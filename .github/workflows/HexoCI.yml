@@ -3,13 +3,13 @@ name: CI
 on:
   push:
     branches:
-      - gh-pages
+      - main
 
 env:
   GIT_USER: vianlex
   GIT_EMAIL: zhouykwork@outlook.com
   DEPLOY_REPO: vianlex/vianlex.github.io
-  DEPLOY_BRANCH: gh-pages
+  DEPLOY_BRANCH: main
 
 jobs:
   build:
@@ -21,20 +21,15 @@ jobs:
         node_version: [12.x]
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-
       - name: Checkout deploy repo
         uses: actions/checkout@v2
         with:
           repository: ${{ env.DEPLOY_REPO }}
           ref: ${{ env.DEPLOY_BRANCH }}
-
       - name: Use Node.js ${{ matrix.node_version }}
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node_version }}
-
       - name: Configuration environment
         env:
           HEXO_DEPLOY_PRI: ${{secrets.HEXO_DEPLOY_PRI}}
@@ -46,11 +41,7 @@ jobs:
           ssh-keyscan github.com > ~/.ssh/known_hosts
           git config --global user.name $GIT_USER
           git config --global user.email $GIT_EMAIL
-
-      - name: Install dependencies
+      - name: Hexo deploy
         run: |
-          npm install
-
-      - name: Deploy hexo
-        run: |
-          npm run deploy
+          hexo clean
+          hexo d
