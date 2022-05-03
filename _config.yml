@@ -106,4 +106,4 @@ deploy:
   type: git
   repo: git@github.com:vianlex/vianlex.github.io.git
   # example, https://github.com/hexojs/hexojs.github.io
-  branch: gh-pages
+  branch: main
