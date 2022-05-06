@@ -17,5 +17,26 @@ ssh -J username@192.168.1.2 username@192.168.1.3
 scp -P 22 -o 'ProxyJump username@192.168.1.2 -p 22' uploadFile.txt username@192.168.1.2:/home/username
 
 ```
+## 本地端口转发
 
-## 参考链接：https://vpsmore.com/ssh-scp-over-jump-server.html
+```
+
+ssh -N [-L|-R]  <local port>:<remote host>:<remote port> <SSH server host>
+-L 表示本地端口转发
+-R 表示远程端口转发
+-N 表示不执行命令,只进行端口转发
+-f 表示执行命令前转入后台运行
+-p 指定中间服务器的端口
+
+将连接到本地电脑 61001 端口的消息通过中间服务器 A 转发到服务器 B 的22端口
+ssh -p 22 -N -L 61001:39.98.110.32:22  sysadmin@10.1.20.107
+ssh username@127.0.0.1 -p 61001
+
+
+```
+
+
+
+## 参考链接：
+https://vpsmore.com/ssh-scp-over-jump-server.html
+https://www.icode9.com/content-4-940210.html
