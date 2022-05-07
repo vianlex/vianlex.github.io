@@ -17,16 +17,17 @@ ssh -J username@192.168.1.2 username@192.168.1.3
 scp -P 22 -o 'ProxyJump username@192.168.1.2 -p 22' uploadFile.txt username@192.168.1.2:/home/username
 
 ```
-## 本地端口转发
-
+## 端口转发
+SSH 端口转发的命令格式如下：
 ```
-
-ssh -N [-L|-R]  <local port>:<remote host>:<remote port> <SSH server host>
--L 表示本地端口转发
--R 表示远程端口转发
+ssh -N -L [localhost][localport]:[remotehost]:[remoteport] [username]@[ForwardServerIP] -p ForwardServerPort
+-L 表示将 ForwardServer 主机要将 localhost 主机的 localport 端口信息都要转发到 remotehost主机的 remoteport 端口 
 -N 表示不执行命令,只进行端口转发
--f 表示执行命令前转入后台运行
--p 指定中间服务器的端口
+-f 表示该条命令要后台运行
+-p 表示的是执行转发操作中间服务器的端口，就是 ForwardServer 的 SSH 登录端口
+```
+![SSH端口转发例图-02](/images/SSH端口转发例图-02.png)
+```
 
 将连接到本地电脑 61001 端口的消息通过中间服务器 A 转发到服务器 B 的22端口
 ssh -p 22 -N -L 61001:39.98.110.32:22  sysadmin@10.1.20.107
