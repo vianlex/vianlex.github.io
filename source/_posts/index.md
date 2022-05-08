@@ -1,5 +1,5 @@
 ---
-title:6
+title:
 ---
 # GitHub Pages + GitHub Action + Hexo 搭建自动部署的静态网站
 
