@@ -11,6 +11,7 @@ title:6
 2、创建一个 ph-pages 分支， 并在仓库的 settings 中指定静态网站使用 ph-pages 分支，main 分支存放搭建 hexo 网站的源码，ph-pages 存放 hexo 编译后的静态网页源码，设置好后，浏览器访问 vianlex.github.io 会默认访问 pg-pages 分支下的 index.html 文件，静态网站使用分支设置如下图：
 ![静态网站分支设置图](/images/静态网站分支设置图.png)
 
+3、vianlex.github.io 静态网站使用仓库的 main 分支存放 hexo 源码，pg-pages 分支存放 hexo 编译后静态文件，另一种方式也可以使用一个仓库存放 hexo 源码，一个仓库存放 hexo 编译后的静态文件。
 
 ## 手动使用 hexo deploy 部署静态网站
 使用 hexo deploy 部署静态网站，其实就是把我们搭建 hexo 网站编译，并将编译后的静态网站源码推送到 pg-pages 分支,  使用 hexo deploy 部署必须安装 hexo-deployer-git 插件和修改 _config.yml 中 deploy 参数。
