@@ -58,6 +58,8 @@ chmod -R 700 ~ /.ssh
 4、禁止密码登录，限制只能使用密钥登录，需要修改 /etc/ssh/sshd_config 文件如下
 
 ```
+# 修改登录端口 port 默认是 22, 修改端口前需要查看是否被占用 netstat -ano | grep 2222
+port 2222
 # 允许 root 用户通过ssh登录
 PermitRootLogin yes
 # 禁用密码登录
