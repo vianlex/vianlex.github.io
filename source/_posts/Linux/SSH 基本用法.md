@@ -28,7 +28,8 @@ ssh-keygen -t rsa -C "xxxx@email.com"
 第一种方式，使用命令 ssh-copy-id
 
 ```
-ssh-copy-id -i ~/.ssh/id_rsp.pub  username@host
+# 将公钥复制到程服务器 ~/.ssh/authorizeys 文件中
+ssh-copy-id -i ~/.ssh/id_rsp.pub  username@host -p 22
 
 -i 参数指定公钥文件，不指定的话，ssh-copy-id 命令默认读取用户目录下 .ssh 文件夹中的 id_rsp.pub 文件
 
@@ -53,3 +54,48 @@ chmod -R 700 ~ /.ssh
 
 
 3、按上面的说明配置好后，即可直接使用命令 ssh username@host 免密登录远程服务
+
+4、禁止密码登录，限制只能使用密钥登录，需要修改 /etc/ssh/sshd_config 文件如下
+
+```
+# 允许 root 用户通过ssh登录
+PermitRootLogin yes
+# 禁用密码登录
+PasswordAuthentication no
+# 允许使用ssh权限登录
+RSAAuthentication yes
+PubkeyAuthentication yes
+
+```
+5、ssh 快捷登录说明，使用 ~/.ssh/config 文件实现
+
+```
+Host server01
+HostName xx.xx.xx.xx
+Port 22
+User username
+IdentityFile  /path/id_rsa # 指定登录的密钥，不指定默认使用的是 ~/.ssh/id_rsa 注意 ~ 符号表示的用户目录
+
+Host server02
+HostName xx.xx.xx.xx
+Port 22
+User username
+
+```
+以上文件配置后，直接使用 ssh server01 和 ssh server02 就能登录到服务器，注意如果没配置密钥连接方式的话，运行 ssh server01 还是会提示输入密码
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
