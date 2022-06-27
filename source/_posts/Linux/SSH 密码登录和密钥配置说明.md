@@ -58,7 +58,7 @@ chmod -R 700 ~ /.ssh
 4、禁止密码登录，限制只能使用密钥登录，需要修改 /etc/ssh/sshd_config 文件如下
 
 ```
-# 修改登录端口 port 默认是 22, 修改端口前需要查看是否被占用 netstat -ano | grep 2222
+# 修改登录端口 port 默认是 22, 修改端口前查看是否被占用 netstat -ano | grep 2222
 port 2222
 # 允许 root 用户通过ssh登录
 PermitRootLogin yes
@@ -93,7 +93,12 @@ User username
 ```
 以上文件配置后，直接使用 ssh server01 和 ssh server02 就能登录到服务器，注意如果没配置密钥连接方式的话，运行 ssh server01 还是会提示输入密码
 
+## 服务器查看 ssh 的登录日志
 
+```
+tail -f -n 200  /var/log/secure
+
+```
 
 
 
