@@ -1,5 +1,5 @@
 ---
-title: SSH 基本用法
+title: SSH 密码登录和密钥配置说明
 date: 2022-05-12
 ---
 
@@ -67,6 +67,13 @@ RSAAuthentication yes
 PubkeyAuthentication yes
 
 ```
+注意修改配置文件要重启 sshd 才能生效，重启命令,如下
+
+```
+service sshd restart
+
+```
+
 5、ssh 快捷登录说明，使用 ~/.ssh/config 文件实现
 
 ```
