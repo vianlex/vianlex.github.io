@@ -1,0 +1,302 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>Vianlex&#39;s Wiki</title>
+  
+  <subtitle>个人知识记录</subtitle>
+  <link href="http://example.com/atom.xml" rel="self"/>
+  
+  <link href="http://example.com/"/>
+  <updated>2022-07-07T06:45:35.911Z</updated>
+  <id>http://example.com/</id>
+  
+  <author>
+    <name>Vianlex</name>
+    
+  </author>
+  
+  <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title></title>
+    <link href="http://example.com/wiki/index/"/>
+    <id>http://example.com/wiki/index/</id>
+    <published>2022-07-07T06:45:35.911Z</published>
+    <updated>2022-07-07T06:45:35.911Z</updated>
+    
+    <content type="html"><![CDATA[<h1 id="GitHub-Pages-GitHub-Action-Hexo-搭建自动部署的静态网站"><a href="#GitHub-Pages-GitHub-Action-Hexo-搭建自动部署的静态网站" class="headerlink" title="GitHub Pages + GitHub Action + Hexo 搭建自动部署的静态网站"></a>GitHub Pages + GitHub Action + Hexo 搭建自动部署的静态网站</h1><h2 id="GitHub-Pages-搭建静态网站"><a href="#GitHub-Pages-搭建静态网站" class="headerlink" title="GitHub Pages 搭建静态网站"></a>GitHub Pages 搭建静态网站</h2><p>1、静态网站的 github 仓库名称必须满足格式：用户名称.github.io，静态网站的访问地址即是仓库的名称，如下图，创建的仓库静态网页 github 仓库名为 vialex.github.io, 则要访问该仓库的静态网页，配置后浏览器访问 vianlex.github.io 即可。<br><img src="/images/%E9%9D%99%E6%80%81%E7%BD%91%E7%AB%99%E4%BB%93%E5%BA%93%E5%90%8D%E7%A7%B0%E8%AE%BE%E7%BD%AE%E8%AF%B4%E6%98%8E%E5%9B%BE.png" alt="静态网站仓库名称设置说明图"></p><p>2、创建一个 ph-pages 分支， 并在仓库的 settings 中指定静态网站使用 ph-pages 分支，main 分支存放搭建 hexo 网站的源码，ph-pages 存放 hexo 编译后的静态网页源码，设置好后，浏览器访问 vianlex.github.io 会默认访问 pg-pages 分支下的 index.html 文件，静态网站使用分支设置如下图：<br><img src="/images/%E9%9D%99%E6%80%81%E7%BD%91%E7%AB%99%E5%88%86%E6%94%AF%E8%AE%BE%E7%BD%AE%E5%9B%BE.png" alt="静态网站分支设置图"></p><p>3、vianlex.github.io 静态网站使用仓库的 main 分支存放 hexo 源码，pg-pages 分支存放 hexo 编译后静态文件，另一种方式也可以使用一个仓库存放 hexo 源码，一个仓库存放 hexo 编译后的静态文件。</p><h2 id="手动使用-hexo-deploy-部署静态网站"><a href="#手动使用-hexo-deploy-部署静态网站" class="headerlink" title="手动使用 hexo deploy 部署静态网站"></a>手动使用 hexo deploy 部署静态网站</h2><p>使用 hexo deploy 部署静态网站，其实就是把我们搭建 hexo 网站编译，并将编译后的静态网站源码推送到 pg-pages 分支,  使用 hexo deploy 部署必须安装 hexo-deployer-git 插件和修改 _config.yml 中 deploy 参数。</p><p>1、安装 <a href="https://github.com/hexojs/hexo-deployer-git">hexo-deployer-git</a> 插件</p><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install hexo-deployer-git --save</span><br></pre></td></tr></table></figure><p>2、修改  _config.yml 配置文件<br>以下配置的作用：是使用 hexo deploy 编译 hexo 源码后，将生成的静态网页，推送到指定的仓库和分支，推送的仓库类型可以是 git、gitlab 或者其他</p><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">deploy:</span><br><span class="line">  type: git  </span><br><span class="line">  repo: git@github.com:vianlex/vianlex.github.io.git  # 指定我们静态网站部署 github 仓库</span><br><span class="line">  branch: gh-pages  # 因为上面我们上面设置 vianlex.github.io 静态网站指定的分支是 ph-pages，所以要将编译后的静态网站源码推动到该分支</span><br></pre></td></tr></table></figure><h2 id="GitHub-Actions-自动部署静态网站"><a href="#GitHub-Actions-自动部署静态网站" class="headerlink" title="GitHub Actions 自动部署静态网站"></a>GitHub Actions 自动部署静态网站</h2><p>自动部署静态网站也需要跟手动部署一样，安装好 hexo-deployer-git 插件和配置好 _config.yml 中 deploy 参数，自动部署其实就是利用 Github 提供的 Github Action 代替我们的手动执行 hexo deploy，<br>要想使用 Github Actions 流水线要做的几个部署如下。</p><p>1、生成部署密钥命令如下：</p><p>密钥可以使用自己以前生成过的访问 github 或者访问其他应用的 ssh 密钥，不过为安全最好是单独生成新的密钥</p><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"> ssh-keygen -t rsa  -f github-deploy-key</span><br><span class="line"></span><br><span class="line">-t 指定密钥的类型，可以省略</span><br><span class="line">-f 指定密钥文件名称</span><br><span class="line"></span><br></pre></td></tr></table></figure><p>2、 在仓库的 settings 配置刚才生成的密钥，公钥和私钥的配置是为 GitHub Actions 流水线编译部署能将 hexo 源码编译的静态网站源码推送到仓库的 ph-pages 分支<br>2.1、设置访问仓库的公钥，如下图：<br><img src="/images/%E8%AE%BE%E7%BD%AE%E8%AE%BF%E9%97%AE%E4%BB%93%E5%BA%93%E7%9A%84%E5%85%AC%E9%92%A5.png" alt="设置访问仓库的公钥"><br>2.2、设置访问仓库需要的私钥，如下图：<br><img src="/images/%E8%AE%BE%E7%BD%AE%E4%BB%93%E5%BA%93%E8%AE%BF%E9%97%AE%E7%A7%81%E9%92%A5.png" alt="设置仓库访问私钥"></p><p>3、在仓库根目录下创建 .github&#x2F;workflows 目录，并目录创建一个 yml 类型的文件，文件名称随意取，然后文件内容如下：</p><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br></pre></td><td class="code"><pre><span class="line"># 指定 GitHub Actions 流水线的名称，即在仓库的 GitHub Actions 流水线列表中的显示的名字</span><br><span class="line">name: auto-deploy-hexo-ci</span><br><span class="line"></span><br><span class="line">on:</span><br><span class="line">  # 设置 Github Actions 流水线的触发方式，使用 git push 的时候触发</span><br><span class="line">  push:  </span><br><span class="line">    branches:</span><br><span class="line">      # 指定触发的分支，main 分支 git push 的时候触发流水线</span><br><span class="line">      - main  </span><br><span class="line"></span><br><span class="line"># 指定环境变量，方便引用，用到的时候使用 $&#123;&#123; env.GIT_USER&#125;&#125; 引用即可</span><br><span class="line">env:</span><br><span class="line">  GIT_USER: vianlex</span><br><span class="line">  GIT_EMAIL: zhouykwork@outlook.com</span><br><span class="line">  DEPLOY_REPO: vianlex/vianlex.github.io</span><br><span class="line">  DEPLOY_BRANCH: main</span><br><span class="line"></span><br><span class="line">jobs:</span><br><span class="line">  build:</span><br><span class="line">    strategy:</span><br><span class="line">      # 指定 node 和 os 版本 矩阵指定多版本</span><br><span class="line">      matrix:</span><br><span class="line">        os: [ubuntu-latest]</span><br><span class="line">        node_version: [12.x]</span><br><span class="line">    # $&#123;&#123;matrix.node_version&#125;&#125; 即使是引用上面定义的版本</span><br><span class="line">    name: Build on node $&#123;&#123; matrix.node_version &#125;&#125; and $&#123;&#123; matrix.os &#125;&#125;</span><br><span class="line">    runs-on: $&#123;&#123; matrix.os &#125;&#125;</span><br><span class="line">    # 流水线执行的步骤</span><br><span class="line">    steps:</span><br><span class="line">      # 第一步，指定拉取hexo 源码仓库分支，repository 和 ref 使用变量引用上面配置的仓库和分支</span><br><span class="line">      - name: Checkout deploy repo</span><br><span class="line">        uses: actions/checkout@v2</span><br><span class="line">        with:</span><br><span class="line">          repository: $&#123;&#123; env.DEPLOY_REPO &#125;&#125;</span><br><span class="line">          ref: $&#123;&#123; env.DEPLOY_BRANCH &#125;&#125;</span><br><span class="line">      # 第二步，指定使用的 node 版本</span><br><span class="line">      - name: Use Node.js $&#123;&#123; matrix.node_version &#125;&#125;</span><br><span class="line">        uses: actions/setup-node@v1</span><br><span class="line">        with:</span><br><span class="line">          node-version: $&#123;&#123; matrix.node_version &#125;&#125;</span><br><span class="line">      # 第三步，设置运行环境的系统变量，并配置访问仓库的密钥，因为流水线编译 hexo 要将编译后的源码推送到仓库的 ph-pages 分支</span><br><span class="line">      - name: Configuration environment</span><br><span class="line">        env:</span><br><span class="line">          # $&#123;&#123;secrets.HEXO_DEPLOY_PRI&#125;&#125; 表示引用的是仓库配置 settings-&gt;secrets 中的标题名称是 HEXO_DEPLOY_PRI 的私钥</span><br><span class="line">          HEXO_DEPLOY_PRI: $&#123;&#123;secrets.HEXO_DEPLOY_PRI&#125;&#125;</span><br><span class="line">        run: |</span><br><span class="line">          sudo timedatectl set-timezone &quot;Asia/Shanghai&quot;</span><br><span class="line">          # 在流水线的主机的用户目录下创建 .ssh 目录，并将我们在仓库设置的私钥复制到其中</span><br><span class="line">          mkdir -p ~/.ssh/</span><br><span class="line">          echo &quot;$HEXO_DEPLOY_PRI&quot; &gt; ~/.ssh/id_rsa</span><br><span class="line">          chmod 600 ~/.ssh/id_rsa</span><br><span class="line">          ssh-keyscan github.com &gt; ~/.ssh/known_hosts</span><br><span class="line">          # 配置访问仓库的用户名和邮箱</span><br><span class="line">          git config --global user.name $GIT_USER</span><br><span class="line">          git config --global user.email $GIT_EMAIL</span><br><span class="line">      # 第四步，安装 hexo 依赖</span><br><span class="line">      - name: Install dependencies</span><br><span class="line">        run: |</span><br><span class="line">          npm install hexo-cli -g</span><br><span class="line">          npm install</span><br><span class="line">      # 第五步，运行 hexo 部署命令</span><br><span class="line">      - name: Hexo deploy</span><br><span class="line">        run: |</span><br><span class="line">          hexo clean</span><br><span class="line">          hexo d</span><br><span class="line"></span><br></pre></td></tr></table></figure><p>4、配置好后，每次 main 分支 git push 的时候 GitHub Actions 都会触发上面配置的流水线，流水线执行状态，如下图可查看：<br><img src="/images/GitHub-Actions%E5%88%97%E8%A1%A8.png" alt="GitHub Actions 列表"></p><h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><p>1、<a href="https://lujiahao0708.github.io/p/df27ccfb.html">https://lujiahao0708.github.io/p/df27ccfb.html</a><br>2、<a href="https://dslwind.github.io/2021-04-20-github-action-hexo">https://dslwind.github.io/2021-04-20-github-action-hexo</a></p>]]></content>
+    
+    
+      
+      
+    <summary type="html">&lt;h1 id=&quot;GitHub-Pages-GitHub-Action-Hexo-搭建自动部署的静态网站&quot;&gt;&lt;a href=&quot;#GitHub-Pages-GitHub-Action-Hexo-搭建自动部署的静态网站&quot; class=&quot;headerlink&quot; title=&quot;GitHub</summary>
+      
+    
+    
+    
+    
+  </entry>
+  
+  <entry>
+    <title>Docker 常用命令</title>
+    <link href="http://example.com/wiki/Docker/Docker%20%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/"/>
+    <id>http://example.com/wiki/Docker/Docker%20%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/</id>
+    <published>2022-07-07T06:45:35.911Z</published>
+    <updated>2022-07-07T06:45:35.911Z</updated>
+    
+    
+    
+    
+    <category term="Docker" scheme="http://example.com/categories/Docker/"/>
+    
+    
+  </entry>
+  
+  <entry>
+    <title>Docker 权限配置</title>
+    <link href="http://example.com/wiki/Docker/Docker%20%E6%9D%83%E9%99%90%E9%85%8D%E7%BD%AE/"/>
+    <id>http://example.com/wiki/Docker/Docker%20%E6%9D%83%E9%99%90%E9%85%8D%E7%BD%AE/</id>
+    <published>2022-07-07T06:45:35.911Z</published>
+    <updated>2022-07-07T06:45:35.911Z</updated>
+    
+    <content type="html"><![CDATA[<h2 id="新增-docker-用户组"><a href="#新增-docker-用户组" class="headerlink" title="新增 docker 用户组"></a>新增 docker 用户组</h2><p>查看 docker 用户组是否存在</p><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo /etc/group | grep docker</span><br></pre></td></tr></table></figure><p>docker 用户组不存在则新建一个</p><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"># 创建用户组</span><br><span class="line">sudo groupadd docker</span><br><span class="line"># 给用户组设置权限</span><br><span class="line">sudo a+rw /var/run/docker.sock</span><br></pre></td></tr></table></figure><h2 id="将当前用户添加-docker-用户组"><a href="#将当前用户添加-docker-用户组" class="headerlink" title="将当前用户添加 docker 用户组"></a>将当前用户添加 docker 用户组</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo gpasswd -a $&#123;USER&#125;  docker</span><br></pre></td></tr></table></figure><h2 id="刷新用户组权限"><a href="#刷新用户组权限" class="headerlink" title="刷新用户组权限"></a>刷新用户组权限</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">newgrp  docker</span><br><span class="line"></span><br></pre></td></tr></table></figure><h2 id="重启-docker-服务"><a href="#重启-docker-服务" class="headerlink" title="重启 docker 服务"></a>重启 docker 服务</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo service docker restart</span><br><span class="line"></span><br></pre></td></tr></table></figure>]]></content>
+    
+    
+      
+      
+    <summary type="html">&lt;h2 id=&quot;新增-docker-用户组&quot;&gt;&lt;a href=&quot;#新增-docker-用户组&quot; class=&quot;headerlink&quot; title=&quot;新增 docker 用户组&quot;&gt;&lt;/a&gt;新增 docker 用户组&lt;/h2&gt;&lt;p&gt;查看 docker 用户组是否存在&lt;/p&gt;
+&lt;fig</summary>
+      
+    
+    
+    
+    <category term="Docker" scheme="http://example.com/categories/Docker/"/>
+    
+    
+  </entry>
+  
+  <entry>
+    <title>Dockerfile 使用说明</title>
+    <link href="http://example.com/wiki/Docker/Dockerfile%20%E4%BD%BF%E7%94%A8%E8%AF%B4%E6%98%8E/"/>
+    <id>http://example.com/wiki/Docker/Dockerfile%20%E4%BD%BF%E7%94%A8%E8%AF%B4%E6%98%8E/</id>
+    <published>2022-07-07T06:45:35.911Z</published>
+    <updated>2022-07-07T06:45:35.911Z</updated>
+    
+    <content type="html"><![CDATA[<h1 id="docker-构建忽略文件-dockerignore，指定构建上下文中可以复制哪些文件-文件格式如下"><a href="#docker-构建忽略文件-dockerignore，指定构建上下文中可以复制哪些文件-文件格式如下" class="headerlink" title="docker 构建忽略文件 .dockerignore，指定构建上下文中可以复制哪些文件, 文件格式如下"></a>docker 构建忽略文件 .dockerignore，指定构建上下文中可以复制哪些文件, 文件格式如下</h1><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"># * 表示忽略全部文件</span><br><span class="line">* </span><br><span class="line"># ! 表示可以排除哪些文件，不需要忽略 </span><br><span class="line">!package.json</span><br><span class="line">!nuxt.config.js </span><br><span class="line">!.nuxt </span><br><span class="line">!static </span><br><span class="line"></span><br></pre></td></tr></table></figure><h1 id="COPY-命令无法复制文件夹，则可以利用-dockerignore-来实现复制文件夹"><a href="#COPY-命令无法复制文件夹，则可以利用-dockerignore-来实现复制文件夹" class="headerlink" title="COPY 命令无法复制文件夹，则可以利用 .dockerignore 来实现复制文件夹"></a>COPY 命令无法复制文件夹，则可以利用 .dockerignore 来实现复制文件夹</h1><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"># 比如想将 static 文件夹和其目录下的文件都复制到 /path 下，是无法实现的，COPY 只会将 static 目录中的文件复制到 /path 下，static 文件夹本身无法复制</span><br><span class="line">COPY static /path/</span><br><span class="line"></span><br><span class="line"># 这种方式可以复制文件夹，如将当前构建上下文中的文件，全部复制到 /path 目录下，COPY 命令会根据 .dockerignore 文件判断哪些文件可以复制，哪些文件不能复制</span><br><span class="line">COPY . /path/</span><br><span class="line"></span><br></pre></td></tr></table></figure>]]></content>
+    
+    
+      
+      
+    <summary type="html">&lt;h1 id=&quot;docker-构建忽略文件-dockerignore，指定构建上下文中可以复制哪些文件-文件格式如下&quot;&gt;&lt;a href=&quot;#docker-构建忽略文件-dockerignore，指定构建上下文中可以复制哪些文件-文件格式如下&quot; class=&quot;headerlink&quot;</summary>
+      
+    
+    
+    
+    <category term="Docker" scheme="http://example.com/categories/Docker/"/>
+    
+    
+  </entry>
+  
+  <entry>
+    <title>Docker-Compose 常用命令</title>
+    <link href="http://example.com/wiki/Docker/docker-compose%20%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/"/>
+    <id>http://example.com/wiki/Docker/docker-compose%20%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/</id>
+    <published>2022-07-07T06:45:35.911Z</published>
+    <updated>2022-07-07T06:45:35.911Z</updated>
+    
+    <content type="html"><![CDATA[<h1 id="docker-compose-单独更新某个镜像使用命令"><a href="#docker-compose-单独更新某个镜像使用命令" class="headerlink" title="docker-compose 单独更新某个镜像使用命令"></a>docker-compose 单独更新某个镜像使用命令</h1><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">docker-compose pull app(docker-compose配置文件中的服务名称)</span><br><span class="line">docker-compose create app</span><br><span class="line">docker-compose start app</span><br><span class="line"></span><br></pre></td></tr></table></figure>]]></content>
+    
+    
+      
+      
+    <summary type="html">&lt;h1 id=&quot;docker-compose-单独更新某个镜像使用命令&quot;&gt;&lt;a href=&quot;#docker-compose-单独更新某个镜像使用命令&quot; class=&quot;headerlink&quot; title=&quot;docker-compose 单独更新某个镜像使用命令&quot;&gt;&lt;/a&gt;docke</summary>
+      
+    
+    
+    
+    <category term="Docker" scheme="http://example.com/categories/Docker/"/>
+    
+    
+  </entry>
+  
+  <entry>
+    <title>Go 基础语法</title>
+    <link href="http://example.com/wiki/Golang/Go%20%E5%9F%BA%E7%A1%80%E8%AF%AD%E6%B3%95/"/>
+    <id>http://example.com/wiki/Golang/Go%20%E5%9F%BA%E7%A1%80%E8%AF%AD%E6%B3%95/</id>
+    <published>2022-07-07T06:45:35.911Z</published>
+    <updated>2022-07-07T06:45:35.911Z</updated>
+    
+    
+    
+    
+    <category term="Golang" scheme="http://example.com/categories/Golang/"/>
+    
+    
+    <category term="go" scheme="http://example.com/tags/go/"/>
+    
+  </entry>
+  
+  <entry>
+    <title></title>
+    <link href="http://example.com/wiki/Linux/Linux%20%E6%9C%8D%E5%8A%A1%E5%99%A8%E6%8C%82%E8%BD%BD%E7%A1%AC%E7%9B%98/"/>
+    <id>http://example.com/wiki/Linux/Linux%20%E6%9C%8D%E5%8A%A1%E5%99%A8%E6%8C%82%E8%BD%BD%E7%A1%AC%E7%9B%98/</id>
+    <published>2022-07-07T06:45:35.911Z</published>
+    <updated>2022-07-07T06:45:35.911Z</updated>
+    
+    <content type="html"><![CDATA[<hr><h2 id="title-Linux-服务器挂载硬盘"><a href="#title-Linux-服务器挂载硬盘" class="headerlink" title="title: Linux 服务器挂载硬盘"></a>title: Linux 服务器挂载硬盘</h2><h2 id="服务器硬盘"><a href="#服务器硬盘" class="headerlink" title="服务器硬盘"></a>服务器硬盘</h2><p>1、使用命令 fdisk -l 查看服务有哪些硬盘<br>2、使用命令 df -h 查看已挂着的命令</p><h2 id="在硬盘上创建文件系统"><a href="#在硬盘上创建文件系统" class="headerlink" title="在硬盘上创建文件系统"></a>在硬盘上创建文件系统</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">命令格式：mkfs.文件系统 硬盘，具体例子如下：</span><br><span class="line"></span><br><span class="line">mkfs.ext4 /dev/vdb</span><br><span class="line"></span><br></pre></td></tr></table></figure><h2 id="使用-blkid-命令查看硬盘-UUID"><a href="#使用-blkid-命令查看硬盘-UUID" class="headerlink" title="使用 blkid 命令查看硬盘 UUID"></a>使用 blkid 命令查看硬盘 UUID</h2><h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><p>1、<a href="https://www.cnblogs.com/hiit/p/12106099.html">https://www.cnblogs.com/hiit/p/12106099.html</a></p>]]></content>
+    
+    
+      
+      
+    <summary type="html">&lt;hr&gt;
+&lt;h2 id=&quot;title-Linux-服务器挂载硬盘&quot;&gt;&lt;a href=&quot;#title-Linux-服务器挂载硬盘&quot; class=&quot;headerlink&quot; title=&quot;title: Linux 服务器挂载硬盘&quot;&gt;&lt;/a&gt;title: Linux 服务器挂载硬盘&lt;/h</summary>
+      
+    
+    
+    
+    <category term="Linux" scheme="http://example.com/categories/Linux/"/>
+    
+    
+  </entry>
+  
+  <entry>
+    <title>SSH 端口转发用法说明</title>
+    <link href="http://example.com/wiki/Linux/SSH%20%E7%AB%AF%E5%8F%A3%E8%BD%AC%E5%8F%91/"/>
+    <id>http://example.com/wiki/Linux/SSH%20%E7%AB%AF%E5%8F%A3%E8%BD%AC%E5%8F%91/</id>
+    <published>2022-07-07T06:45:35.911Z</published>
+    <updated>2022-07-07T06:45:35.911Z</updated>
+    
+    <content type="html"><![CDATA[<h2 id="跳板机"><a href="#跳板机" class="headerlink" title="跳板机"></a>跳板机</h2><p><img src="/images/SSH%E8%B7%B3%E6%9D%BF%E6%9C%BA%E6%9C%8D%E5%8A%A1%E5%99%A8-01.png" alt="跳板机说明例图-01"><br>如上图本地电脑，能直接访问服务器 A，无法访问服务器 B，本地电脑要想登录远程和操作服务器 B，则需要使用服务器A作为中间的跳板。<br>1、通过中间跳板机登录远程服务器</p><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh -J username@192.168.1.2:22 username@192.168.1.3 -p 22</span><br></pre></td></tr></table></figure><p>如果 ssh 的端口时默认的 22 端口可以省略掉简写成：</p><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh -J username@192.168.1.2 username@192.168.1.3 </span><br></pre></td></tr></table></figure><p>2、通过中间跳板机上传文件</p><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">scp -P 22 -o &#x27;ProxyJump username@192.168.1.2 -p 22&#x27; uploadFile.txt username@192.168.1.2:/home/username</span><br><span class="line"></span><br></pre></td></tr></table></figure><h2 id="本地端口转发"><a href="#本地端口转发" class="headerlink" title="本地端口转发"></a>本地端口转发</h2><p>SSH 端口转发的命令格式如下：</p><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">ssh -N -L [localport]:[targethost]:[targetport] [username]@[ssh-tunnel-ip] -p ssh-tunnel-port</span><br><span class="line"></span><br><span class="line">-L 表示本地运行的 ssh 命令监听到，访问本地端口 localport 的信息时，通过中间跳板机 ssh-tunnel 将信息转发到目标主机 targetprot 的目标端口 targetport 上  </span><br><span class="line">-N 表示 SSH 连接只进行端口转发，不登录远程 Shell</span><br><span class="line">-f 表示 SSH 连接成功后，该命令就后台运行</span><br><span class="line">-p 用于指定执行转发操作的 SSH 通道服务器(中间服务器)端口</span><br><span class="line"></span><br></pre></td></tr></table></figure><p>例子1，如下图, 本地电脑能直接访问服务器 A 不直接访问服务器 B 和 C，服务器 A 能直接访问服务器 B，而不能直接访问服务器 C</p><p><img src="/images/SSH%E7%AB%AF%E5%8F%A3%E8%BD%AC%E5%8F%91%E4%BE%8B%E5%9B%BE-01.png" alt="SSH端口转发例图-01"></p><p>本地电脑想要远程登录服务器 C，则需要使用服务器 B 作为中间服务器器，将服务器 A 本端口转发服务器 C，然后本地电脑访问服务器 A 设置的转发端口，就能访问服务器 C，则要执行如下命令：</p><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"># 在服务器 B 中执行命令</span><br><span class="line">ssh -N -L 6011:192.168.1.4:22 username@192.168.1.3 -p 22</span><br><span class="line"># 本地电脑执行名</span><br><span class="line">ssh username@192.168.1.2 -p 6011</span><br><span class="line"></span><br></pre></td></tr></table></figure><p>例子2、如下图, 本地电脑只能访问到服务器 A 如果想访问 MySql、服务器 B、HTTP 服务器、Email 服务器，则必须通过服务器 A 作为中间转发通道可以实现访问。</p><p><img src="/images/SSH%E7%AB%AF%E5%8F%A3%E8%BD%AC%E5%8F%91%E4%BE%8B%E5%AD%90-02.png" alt="SSH端口转发例子-02"></p><p>想要访问服务器 B，要执行的命令如下：</p><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"># 本地电脑运行如下命令，通过中间服务器 A(192.168.1.1) 作为转发通道，将本地电脑的端口 3111 转发到服务器 B(192.168.1.3) 的22端口</span><br><span class="line">ssh -N -L 3111:192.168.1.3:22 username@192.168.1.1 -p 22</span><br><span class="line"># 本地电脑再运行命令，即可访问到服务器 B，username 服务器 B 的 ssh 用户名</span><br><span class="line">ssh username@127.0.0.1 -p 3111   </span><br><span class="line"></span><br></pre></td></tr></table></figure><p>想要访问 Myql 服务器，本地电脑也可以使用服务器 A 作为中间跳板机，端口转发，然后访问到 MySql</p><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"># ssh 转发命令运行后，监听本地端口 3336 如果收 3306 端连接的信息，则通过服务器 A 转发到 mysql 服务器的 3306 端口</span><br><span class="line">ssh -N -L 3336:192.168.1.2:3306 username@192.168.1.1 -p 22</span><br><span class="line"># 运行连接命令</span><br><span class="line">mysql -u username -h 127.0.0.1 -p 3336</span><br><span class="line"></span><br></pre></td></tr></table></figure><p>想要访问 Http 服务器和访问 Email 服务也可以通过本地端口转发来实现</p><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"># 本地电脑先运行转发命令</span><br><span class="line">ssh -N L 880:192.168.1.2:80 -L 225:192.168.1.2:25 username@192.168.1.1 -p 22</span><br><span class="line"># 浏览器输入如下连接即可访问 Http 和 Email 服务</span><br><span class="line">http://127.0.0.1:880</span><br><span class="line">http://127.0.0.1:225</span><br><span class="line"></span><br></pre></td></tr></table></figure><h2 id="远程端口转发"><a href="#远程端口转发" class="headerlink" title="远程端口转发"></a>远程端口转发</h2><p>远程转发指的是在远程 SSH 服务器建立的转发规则，访问远程服务器会将指定端口的流量转发到本地服务，远程转发的命令如下：</p><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"># 将访问 remotehost 的 remote-port 端口的流量转发到 target-host 的 target-port 端口</span><br><span class="line">ssh -R remote-port:target-host:target-port -N remotehost</span><br><span class="line"></span><br></pre></td></tr></table></figure><p><img src="/images/%E8%BF%9C%E7%A8%8B%E7%AB%AF%E5%8F%A3%E8%BD%AC%E5%8F%91%E4%BE%8B%E5%9B%BE.png" alt="远程端口转发例图"></p><p>如上图，内网本地电脑无法连接外网，但是服务器 A 可以访问到本地电脑，外部网络想要访问到本地电脑，则可以通过远程端口转发的形式访问，运行如下命令：</p><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"># 运行该命令后，只要访问 192.168.1.1 的 8080 端口就会将流量转发到 127.0.0.1 的 8080 端口</span><br><span class="line">ssh -N -R 8080:127.0.0.1:8081 192.168.1.1 </span><br><span class="line"></span><br></pre></td></tr></table></figure><h2 id="动态端口转发"><a href="#动态端口转发" class="headerlink" title="动态端口转发"></a>动态端口转发</h2><p>动态转发指的是通过 SSH 监听本地的某个端口，将监听到流量数据转发通过 SSH 通道(即中间服务器)转发出去，动态端口转发的命令格式如下：</p><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ssh -D local-port tunnel-host -N </span><br><span class="line"></span><br></pre></td></tr></table></figure><h2 id="参考链接："><a href="#参考链接：" class="headerlink" title="参考链接："></a>参考链接：</h2><p>1、<a href="https://vpsmore.com/ssh-scp-over-jump-server.html">https://vpsmore.com/ssh-scp-over-jump-server.html</a><br>2、<a href="https://www.icode9.com/content-4-940210.html">https://www.icode9.com/content-4-940210.html</a><br>3、<a href="https://www.cainiaojc.com/ssh/ssh-port-forwarding.html">https://www.cainiaojc.com/ssh/ssh-port-forwarding.html</a><br>4、<a href="https://solitum.net/posts/an-illustrated-guide-to-ssh-tunnels/#remote-tunnels">https://solitum.net/posts/an-illustrated-guide-to-ssh-tunnels/#remote-tunnels</a></p>]]></content>
+    
+    
+      
+      
+    <summary type="html">&lt;h2 id=&quot;跳板机&quot;&gt;&lt;a href=&quot;#跳板机&quot; class=&quot;headerlink&quot; title=&quot;跳板机&quot;&gt;&lt;/a&gt;跳板机&lt;/h2&gt;&lt;p&gt;&lt;img src=&quot;/images/SSH%E8%B7%B3%E6%9D%BF%E6%9C%BA%E6%9C%8D%E5%8A%A1</summary>
+      
+    
+    
+    
+    <category term="Linux" scheme="http://example.com/categories/Linux/"/>
+    
+    
+  </entry>
+  
+  <entry>
+    <title>使用出现问题记录</title>
+    <link href="http://example.com/wiki/PowerDesigner/%E4%BD%BF%E7%94%A8%E9%97%AE%E9%A2%98%E8%AE%B0%E5%BD%95/"/>
+    <id>http://example.com/wiki/PowerDesigner/%E4%BD%BF%E7%94%A8%E9%97%AE%E9%A2%98%E8%AE%B0%E5%BD%95/</id>
+    <published>2022-07-07T06:45:35.911Z</published>
+    <updated>2022-07-07T06:45:35.911Z</updated>
+    
+    <content type="html"><![CDATA[<h2 id="提示-the-object-has-no-symbol"><a href="#提示-the-object-has-no-symbol" class="headerlink" title="提示 the object has no symbol"></a>提示 the object has no symbol</h2><p>在 Workspace 中找到应对 PDM 或者 CDM 的 PhysicalDiagram 然后右键选择 show symbols 再选择要显示的对象即可。</p>]]></content>
+    
+    
+      
+      
+    <summary type="html">&lt;h2 id=&quot;提示-the-object-has-no-symbol&quot;&gt;&lt;a href=&quot;#提示-the-object-has-no-symbol&quot; class=&quot;headerlink&quot; title=&quot;提示 the object has no symbol&quot;&gt;&lt;/a&gt;提示 th</summary>
+      
+    
+    
+    
+    <category term="PowerDesigner" scheme="http://example.com/categories/PowerDesigner/"/>
+    
+    
+  </entry>
+  
+  <entry>
+    <title>SQL 逆向导入生成 PDM</title>
+    <link href="http://example.com/wiki/PowerDesigner/%E9%80%86%E5%90%91%E5%AF%BC%E5%85%A5%E9%97%AE%E9%A2%98%E8%AE%B0%E5%BD%95/"/>
+    <id>http://example.com/wiki/PowerDesigner/%E9%80%86%E5%90%91%E5%AF%BC%E5%85%A5%E9%97%AE%E9%A2%98%E8%AE%B0%E5%BD%95/</id>
+    <published>2022-07-07T06:45:35.911Z</published>
+    <updated>2022-07-07T06:45:35.911Z</updated>
+    
+    <content type="html"><![CDATA[<h2 id="逆向导入-MySQL-表结构例子"><a href="#逆向导入-MySQL-表结构例子" class="headerlink" title="逆向导入 MySQL 表结构例子"></a>逆向导入 MySQL 表结构例子</h2><h3 id="第一步"><a href="#第一步" class="headerlink" title="第一步"></a>第一步</h3><p><img src="/images/SQL%E9%80%86%E5%90%91%E7%94%9F%E6%88%90PMD%E6%AD%A5%E9%AA%A4-1.png" alt="SQL逆向生成PMD步骤-01"></p><h4 id="第二步、DBMS-需要选择-MySql"><a href="#第二步、DBMS-需要选择-MySql" class="headerlink" title="第二步、DBMS 需要选择 MySql"></a>第二步、DBMS 需要选择 MySql</h4><p><img src="/images/SQL%E9%80%86%E5%90%91%E7%94%9F%E6%88%90PMD%E6%AD%A5%E9%AA%A4-2.png" alt="SQL逆向生成PMD步骤-02"></p><h3 id="第三步、选择要导入的建表-SQL-脚本"><a href="#第三步、选择要导入的建表-SQL-脚本" class="headerlink" title="第三步、选择要导入的建表 SQL 脚本"></a>第三步、选择要导入的建表 SQL 脚本</h3><p><img src="/images/SQL%E9%80%86%E5%90%91%E7%94%9F%E6%88%90PMD%E6%AD%A5%E9%AA%A4-3.png" alt="SQL逆向生成PMD步骤-03"></p><h2 id="查看-Colums-没有-comment-注释列的话，可以-CTRL-U-选择显示-comment-即可"><a href="#查看-Colums-没有-comment-注释列的话，可以-CTRL-U-选择显示-comment-即可" class="headerlink" title="查看 Colums 没有 comment 注释列的话，可以 CTRL+U 选择显示 comment 即可"></a>查看 Colums 没有 comment 注释列的话，可以 CTRL+U 选择显示 comment 即可</h2><p><img src="/images/SQL%E9%80%86%E5%90%91%E7%94%9F%E6%88%90PMD%E6%AD%A5%E9%AA%A4-4.png" alt="SQL逆向生成PMD步骤-04"></p><h2 id="SQL-逆向导入生成-PDM-没有导入-COMMENT-注释问题"><a href="#SQL-逆向导入生成-PDM-没有导入-COMMENT-注释问题" class="headerlink" title="SQL 逆向导入生成 PDM 没有导入 COMMENT 注释问题"></a>SQL 逆向导入生成 PDM 没有导入 COMMENT 注释问题</h2><p>解决的方式是，把建表语句中字段设置的默认值和字符集全去掉，只保留字段的类型和注释，如下：</p><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">CREATE TABLE `user` (</span><br><span class="line">`id` VARCHAR(50)  COMMENT &#x27;用户 ID&#x27;,</span><br><span class="line">`username` VARCHAR(50) COMMENT &#x27;用户名&#x27;,</span><br><span class="line">    PRIMARY KEY (`id`) USING BTREE</span><br><span class="line">) COLLATE=&#x27;utf8mb4_0900_ai_ci&#x27; ENGINE=InnoDB COMMENT &#x27;用户表&#x27;;</span><br><span class="line"></span><br></pre></td></tr></table></figure><h2 id="将生成的-PDM-转-CDM"><a href="#将生成的-PDM-转-CDM" class="headerlink" title="将生成的 PDM 转 CDM"></a>将生成的 PDM 转 CDM</h2><p>菜单栏上选择 Tools 然后选择 Generate conceptual Data Model 即可</p>]]></content>
+    
+    
+      
+      
+    <summary type="html">&lt;h2 id=&quot;逆向导入-MySQL-表结构例子&quot;&gt;&lt;a href=&quot;#逆向导入-MySQL-表结构例子&quot; class=&quot;headerlink&quot; title=&quot;逆向导入 MySQL 表结构例子&quot;&gt;&lt;/a&gt;逆向导入 MySQL 表结构例子&lt;/h2&gt;&lt;h3 id=&quot;第一步&quot;&gt;&lt;a h</summary>
+      
+    
+    
+    
+    <category term="PowerDesigner" scheme="http://example.com/categories/PowerDesigner/"/>
+    
+    
+  </entry>
+  
+  <entry>
+    <title>Awk 基础用法</title>
+    <link href="http://example.com/wiki/Shell/Awk%20%20%E5%9F%BA%E7%A1%80%E7%94%A8%E6%B3%95/"/>
+    <id>http://example.com/wiki/Shell/Awk%20%20%E5%9F%BA%E7%A1%80%E7%94%A8%E6%B3%95/</id>
+    <published>2022-07-07T06:45:35.911Z</published>
+    <updated>2022-07-07T06:45:35.911Z</updated>
+    
+    
+    
+    
+    <category term="Shell" scheme="http://example.com/categories/Shell/"/>
+    
+    
+  </entry>
+  
+  <entry>
+    <title>Sed 基础用法</title>
+    <link href="http://example.com/wiki/Shell/Sed%20%E5%9F%BA%E7%A1%80%E7%94%A8%E6%B3%95/"/>
+    <id>http://example.com/wiki/Shell/Sed%20%E5%9F%BA%E7%A1%80%E7%94%A8%E6%B3%95/</id>
+    <published>2022-07-07T06:45:35.911Z</published>
+    <updated>2022-07-07T06:45:35.911Z</updated>
+    
+    
+    
+    
+    <category term="Shell" scheme="http://example.com/categories/Shell/"/>
+    
+    
+  </entry>
+  
+  <entry>
+    <title>软件名称记录</title>
+    <link href="http://example.com/wiki/other/%E8%BD%AF%E4%BB%B6%E5%90%8D%E7%A7%B0%E8%AE%B0%E5%BD%95/"/>
+    <id>http://example.com/wiki/other/%E8%BD%AF%E4%BB%B6%E5%90%8D%E7%A7%B0%E8%AE%B0%E5%BD%95/</id>
+    <published>2022-07-07T06:45:35.911Z</published>
+    <updated>2022-07-07T06:45:35.911Z</updated>
+    
+    <content type="html"><![CDATA[<p>1、常见软件名后缀 CE、EE、CS 的说明</p><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">docker-ce  表示的是 docker 社区版(Community Edition)</span><br><span class="line">docker-ee  表示的是 docker 企业版(Enterprise Edition)</span><br><span class="line">docker-cs  表示的是 docker 自定义版(Custom Support)</span><br><span class="line"></span><br></pre></td></tr></table></figure>]]></content>
+    
+    
+      
+      
+    <summary type="html">&lt;p&gt;1、常见软件名后缀 CE、EE、CS 的说明&lt;/p&gt;
+&lt;figure class=&quot;highlight plaintext&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span cl</summary>
+      
+    
+    
+    
+    <category term="other" scheme="http://example.com/categories/other/"/>
+    
+    
+  </entry>
+  
+  <entry>
+    <title>SSH 密码登录和密钥配置说明</title>
+    <link href="http://example.com/wiki/Linux/SSH%20%E5%AF%86%E7%A0%81%E7%99%BB%E5%BD%95%E5%92%8C%E5%AF%86%E9%92%A5%E9%85%8D%E7%BD%AE%E8%AF%B4%E6%98%8E/"/>
+    <id>http://example.com/wiki/Linux/SSH%20%E5%AF%86%E7%A0%81%E7%99%BB%E5%BD%95%E5%92%8C%E5%AF%86%E9%92%A5%E9%85%8D%E7%BD%AE%E8%AF%B4%E6%98%8E/</id>
+    <published>2022-05-11T16:00:00.000Z</published>
+    <updated>2022-07-07T06:45:35.911Z</updated>
+    
+    <content type="html"><![CDATA[<h2 id="账号密码登录"><a href="#账号密码登录" class="headerlink" title="账号密码登录"></a>账号密码登录</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh username@host -p 22</span><br></pre></td></tr></table></figure><h2 id="公钥登录"><a href="#公钥登录" class="headerlink" title="公钥登录"></a>公钥登录</h2><p>1、运行如下命令生成密钥，如果已有密钥则不必重新生成，默认会在用户目录，生成 .ssh 目录和 id_rsa 私钥 以及 id_rsa.pub 公钥</p><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">ssh-keygen -t rsa -C &quot;xxxx@email.com&quot;</span><br><span class="line"></span><br><span class="line">-t 指定密钥类型，一般类型有 dsa和 rsa 默认是 rsa 类型，可以省略。</span><br><span class="line">-C 设置注释，一般填写的都是自己的邮箱</span><br><span class="line">-f 指定密钥文件存储文件名</span><br><span class="line">-P 密钥的密码，一般都是不指定密码的，-P &#x27;&#x27; 指定密码为空字符时，运行命令可以少敲两个回车 </span><br><span class="line">-b 指定密钥的位数，可以设置值如 1024 或 4069，未研究位数的作用</span><br><span class="line"></span><br></pre></td></tr></table></figure><p>2、将公钥复制到远程服务器，复制的方式有两种</p><p>第一种方式，使用命令 ssh-copy-id</p><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"># 将公钥复制到程服务器 ~/.ssh/authorizeys 文件中</span><br><span class="line">ssh-copy-id -i ~/.ssh/id_rsp.pub  username@host -p 22</span><br><span class="line"></span><br><span class="line">-i 参数指定公钥文件，不指定的话，ssh-copy-id 命令默认读取用户目录下 .ssh 文件夹中的 id_rsp.pub 文件</span><br><span class="line"></span><br></pre></td></tr></table></figure><p>第二种方式，将公钥 id_rsa.pub 文件内容追加到远程服务器 ~&#x2F;.ssh&#x2F;authorizeys 文件中，如果 .ssh 目录和 authorizeys 文件不存在则需要创建后再把 id_rsa.pub 内容复制到其中。 </p><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">上传 id_rsa.pub 文件到远程服务，可以使用 sftp 工具上传，也可以使用 scp 上传，或者其他方式上传，例子使用 scp 命令上传</span><br><span class="line"></span><br><span class="line">scp ~/.ssh/id_rsa.pub username@host:/home/username   </span><br><span class="line"></span><br><span class="line">密码登录远程服务将刚才上传的公钥内容追加到 authorizeys 文件中</span><br><span class="line"></span><br><span class="line">cat ~/id_rsa.pub &gt;&gt; ~/.ssh/authorizeys</span><br><span class="line"></span><br><span class="line">注意远程服务的 .ssh 目录权限不是 700 要修改一下</span><br><span class="line"></span><br><span class="line">chmod -R 700 ~ /.ssh</span><br><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure><p>3、按上面的说明配置好后，即可直接使用命令 ssh username@host 免密登录远程服务</p><p>4、禁止密码登录，限制只能使用密钥登录，需要修改 &#x2F;etc&#x2F;ssh&#x2F;sshd_config 文件如下</p><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"># 修改登录端口 port 默认是 22, 修改端口前查看是否被占用 netstat -ano | grep 2222</span><br><span class="line">port 2222</span><br><span class="line"># 允许 root 用户通过ssh登录</span><br><span class="line">PermitRootLogin yes</span><br><span class="line"># 禁用密码登录</span><br><span class="line">PasswordAuthentication no</span><br><span class="line"># 允许使用ssh权限登录</span><br><span class="line">RSAAuthentication yes</span><br><span class="line">PubkeyAuthentication yes</span><br><span class="line"></span><br></pre></td></tr></table></figure><p>注意修改配置文件要重启 sshd 才能生效，重启命令,如下</p><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">service sshd restart</span><br><span class="line"></span><br></pre></td></tr></table></figure><p>5、ssh 快捷登录说明，使用 ~&#x2F;.ssh&#x2F;config 文件实现</p><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">Host server01</span><br><span class="line">HostName xx.xx.xx.xx</span><br><span class="line">Port 22</span><br><span class="line">User username</span><br><span class="line">IdentityFile  /path/id_rsa # 指定登录的密钥，不指定默认使用的是 ~/.ssh/id_rsa 注意 ~ 符号表示的用户目录</span><br><span class="line"></span><br><span class="line">Host server02</span><br><span class="line">HostName xx.xx.xx.xx</span><br><span class="line">Port 22</span><br><span class="line">User username</span><br><span class="line"></span><br></pre></td></tr></table></figure><p>以上文件配置后，直接使用 ssh server01 和 ssh server02 就能登录到服务器，注意如果没配置密钥连接方式的话，运行 ssh server01 还是会提示输入密码</p><h2 id="服务器查看-ssh-的登录日志"><a href="#服务器查看-ssh-的登录日志" class="headerlink" title="服务器查看 ssh 的登录日志"></a>服务器查看 ssh 的登录日志</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">tail -f -n 200  /var/log/secure</span><br><span class="line"></span><br></pre></td></tr></table></figure>]]></content>
+    
+    
+      
+      
+    <summary type="html">&lt;h2 id=&quot;账号密码登录&quot;&gt;&lt;a href=&quot;#账号密码登录&quot; class=&quot;headerlink&quot; title=&quot;账号密码登录&quot;&gt;&lt;/a&gt;账号密码登录&lt;/h2&gt;&lt;figure class=&quot;highlight plaintext&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=</summary>
+      
+    
+    
+    
+    <category term="Linux" scheme="http://example.com/categories/Linux/"/>
+    
+    
+  </entry>
+  
+</feed>
