@@ -3,10 +3,8 @@ title: ByteBuddy 入门笔记
 ---
 # ByteBuddy 概述
 ByteBuddy 是一个可以在运行时动态生成 java class 的类库。
-
 # 依赖
 在使用 ByteBuddy 之前我们需要引入对应的 Jar 到工程中，如下
-
 ```xml
 <dependency>
   <groupId>net.bytebuddy</groupId>
@@ -14,10 +12,8 @@ ByteBuddy 是一个可以在运行时动态生成 java class 的类库。
   <version>1.12.17</version>
 </dependency>
 ```
-
 # 根据[官网](https://bytebuddy.net)例子入门
 ## JVM 运行时创建 Java 类
-
 ```java
 class HellWorld{
 	@Test
@@ -47,7 +43,6 @@ class HellWorld{
 ## 动态类的命名说明
 使用 [name|with] 方法, 可以指定动态类的名称，当两者同时设置时 with 方法的优先级更高
 ```java
-
 class NameTest{
 	@Test
 	public void testName() {
@@ -68,11 +63,9 @@ class NameTest{
 }
 
 ```
-
-## 重写方法说明
-ByteBuddy 运行时动态生成类, 重写父类方法使用 method 配合 ElementMatcher 选择器去匹配父类的方法，如下：
+## 动态类重写父类方法
+ByteBuddy 动态生成的类, 需要重写父类方法时， 使用 method 配合 ElementMatcher 选择器去匹配父类的方法，然后通过 intercept 指定重写方法的实现，如下：
 ```java
-
 class Foo {
 
 	public String bar() {
@@ -124,7 +117,7 @@ class MethodTest {
 		System.out.println(dynamicFoo.bar()); // 输出 One!
 		System.out.println(dynamicFoo.foo()); // 输出 Two!
 		System.out.println(dynamicFoo.foo("Hello Wold")); // 输出 Three!
-
+		
 		Unloaded<Foo> unloadedClass02 = new ByteBuddy().subclass(Foo.class)
 				.method(ElementMatchers.named("foo")).intercept(FixedValue.value("Two!"))
 				.method(ElementMatchers.named("foo").and(ElementMatchers.takesArguments(1))).intercept
@@ -144,9 +137,7 @@ class MethodTest {
 }
 
 ```
-
 ## 代理方法的调用
-
 ```java
 
 ```
