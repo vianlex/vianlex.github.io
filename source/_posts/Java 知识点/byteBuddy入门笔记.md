@@ -139,7 +139,55 @@ class MethodTest {
 ```
 ## 代理方法的调用
 ```java
+public class Source {
 
+	public String hello(String name) {
+		return null;
+	}
+
+}
+public class Target {
+
+	public static String intercept01(String name) {
+		return "Hello " + name + "!";
+	}
+
+	public static String intercept02(int i) {
+		return Integer.toString(i);
+	}
+
+	public static String intercept03(Object o) {
+		return o.toString();
+	}
+}
+public class DelegationTest {
+	/**
+	 * 方法委托调用
+	 * 
+	 * @throws Exception
+	 */
+	@Test
+	public void testMethodDelegation() throws Exception {
+		// 生成动态类
+		Unloaded<Source> unloaded = new ByteBuddy()
+				// 指定动态类的父类
+				.subclass(Source.class)
+				.method(ElementMatchers.named("hello").and(ElementMatchers.returns(String.class)))
+				/**
+				 *  拦截 target 类方法，delegation 会找到一个最匹配的方法，名称不要求一样，但是返回值类型和参数类型要求相匹配才行，
+				 *  比如  target 类中 intercept02 方法的参数 int 类型肯定是不匹配的，因为 source 类的 hello 方法参数是 String,
+				 *  target 类中剩下参数是 Object 和  String 的方法，根据最优原则，会匹配到 intercept01 方法，如果
+				 *  没有匹配到就抛出异常，注意 Delegation 委托的 target 是类不是实例对象，所以只会匹配静态方法
+				 */
+				.intercept(MethodDelegation.to(Target.class ))
+				.make();
+		// 将动态类加载到 JVM 并通过反射实例化
+		Source source = unloaded.load(getClass().getClassLoader()).getLoaded().newInstance();
+		String result =  source.hello("World");
+		// 输出  helloWorld
+		System.out.println(result);
+	}
+}
 ```
 
 
