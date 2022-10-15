@@ -18,7 +18,7 @@ npm config list 或者 npm config ls
 
 ## npm install -g [cli package]
 
-安装全局 CLI 命令包，是需要将 node_global 添加到环境变量中 
+安装全局 CLI 命令包，是需要将 node_global 添加到环境变量中, 才能直接在终端中使用
 
 ## npm 配置文件说明
 使用 npm set(修改用户级别配置的命令) 和 npm golabl set(修改全局配置的命令) 命令修改配置文件，都会直接写入对应的级别的配置文件中，所以也可以直接修改配置文件也是一样的效果，npm 配置的查找顺序如下：
