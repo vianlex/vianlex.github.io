@@ -21,14 +21,17 @@ Node 真正运行工作负载的节点，通过 kube-proxy 管理应用服务的
 | -- | -- |
 | Kubelet | 负责维护容器的生命周期，即通过控制 docker、来创建、更新、销毁容器 |
 | Kube-Proxy | 负责提供 Node 节点应用集群的服务发现和负载均衡，Internet(或者用户)访问应用前必须经过 Kube-Proxy |
-| docker | 负责镜像管理以及Pod和提供容器的真正运行接口, 容器运行时接口（Container Runtime Interface；CRI），是 kubelet 和容器运行时之间通信的主要协议，让 kubelet 能够使用各种容器运行时，无需重新编译集群组件 |
+| docker | 负责镜像管理以及Pod和提供容器的真正运行接口(CRI) , CRI 是一个接口，用来操作容器的接口。k8s通过CRI对容器进行操作，创建、启停容器等 |
+
 ### 2.3 kubectl 
 kubectl 就是 Kubernetes API 的封装的一个客户端命令行，用于控制和操作整个 K8s 集群，类似于 docker 中的 docker 命令。
 
 ## 3. K8s 资源的理解
-K8s 组件是支持 K8s 平台运行的软件，是系统运行的进程，只有组件工作才能创建出资源，查看 K8s 资源使用如下的命令:
+K8s 组件是支持 K8s 平台运行的软件，是系统运行的进程，资源是通过组件去创建和管理的。跟 Linux 中一切皆文件, 在 K8S 中也有一切皆资源的概念。Resource 是 K8s 的一个基础概念，k8s 用 Resource 来表示集群中的各个资源。比如 Pod、Service、Deployment 等等都属于 K8s 的资源，尽管这个资源看起来差别很大，但它们都有许多共同的属性，如 name(名称)、kind(类型)、apiVersion(api版本)、metadata(元信息等)。
+
+查看 K8s 资源有哪些资源使用如下的命令:
 ```
-kubectl api-resource  
+kubectl api-resource
 ```
 命令显示的结果如下：
 |  结果标题 | 结果说明 |
@@ -40,13 +43,8 @@ kubectl api-resource
 | KIND | 资源类型 |
 
 ### 3.1 资源的命名空间
+Namespace 的作用主要是用于名称隔离，可比如在不同的命名空间下 Pod 的名称是一样的，只需要保证资源名称在一个命名空间内保持唯一即可。并不是所有的资源都使用命名空间隔离的，具体可以使用命令 `kubectl api-resource` 查看。
 
-
-### 3.2 定义资源文件
-定义某个一类型的资源是可以用使用 `kubectl explain` 命令查看需要定义的资源属性，如以下例子：  
-``` 
-kubectl explain pod
-
-在进一步看里面的属性定义，如 metadata 使用如下命令：
-kubectl explain pod.metadata
-``` 
+## 4. Pod
+Pod 是 k8s 的最小调度单位，Pod 包含一个或多个 Container(容器) ，Pod 中运行的容器是共享网络的，使用的网络模式是 Docker 的 Container 模式，K8s 创建 Pod 时候会先创建一个空的基础容器，然后在使用 Container 模式创建 Pod 中定义的容器，让它们共享基础容器的网络命名空间，所以容器在 Pod 中是共享网络，可以使用 localhost 就相互访问。
+### 4.1 Pod 定义 
