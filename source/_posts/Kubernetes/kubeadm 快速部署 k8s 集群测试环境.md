@@ -73,7 +73,15 @@ ntpdate time1.aliyun.com
 ```
 
 
-## 4、安装 kubeadm、kubelet 和 kubectl
+## 4 安装 kubeadm、kubelet 和 kubectl
+ kubeadm 的常用命令如下
+ - kubeadm init 初始化 Kubernetes 主节点
+ - kubeadm join 用于 node 节点加入到集群中
+ - kubeadm upgrade 更新 Kubernetes 集群到新版本
+ - kubeadm token 管理 k8s token 令牌
+ - kubeadm reset 还原 kubeadm init 或者 kubeadm join 所作的操作
+ - kubeadm version 打印出 kubeadm 版本
+
 ### 4.1 添加阿里云 k8s 软件源
 ```
 cat > /etc/yum.repos.d/kubernetes.repo << EOF
@@ -95,6 +103,7 @@ yum install -y  kubeadm-1.20.15 kubectl-1.20.15 kubelet-1.20.15
 # 启动 kubelet 并设置开机启动
 systemctl start kubelet && systemctl enable kubelet
 ```
+
 ### 4.2 初始化 master 节点
 ```
 kubeadm init \
@@ -116,6 +125,9 @@ kubectl 是与 kubernetes 集群交互的一个命令行工具, kubectl 通过�
 mkdir -p $HOME/.kube
 sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
 sudo chown $(id -u):$(id -g) $HOME/.kube/config
+# 或者
+echo "export KUBECONFIG=/etc/kubernetes/admin.conf" >> ~/.bash_profile
+source ~/.bash_profile
 ```
 ### 4.4 node 节点安装 kubeadm、kubelet 
 ```
@@ -144,8 +156,8 @@ kubectl apply -f kube-flannel.yml
 # 查看部署的网络插件，使用如下命令       
 kubectl get pods -n kube-system
 # 显示的结果如下，说明部署成功
-NAME                          READY   STATUS    RESTARTS   AGE
-kube-flannel-xx-xx-xx   1/1     Running   0          72s
+NAME                   READY   STATUS    RESTARTS   AGE
+kube-flannel-xx-xx-xx   1/1    Running   0          72s
 
 ```
 
