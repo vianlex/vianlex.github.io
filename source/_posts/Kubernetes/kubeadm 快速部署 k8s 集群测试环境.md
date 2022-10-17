@@ -111,6 +111,7 @@ kubeadm init \
 
 ```
 ### 4.3 k8s 客户端 kubectl 工具配置
+kubectl 是与 kubernetes 集群交互的一个命令行工具, kubectl 通过与 kubernets api server 的 http 端口交互来操作集群。
 ```bash
 mkdir -p $HOME/.kube
 sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
@@ -134,16 +135,17 @@ kubeadm join 192.168.1.1:6443 --token esce21.q6hetwm8si29qxwn \
 
 ## 5. 部署网络插件
 kubernetes 需要使用第三方的网络插件来实现 kubernetes 的网络功能，第三方网络插件有多种，常用的有 flanneld、calico 和 cannel（flanneld+calico），不同的网络组件，都提供基本的网络功能，为各个 Node 节点提供 IP 网络等。
+k8s 的组件可以通过容器化的方式，运行在 k8s 集群中，将 kube-flannel 网络插件创建在集群中，操作如下：
 ```
-# 下载网络插件的资源文件
+# 下载网络插件的资源文件，如果网络被墙无法下载，可以到网上找到文件内容，然后手动创建一个。
 wget https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
 # 部署网络插件
 kubectl apply -f kube-flannel.yml     
 # 查看部署的网络插件，使用如下命令       
 kubectl get pods -n kube-system
-# 显示的结果如下
+# 显示的结果如下，说明部署成功
 NAME                          READY   STATUS    RESTARTS   AGE
-kube-flannel-ds-amd64-2pc95   1/1     Running   0          72s
+kube-flannel-xx-xx-xx   1/1     Running   0          72s
 
 ```
 

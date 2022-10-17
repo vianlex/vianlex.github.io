@@ -24,27 +24,36 @@ Node 真正运行工作负载的节点，通过 kube-proxy 管理应用服务的
 | docker | 负责镜像管理以及Pod和提供容器的真正运行接口(CRI) , CRI 是一个接口，用来操作容器的接口。k8s通过CRI对容器进行操作，创建、启停容器等 |
 
 ### 2.3 kubectl 
-kubectl 就是 Kubernetes API 的封装的一个客户端命令行，用于控制和操作整个 K8s 集群，类似于 docker 中的 docker 命令。
+kubectl 是与 kubernetes 集群交互的一个命令行工具，kubectl 通过与 kubernets api server 提供 Rest API 来操作控制 K8s 集群，类似于 docker 中的 docker 命令。
 
 ## 3. K8s 资源的理解
-K8s 组件是支持 K8s 平台运行的软件，是系统运行的进程，资源是通过组件去创建和管理的。跟 Linux 中一切皆文件, 在 K8S 中也有一切皆资源的概念。Resource 是 K8s 的一个基础概念，k8s 用 Resource 来表示集群中的各个资源。比如 Pod、Service、Deployment 等等都属于 K8s 的资源，尽管这个资源看起来差别很大，但它们都有许多共同的属性，如 name(名称)、kind(类型)、apiVersion(api版本)、metadata(元信息等)。
+K8s 组件是支持 K8s 平台运行的软件，是系统运行的进程，资源是通过组件去创建和管理的。跟 Linux 中一切皆文件, 在 K8S 中也有一切皆资源的概念。Resource 是 K8s 的一个基础概念，k8s 用 Resource 来表示集群中的各个资源。比如 Pod、Service、Deployment、namespace 等等都属于 K8s 的资源，尽管这个资源看起来差别很大，但它们都有许多共同的属性，如 name(名称)、kind(类型)、apiVersion(api版本)、metadata(元信息等)。查看 K8s 资源有哪些资源使用如下的命令 ` kubectl api-resource `
 
-查看 K8s 资源有哪些资源使用如下的命令:
+k8s 支持通过 YAML 配置文件创建资源对象，资源支持的属性配置使用命令 `kebectl explain 资源 ` 查看，使用 YAML 定义资源的格式如下：
 ```
-kubectl api-resource
+apiVersion: v1    # 指定资源的版本，使用命令[ kubectl explain 资源 ]，如 kubectl explain pod
+kind: Namespace   # 指定资源的类型，pod、namespace, service 等等
+metadata:   # metadata 可以定义的资源的名称等，可以使用命令 [kubectl explain 资源.metadata]，查看支持哪些属性的定义
+  name: xxxx  # 资源的名称
 ```
-命令显示的结果如下：
-|  结果标题 | 结果说明 |
-| --   | --   |
-| NAME | 资源名称 |
-| SHORTNAMES | 资源名称简写 |
-| APIVERSION  | 资源版本 |
-| NAMESPACED | 是否可使用命名空间隔离，true 是， false 否 |
-| KIND | 资源类型 |
 
 ### 3.1 资源的命名空间
-Namespace 的作用主要是用于名称隔离，可比如在不同的命名空间下 Pod 的名称是一样的，只需要保证资源名称在一个命名空间内保持唯一即可。并不是所有的资源都使用命名空间隔离的，具体可以使用命令 `kubectl api-resource` 查看。
+命名空间为集群中的资源名称赋予作用域，主要作用是资源名称隔离，在命名空间中资源名称必须是唯一的，但是并不是所有的资源都使用命名空间隔离的名称，具体可以使用命令 `kubectl api-resource` 查看。
+创建命名空间使用以下命令：
+```
+# 第一种方式创建命名空间，查看创建日志，在命令后面加参数 -v = 9 其中 9 表示日志的级别，一般数字越大信息越详细
+kubectl create ns 空间名称  
+# 第二种方式
+kubectl create -f /xx/xx/xx.yaml
+
+# 查看命名空间信息，可选参数 -o 指定查看信息的详细程度和输出格式
+kubectl get ns 空间名称 -o [wide | ymal | json ] 
+# 删除命名空间
+kubectl 
+```
 
 ## 4. Pod
 Pod 是 k8s 的最小调度单位，Pod 包含一个或多个 Container(容器) ，Pod 中运行的容器是共享网络的，使用的网络模式是 Docker 的 Container 模式，K8s 创建 Pod 时候会先创建一个空的基础容器，然后在使用 Container 模式创建 Pod 中定义的容器，让它们共享基础容器的网络命名空间，所以容器在 Pod 中是共享网络，可以使用 localhost 就相互访问。
+kubernetes 本身的组件也可以通过容器化的方式运行在集群中，并且都存在于 kube-system 命名空间下。
+
 ### 4.1 Pod 定义 
