@@ -74,13 +74,15 @@ ntpdate time1.aliyun.com
 
 
 ## 4 安装 kubeadm、kubelet 和 kubectl
- kubeadm 的常用命令如下
+kubeadm 创建 Kubernetes 集群的最快捷的一种命令行工具，其常用的命令如下：
  - kubeadm init 初始化 Kubernetes 主节点
  - kubeadm join 用于 node 节点加入到集群中
  - kubeadm upgrade 更新 Kubernetes 集群到新版本
  - kubeadm token 管理 k8s token 令牌
  - kubeadm reset 还原 kubeadm init 或者 kubeadm join 所作的操作
  - kubeadm version 打印出 kubeadm 版本
+kubectl 是操作管理 k8s 集群的命令行工具。
+kubelet 是容器运行时，k8s 组件 api service 接收到 kubectl 的操作请求，通过控制 kubelet 去创建和管理容器的。 
 
 ### 4.1 添加阿里云 k8s 软件源
 ```
@@ -120,7 +122,7 @@ kubeadm init \
 
 ```
 ### 4.3 k8s 客户端 kubectl 工具配置
-kubectl 是与 kubernetes 集群交互的一个命令行工具, kubectl 通过与 kubernets api server 的 http 端口交互来操作集群。
+kubectl 是与 kubernetes 集群交互的一个命令行工具, kubectl 通过与 kubernets api server 的 http 端口交互来操作集群。kubectl 请求 k8s api server 的认证信息和请求地址是配置在 admin.conf 文件中的，kubectl 默认会去用户目录 .kube/config 下查找 admin.conf 文件，如果查找不到，会查找环境变量 KUBECONFIG 是否配置有 admin.conf 的文件路径，如果也找不到，kubectl 默认将操作的请求发送到本机的 8080 端口，如果 8080 端口非 k8s api server 的服务端口，则会报错。所以想要使用 kubectl 要先配置 admin.config 文件让 kubectl 读取到， 配置命令如下： 
 ```bash
 mkdir -p $HOME/.kube
 sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
