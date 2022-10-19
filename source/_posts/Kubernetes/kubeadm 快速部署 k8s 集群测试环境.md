@@ -17,6 +17,18 @@ title: kubeadm 快速部署 kubernetes 集群测试环境
 | 1   | 192.168.1.1 | CentOS8  | master  |
 | 2   | 192.168.1.2 | CentOS8  |  node   |
 
+### 2.1 云服务的安全组设置
+如果搭建的集群使用外网，需要在安全组中开放端口
+|  节点              |  协议类型| 访问方向     |  端口  |   描述 |  
+|   --               | --      | --      | --    |  --      | 
+|  Master 服务器     | TCP     |	入方向	| 6443	| Kubernetes API server	的端口 |
+|   Master 服务器    | TCP	    | 入方向	| 2379-2380	| etcd server client API	kube-apiserver, etcd 的端口 |
+|   Master 服务器    | TCP	    | 入方向	| 10250	| Kubelet API	的端口 |
+|   Master 服务器    | TCP	    | 入方向	| 10259	| kube-scheduler	的端口 |
+| node 服务器        | TCP      | 入方向	| 10250 | Kubelet API	的端口 |
+| node 服务器        | TCP      | 入方向	| 30000-32767 |  NodePort Services 的端口 |
+
+
 ## 3. CenteOs 系统环境配置（ master 和 node 机器都要改）
 ### 3.1 关闭防火墙 和 SELINUX(类型 Window UAC)
 ```
@@ -138,6 +150,7 @@ yum install -y  kubeadm-1.20.15  kubelet-1.20.15
 systemctl start kubelet && systemctl enable kubelet
 ```
 ### 4.5 Node 加入 master 所在集群
+需要在 master 节点中先安装网络插件，才能访问到集群
 ```
 # master 节点获取 token, 默认token有效期为24小时 
 kubeadm token create --print-join-command
@@ -147,19 +160,22 @@ kubeadm join 192.168.1.1:6443 --token esce21.q6hetwm8si29qxwn \
 
 ```
 
-## 5. 部署网络插件
+## 5. 注意 coredns 组件
+如果未安装网络插件的话，coredns 组件的 pod 会一直在 pending 中，直到检测有网络插件完成成功为止。
+
+## 6. 部署网络插件
 kubernetes 需要使用第三方的网络插件来实现 kubernetes 的网络功能，第三方网络插件有多种，常用的有 flanneld、calico 和 cannel（flanneld+calico），不同的网络组件，都提供基本的网络功能，为各个 Node 节点提供 IP 网络等。
-k8s 的组件可以通过容器化的方式，运行在 k8s 集群中，将 kube-flannel 网络插件创建在集群中，操作如下：
+k8s 的组件可以通过容器化的方式，运行在 k8s 集群中，将 calico 网络插件创建在集群中，操作如下：
 ```
-# 下载网络插件的资源文件，如果网络被墙无法下载，可以到网上找到文件内容，然后手动创建一个。
-wget https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
+# 下载网络插件的资源文件，要注意下载的版本是否支持安装的 k8s 
+wget https://docs.projectcalico.org/v3.20/manifests/calico.yaml
 # 部署网络插件
-kubectl apply -f kube-flannel.yml     
+kubectl apply -f calico.yaml
 # 查看部署的网络插件，使用如下命令       
 kubectl get pods -n kube-system
 # 显示的结果如下，说明部署成功
 NAME                   READY   STATUS    RESTARTS   AGE
-kube-flannel-xx-xx-xx   1/1    Running   0          72s
+calico-kube-xx-xx-xx   1/1    Running   0          72s
 
 ```
 
