@@ -1,7 +1,16 @@
 ---
 title: iptables 学习笔记
 ---
+## iptables 简介
+iptables 是 Linux 防火墙软件，虽然已经被 nftables 取代了，但是仍然广泛的运用着。iptables 防火墙的网络地址转换、数据包修改，以及过滤功能，是由 Linux 内核中的 netfilter 模块实现的，iptables 通过命令行去定义服务器流量的进出规则，然后由 netfilter 模块去执行。
 
+## iptables Rule(规则)
+
+
+
+
+## iptales 规则匹配说明
+iptables 匹配规则是从上到下的一条一条的匹配的，某一条规则不管是匹配到 DROP 或者 ACCEPT 都算是匹配成功，一旦匹配成功就不会继续往下匹配了。
 
 
 
@@ -10,8 +19,8 @@ title: iptables 学习笔记
 查看 iptables 表规则时使用如下参数：
 * -t 指定要查看的表，默认查看的是 filter 表
 * -L 查看表的所有规则
-* -n 输出详细信息，包含通过该规则的数据包数量
-* -v 跟 -n 一样输出详细信息，只是显示方式不一样
+* -n 表示不对 IP 地址进行反查，加上这个参数显示速度将会加快 
+* -v 输出详细信息，包含通过该规则的数据包数量
 * –line-number 显示规则的序列号，删除或修改规则时会用到
 ```
 # 查看 filter 表的所有规则
