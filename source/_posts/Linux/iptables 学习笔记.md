@@ -18,14 +18,14 @@ netfilter 是从上到下的一条一条的匹配 iptables 在 raw -> mangle -> 
 ### 2.1 iptables 规则定义
 iptables 定义规则的语法如下：
 ```
-iptables -t <table> <command> <chain> <parameter> -j <action>
+iptables -t <table> <command> <chain> <parameter> -j <target>
 
 ```
 * table 指定规则定义在哪个表中，如 raw、mangle、nat、filter 等。
 * command 指定规则的添加方式，如 -A 将规则追加到表的末尾，-I 将规则插入到表的指定行中。
 * chain 指定规则要定义在哪个节点链上
 * parameter 指定规则的过滤或者转发的条件参数
-* action 指定规则匹配要跳转执行的动作，如 ACCEPT、DROP 等等
+* target 指定规则匹配要跳转执行的动作，如 ACCEPT、DROP 等等
 
 ### 2.2 定义规则用到的参数说明
 定义规则常用的参数说明如下:
@@ -61,6 +61,26 @@ iptables -nL
 iptables -t nat -nL --line-numbers
 
 ```
+查询规则显示的结果说明
+- pkts 规则匹配到的报文的个数。
+- bytes 匹配到的报文包的大小总和。
+- target 规则执行的动作。
+- prot 表示规则作用的协议。
+- opt 表示规则对应的选项。
+- in 表示数据包由哪个接口(网卡)流入，定义规则的时候，可以设置。
+- out 表示数据包由哪个接口(网卡)流出，定义规则的时候，可以设置。
+- source 表示规则对应的源头地址，可以是一个IP，也可以是一个网段。
+- destination 表示规则对应的目标地址，可以是一个 IP，也可以是一个网段。
+当然，我们也可以只查看某个链的规则，并且不让IP进行反解，这样更清晰一些，比如 iptables -nvL INPUT
+- line-numbers 显示规则在对应表中的行号，删除的时候，指定行号去删除。
+- policy 表示当前链的默认策略，表示所有规则都没有匹配时，默认指定的动作。
+- packets 表示当前链（上例为INPUT链）默认策略匹配到的包的数量，0 packets表示默认策略匹配到0个包。
+- bytes 表示当前链默认策略匹配到的所有包的大小总和。
+
+
+
+
+
 ## 删除规则
 删除整个表的规则命令 ` iptables [-t 表]  -F ` 常用例子如下：
 ```bash 
