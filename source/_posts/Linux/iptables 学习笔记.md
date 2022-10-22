@@ -1,16 +1,25 @@
 ---
 title: iptables 学习笔记
 ---
-## iptables 简介
+## 1. iptables 简介
 iptables 是 Linux 防火墙软件，虽然已经被 nftables 取代了，但是仍然广泛的运用着。iptables 防火墙的网络地址转换、数据包修改，以及过滤功能，是由 Linux 内核中的 netfilter 模块实现的，iptables 通过命令行去定义服务器流量的进出规则，然后由 netfilter 模块去执行。
 
-## iptables Rule(规则)
+## 2. iptables 过滤和转发数据包的流程
+流量数据流量包传输到主机的数据链路层时，也就传输到内核的 TCP/IP 协议栈时，会经过 PREROUTING、INPUT、OUTPUT、FORWARD 和 POSTROUTING 链路节点，通过 iptable 可以在这些节点上配置过滤、转发规则，每一个节点上可以配置多个规则，多个规则串联起来形成一条链(chain)，在节点中的链规则是从上往下执行的，只要某一条规则匹配成功，就不继续往下匹配，并执行规则中配置的 ACCEPT 或者 DROP 等等动作，链中的规则，按规则作用分组，然后每一个分组可以看作一个表(table)，在表中的规则作用如下：
+- raw：控制 nat 表中连接追踪机制的启用状况，可以控制的链路有 PREROUTING、OUTPUT;
+- mangle 表：用于修改数据包中的数据，可以控制的链路有 PREROUTING、INPUT、OUTPUT、FORWARD 和 POSTROUTING;
+- nat 表：用于数据包的转发，可以控制的链路有 PREROUTING、INPUT、OUTPUT 和 POSTROUTING;
+- filter 表：控制数据包是否允许进出及转发，可以控制的链路有 INPUT、FORWARD 和 OUTPUT。
+![iptables-过滤转发流程](/images/iptables-过滤转发流程.png)
 
 
 
 
-## iptales 规则匹配说明
-iptables 匹配规则是从上到下的一条一条的匹配的，某一条规则不管是匹配到 DROP 或者 ACCEPT 都算是匹配成功，一旦匹配成功就不会继续往下匹配了。
+## iptales 规则说明
+iptables 匹配规则是从上到下的一条一条的匹配的，只要匹配成功就会执行规则中配置的动作，注意一旦匹配成功就不会继续往下匹配了。
+
+
+
 
 
 
