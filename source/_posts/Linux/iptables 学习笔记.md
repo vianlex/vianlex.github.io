@@ -22,13 +22,15 @@ iptables -t <table> <command> <chain> <parameter> -j <target>
 
 ```
 * table 指定规则定义在哪个表中，如 raw、mangle、nat、filter 等。
-* command 指定规则的添加方式，如 -A 将规则追加到表的末尾，-I 将规则插入到表的指定行中。
+* command 指定规则的添加方式，如 -A 将规则追加到表的末尾，-I 将规则插入到表的指定行中, 行号要在 chain 后面指定。
 * chain 指定规则要定义在哪个节点链上
 * parameter 指定规则的过滤或者转发的条件参数
 * target 指定规则匹配要跳转执行的动作，如 ACCEPT、DROP 等等
 
 ### 2.2 定义规则用到的参数说明
 定义规则常用的参数说明如下:
+
+
 
 
 ### 2.3 定义规则用到的动作说明
@@ -41,23 +43,21 @@ iptables -t <table> <command> <chain> <parameter> -j <target>
 - REDIRECT：在本机做端口映射。
 - LOG：会将访问日志记录到 /var/log/messages 文件中，只是做日记记录，所以会继续往下匹配规则。
 
-
-
-
-
-
 ## 查看规则
 查看 iptables 表规则时使用如下参数：
 * -t 指定要查看的表，默认查看的是 filter 表
-* -L 查看表的所有规则
+* -L 查看指定链的规则，如果 -L 后面不指定链，则默认查看所有的规则
 * -n 表示不对 IP 地址进行反查，加上这个参数显示速度将会加快 
 * -v 输出详细信息，包含通过该规则的数据包数量
 * –line-number 显示规则的序列号，删除或修改规则时会用到
 ```
 # 查看 filter 表的所有规则
-iptables -nL 
+iptables -t filter -nL 
 
-# 查看 NAT 表的所有规则，并打印行号
+# 查看 nat 表 OUTPUT 链的规则
+iptables -t nat -L OUTPUT 
+
+# 查看 nat 表的所有规则，并打印行号
 iptables -t nat -nL --line-numbers
 
 ```
@@ -78,11 +78,8 @@ iptables -t nat -nL --line-numbers
 - bytes 表示当前链默认策略匹配到的所有包的大小总和。
 
 
-
-
-
 ## 删除规则
-删除整个表的规则命令 ` iptables [-t 表]  -F ` 常用例子如下：
+删除整个表的规则命令 ` iptables -t <table>  -F ` 
 ```bash 
 # 删除整个 filter 表的规则，不用 -t 指定表就默认时操作 filter 表
 iptables -F 
