@@ -13,37 +13,123 @@ iptables 是 Linux 防火墙软件，虽然已经被 nftables 取代了，但是
  **总上所述，iptable 中常说的4表5链，指的就是 raw、mangle、nat、filter 和 PREROUTING、INPUT、OUTPUT、FORWARD、POSTROUTING。**
 ![iptables-过滤转发流程](/images/iptables-过滤转发流程.png)
 
-## iptales 规则
-netfilter 是从上到下的一条一条的匹配 iptables 在 raw -> mangle -> nat -> filter 表中定义的规则，只要匹配成功就会执行规则中配置的动作，注意一旦匹配成功就不会继续往下匹配了。
+## 2. iptales 规则
+netfilter 是从上到下的一条一条的匹配 iptables 在 raw -> mangle -> nat -> filter 表中定义的规则，只要匹配成功就会执行规则中配置的动作，注意一旦匹配成功就不会继续往下匹配了，如果是定义的规则都不配会执行默认的(policy)策略
 ### 2.1 iptables 规则定义
 iptables 定义规则的语法如下：
 ```
-iptables -t <table> <command> <chain> <parameter> -j <target>
+iptables -t <table> <command> <chain> <match-parameter> -j <target> <target-parameter>
 
 ```
 * table 指定规则定义在哪个表中，如 raw、mangle、nat、filter 等。
-* command 指定规则的添加方式，如 -A 将规则追加到表的末尾，-I 将规则插入到表的指定行中, 行号要在 chain 后面指定。
+* command 指定规则的添加方式，如 -A 将规则追加到表的末尾，-I 将规则插入到表的指定行中, 行号要在 chain 后面指定，-P 指定链的默认规则。
 * chain 指定规则要定义在哪个节点链上
-* parameter 指定规则的过滤或者转发的条件参数
+* parameter 指定规则的过滤或者转发的条件参数，条件参数的个数时不限制的，可以同时指定任意多个
 * target 指定规则匹配要跳转执行的动作，如 ACCEPT、DROP 等等
 
-### 2.2 定义规则用到的参数说明
-定义规则常用的参数说明如下:
+### 2.2 定义规则 match-parameter(匹配参数)说明
+在规则中的使用参数，就是规则的匹配条件，流量数据包匹配规则中的参数，则说明规则匹配成功，注意大部分参数都是可以使用 ! 符号取反的，定义规则常用的参数如下:
+- [!]-p 指定匹配的协议，不指定默认匹配所有跟 -p all 相同，可匹配的协议有 tcp、udp、udplite、icpm、esp、ah、sctp，其中可选 ! 符号表示取反，不匹配某个协议的意思
+- [!]-i 指定要匹配某个网卡进来的数据包，如 ` -i eth1 `，注意只能用在 PREROUTING 链、INPUT 链、FORWARD 链上
+- [!]-o 根据 -i 相反要匹配数据包从哪个网卡出去的
+- [!]-s 指定匹配数据包的来源 IP 地址, 指定多个 IP 需要用逗号隔开，或者指定一个网段如 192.10.0.0/16
+- [!]-d 与 -s 相反，用于指定匹配数据包访问的目标 IP 地址, 指定多个 IP 需要用逗号隔开，或者指定一个网段如 192.10.0.0/16
+- [!]--sport 指定匹配数据包的来源端口，如果要指定多个端口，可以使用冒号隔开，如 --sport 22:25, 注意如果 :22 等同于 0:22 , 25: 等同于 25:65535
+- [!]--dport 指定匹配数据包访问的目标端口
+- --icmp-type 指定 icmp 类型，常用的可选值 8 或 echo-request 表示 ping 请求、0 或 echo-reply 表示 ping 应答
 
+#### 2.2.1 扩展的匹配参数模块
+1. iprange 模块，用于指定连续的 ip 访问, 扩展的参数如下：
+- -m 指定要使用的扩展模块
+- --src-range 指定源 ip 范围
+- --dst-range  指定目的 ip 范围
+```
+iptables -t filter -A INPUT -m iprange --src-range 192.168.1.1-192.168.2.5 -j DROP
+```
+2. string 模块，用于匹配报文中是否包含对应的字符串，扩展的参数如下：
+- --string 指定要匹配的内容
+- –algo 可选参数，指定使用什么算法去匹配，如 bm  
+```
+iptables -t filter -A INPUT -m string --algo bm --string "abcs" -j DROP 
+```
+3. time 扩展模块，根据时间段区匹配报文，扩展的参数如下：
+- –timestart 指定时间范围的开始时间，注意不可取反
+- –timestop 指定时间范围的结束时间，注意不可取反
+- –weekdays 指定星期的天数
+- –monthdays 用于指定月份的天数
+- –datestart 指定日期范围的开始日期，注意不可取反
+- –datestop 指定日期范围的结束时间，注意不可取反
+```bash
+# 限制 ssh 只能在以下时间段链接
+iptables -t filter -I OUTPUT -p tcp --dport 22 -m time --timestart 08:00:00 --timestop 12:00:00 -j REJECT
+iptables -t filter -I OUTPUT -p tcp --dport 22  -m time --weekdays 1,2 -j REJECT
+iptables -t filter -I OUTPUT -p tcp --dport 22  -m time --monthdays 10,25 -j REJECT
+iptables -t filter -I OUTPUT -p tcp --dport 8220  -m time --timestart 08:00:00 --timestop 12:00:00 --weekdays 1,2 -j REJECT
+```
+4. connlimit 扩展模块，用于匹配限制链接数量，扩展的参数如下：
+- -connlimit-above 表示限制的链接数量
+- -connlimit-mask 用于指定要限制的网段
+```
+iptables -I INPUT -p tcp --dport 22 -m connlimit --connlimit-above 80 --connlimit-mask 25 -j REJECT
+```
+5. multiport 模块，用于指定多个端口, 扩展的参数如下：
+- --sports
+- --dports
+```
+ptables -I INPUT -p tcp --dports 22,25,26 -j REJECT
+```
 
-
-
-### 2.3 定义规则用到的动作说明
+### 2.3 定义规则的 target(动作)和 target-parameter(动作参数)说明
 - ACCEPT：允许数据包通过。
-- DROP：直接丢弃数据包，不给任何回应信息。
-- REJECT：拒绝数据包通过，会响应一个拒绝的信息。
-- SNAT：源地址转换，解决内网用户用同一个公网地址上网的问题。
-- MASQUERADE：是 SNAT 的一种特殊形式，适用于动态的、临时会变的 ip 上。
-- DNAT：目标地址转换。
-- REDIRECT：在本机做端口映射。
-- LOG：会将访问日志记录到 /var/log/messages 文件中，只是做日记记录，所以会继续往下匹配规则。
+- DROP：直接丢弃数据包，不给任何回应信息，客户端会提示超时。
+- REJECT：拒绝数据包通过，会响应一个拒绝的信息，可选参数如下：
+    - --reject-with 参数用户设定回复的报文，可选值有 icmp host unreachable(无法访问)、icmp-port-unreachable、icmp-proto-unreachable、icmp-net-prohibited(禁止)、icmp-host-prohibited，如果是 TCP 还可以设置 tcp-reset 要求对方关闭链接 
+- SNAT：源地址转换，解决内网用户用同一个公网地址上网的问题，使用 SNAT 时不需要配置 NDAT，iptables 会自动维护 NAT 表，并将响应报文的目标地址转换回来，可选参数如下：
+    - --to-source 用于设置源地址转换后的值
+- MASQUERADE：是 SNAT 的一种特殊形式，MASQUERADE 会自动将源 ip 动态转换到  -o 指定网卡的ip
+- DNAT：目标地址转换，可选的参数如下：
+    - --to-destination 用于设置目的地址转换后的值
+- REDIRECT：在本机做端口映射，可选参数如下：
+    - --to-ports 用于设置目标端口转换后的值。使用该参数时，必须指定 -p [tcp|udp|sctp|dccp]
+    - --random 将目的端口转换成任意端口
+- LOG：会将访问日志记录到 /var/log/messages 文件中，只是做日记记录，所以会继续往下匹配规则，可选的参数如下：
+    - --log-level 设定 iptables 日志的等级，可选值有 debug，info，notice，warning，err，emerg。默认是 info 级别。
+    - --log-prefix 在日志消息中添加特定的字串前缀
+- RETURN 用于自定义链，返回上一级链
 
-## 查看规则
+### 2.4 定义规则例子
+```bash
+
+# 指定链的默认规则，如果所有规则都不匹配成功，就会执行链默认(policy)
+$ iptables -P INPUT DROP # 默认不允许访问
+$ iptables -P FORWARD DROP # 默认不允许转发
+$ iptables -P OUTPUT ACCEPT # 默认可以出去
+
+# 指定特定的网段才能连接主机的 ssh 
+iptables -A INPUT -s 100.128.0.0/16 -p tcp --dport 22 -j ACCEPT
+
+# 拒绝访问 80 端口，并提示无法访问
+iptables -A INPUT -p tcp --dport 80 -j REJECT --reject-with icmp-host-unreachable
+
+# 主机禁止 ping，在 INPUT 和 OUTPUT 链上丢弃包都可以
+iptables -A INPUT -p icmp --icmp-type echo-request -j REJECT
+iptables -A OUTPUT -p icmp --icmp-type echo-request -j DROP
+
+# 应用使用内网 ip 去访问主机，利用 iptables 将内网 ip 转成外网的 ip 
+iptables -t nat -A OUTPUT -d 192.168.0.88 -j DNAT --to-destination 116.205.143.251
+
+# 内网主机使用一个公网地址上网转发上网
+iptables -t nat -I POSTROUTING -s 172.16.0.0/16 -j SNAT --to-source  100.120.20.12
+
+# 内网主机使用一个公网地址上网转发上网, MASQUERADE 根据 SNAT 的区别是自动将源 ip 转换到 -o 指定网卡的外网ip
+iptables -t nat -I POSTROUTING -s 172.16.0.0/16 -o eht0 -j MASQUERADE
+
+```
+## 3. 自定义链
+
+
+
+## 4. 查看规则
 查看 iptables 表规则时使用如下参数：
 * -t 指定要查看的表，默认查看的是 filter 表
 * -L 查看指定链的规则，如果 -L 后面不指定链，则默认查看所有的规则
@@ -78,7 +164,7 @@ iptables -t nat -nL --line-numbers
 - bytes 表示当前链默认策略匹配到的所有包的大小总和。
 
 
-## 删除规则
+## 5. 删除规则
 删除整个表的规则命令 ` iptables -t <table>  -F ` 
 ```bash 
 # 删除整个 filter 表的规则，不用 -t 指定表就默认时操作 filter 表
@@ -95,4 +181,6 @@ iptables -t filter -nL
 iptables -t filter -D INPUT 5  
 
 ```
+
+
 
