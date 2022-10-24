@@ -13,9 +13,9 @@ iptables 是 Linux 防火墙软件，虽然已经被 nftables 取代了，但是
  **总上所述，iptable 中常说的4表5链，指的就是 raw、mangle、nat、filter 和 PREROUTING、INPUT、OUTPUT、FORWARD、POSTROUTING。**
 ![iptables-过滤转发流程](/images/iptables-过滤转发流程.png)
 
-## 2. iptales 规则
+### 2.1 iptales 规则
 netfilter 是从上到下的一条一条的匹配 iptables 在 raw -> mangle -> nat -> filter 表中定义的规则，只要匹配成功就会执行规则中配置的动作，注意一旦匹配成功就不会继续往下匹配了，如果是定义的规则都不配会执行默认的(policy)策略
-### 2.1 iptables 规则定义
+### 2.2 iptables 规则定义
 iptables 定义规则的语法如下：
 ```
 iptables -t <table> <command> <chain> <match-parameter> -j <target> <target-parameter>
@@ -27,7 +27,7 @@ iptables -t <table> <command> <chain> <match-parameter> -j <target> <target-para
 * parameter 指定规则的过滤或者转发的条件参数，条件参数的个数时不限制的，可以同时指定任意多个
 * target 指定规则匹配要跳转执行的动作，如 ACCEPT、DROP 等等
 
-### 2.2 定义规则 match-parameter(匹配参数)说明
+### 2.3 定义规则 match-parameter(匹配参数)说明
 在规则中的使用参数，就是规则的匹配条件，流量数据包匹配规则中的参数，则说明规则匹配成功，注意大部分参数都是可以使用 ! 符号取反的，定义规则常用的参数如下:
 - [!]-p 指定匹配的协议，不指定默认匹配所有跟 -p all 相同，可匹配的协议有 tcp、udp、udplite、icpm、esp、ah、sctp，其中可选 ! 符号表示取反，不匹配某个协议的意思
 - [!]-i 指定要匹配某个网卡进来的数据包，如 ` -i eth1 `，注意只能用在 PREROUTING 链、INPUT 链、FORWARD 链上
@@ -38,7 +38,7 @@ iptables -t <table> <command> <chain> <match-parameter> -j <target> <target-para
 - [!]--dport 指定匹配数据包访问的目标端口
 - --icmp-type 指定 icmp 类型，常用的可选值 8 或 echo-request 表示 ping 请求、0 或 echo-reply 表示 ping 应答
 
-#### 2.2.1 扩展的匹配参数模块
+#### 2.3.1 扩展的匹配参数模块
 1. iprange 模块，用于指定连续的 ip 访问, 扩展的参数如下：
 - -m 指定要使用的扩展模块
 - --src-range 指定源 ip 范围
@@ -79,7 +79,7 @@ iptables -I INPUT -p tcp --dport 22 -m connlimit --connlimit-above 80 --connlimi
 ptables -I INPUT -p tcp --dports 22,25,26 -j REJECT
 ```
 
-### 2.3 定义规则的 target(动作)和 target-parameter(动作参数)说明
+### 2.4 定义规则的 target(动作)和 target-parameter(动作参数)说明
 - ACCEPT：允许数据包通过。
 - DROP：直接丢弃数据包，不给任何回应信息，客户端会提示超时。
 - REJECT：拒绝数据包通过，会响应一个拒绝的信息，可选参数如下：
@@ -97,7 +97,7 @@ ptables -I INPUT -p tcp --dports 22,25,26 -j REJECT
     - --log-prefix 在日志消息中添加特定的字串前缀
 - RETURN 用于自定义链，返回上一级链
 
-### 2.4 定义规则例子
+### 2.5 定义规则例子
 ```bash
 
 # 指定链的默认规则，如果所有规则都不匹配成功，就会执行链默认(policy)
