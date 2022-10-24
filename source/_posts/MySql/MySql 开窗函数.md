@@ -21,10 +21,24 @@ MySql 是从8.0版本之后开始支持开窗函数，开窗函数也叫分析�
 | NTH_VALUE(expression, N) | 从有序行集中的第N行获取值 |
 | NTILE() | 将排序分区中的行划分为特定数量的组，从每个组分配一个从一开始的桶号，对于每一行，NTILE()函数返回一个桶号，表示行所属的组 |
  
-
-
+## 窗口函数语法
+开窗函数语法格式：`func_name([<字段名>]) over([partition by <分组字段>] [order by <排序字段>] [<frame 窗口>]) `
+ - partition by 子句：按照指定字段进行分区，over 中不使用 partition by 时，则分区默认是按查询条件查出来的所有记录
+ - order by 子句：按照指定字段进行排序，可以和 partition by 子句配合使用，也可以单独使用
+ - frame 窗口：在 over 分区的基础上指定一个子集分区，语法格式：`rows | range between start_expr and end_expr`
+    - start_expr 可选值如下：
+        - unbounded preceding：over 分区排序后的第一行作为窗口的起始行
+        - current row：以当前行作为窗口的起始行
+        - n preceding：以当前行的前面第 n(注意：是一个具体的数字) 行作为窗口的起始行；
+        - n following：以当前行的后面第 n 行作为窗口的起始行；
+    - end_expr 可选值如下：
+        - unbounded following：over 分区排序后的最后一行作为窗口终点；
+        - current row：以当前行作为窗口终点；；
+        - n preceding：以当前行的前面第 n 行作为窗口终点；；
+        - n following：以当前行的后面第 n 行作为窗口终点；；
 
 
 
 ## 参考链接
 1、https://www.begtut.com/mysql/mysql-ntile-function.html
+2、https://www.ngui.cc/51cto/show-543033.html?action=onClick
