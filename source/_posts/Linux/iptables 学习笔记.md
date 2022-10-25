@@ -5,7 +5,7 @@ title: iptables 学习笔记
 iptables 是 Linux 防火墙软件，虽然已经被 nftables 取代了，但是仍然广泛的运用着。iptables 防火墙的网络地址转换、数据包修改，以及过滤功能，是由 Linux 内核中的 netfilter 模块实现的，iptables 通过命令行去定义服务器流量的进出规则，然后由 netfilter 模块去执行。
 
 ## 2. iptables 过滤和转发数据包的流程
-流量数据流量包传输到主机的数据链路层时，也就传输到内核的 TCP/IP 协议栈时，会经过 PREROUTING、INPUT、OUTPUT、FORWARD 和 POSTROUTING 链路节点，通过 iptable 可以在这些节点上配置过滤、转发规则，每一个节点上可以配置多个规则，多个规则串联起来形成一条链(chain)，在节点中的链规则是从上往下执行的，只要某一条规则匹配成功，就不继续往下匹配，并执行规则中配置的 ACCEPT 或者 DROP 等等动作，链中的规则，按规则作用分组，然后每一个分组可以看作一个表(table)，因此不同作用规则要定义到指定的表中，表的说明如下：
+流量数据流量包经过主机内核时，也就传输到内核的 TCP/IP 协议栈时，会经过 PREROUTING、INPUT、OUTPUT、FORWARD 和 POSTROUTING 链路节点，通过 iptable 可以在这些节点上配置过滤、转发规则，每一个节点上可以配置多个规则，多个规则串联起来形成一条链(chain)，在节点中的链规则是从上往下执行的，只要某一条规则匹配成功，就不继续往下匹配，并执行规则中配置的 ACCEPT 或者 DROP 等等动作，链中的规则，按规则作用分组，然后每一个分组可以看作一个表(table)，因此不同作用规则要定义到指定的表中，表的说明如下：
 - raw 表：控制 nat 表中连接追踪机制的启用状况，可以控制的链路节点有 PREROUTING、OUTPUT;
 - mangle 表：用于修改数据包中的数据，可以控制的链路节点有 PREROUTING、INPUT、OUTPUT、FORWARD 和 POSTROUTING;
 - nat 表：用于数据包的转发，可以控制的链路节点有 PREROUTING、INPUT、OUTPUT 和 POSTROUTING;
@@ -125,14 +125,51 @@ iptables -t nat -I POSTROUTING -s 172.16.0.0/16 -j SNAT --to-source  100.120.20.
 iptables -t nat -I POSTROUTING -s 172.16.0.0/16 -o eht0 -j MASQUERADE
 
 ```
+
+### 2.6 定义链的策略
+```bash
+# 定义 filter 表 OUTPUT 链的默认策略是允许访问，如果 OUTPUT 所有的规则都不匹配，就会执行默认的策略
+ipatables -t filter -P OUTPUT ACCPT 
+```
+
+
 ## 3. 自定义链
+自定义链主要为方便管理规则，自定义链是默认链规则的下一级匹配链。
 
+### 3.1 创建和使用自定义链
+1. 创建自定义链使用命令  `iptables -t [raw|mangle|nat|filter] -N <自定义链名>  `
+```bash
+# 在 filter 表中创建一条名为 SSH-FIREWALL 的链，
+iptables -t filter SSH-FIREWALL
+```
+2. 自定义链关联系统的默认链，数据包匹配默认链的规则后，跳转到自定义链，并继续匹配自定义链中的规则，自定义链相当于默认链规则的下一级匹配链
+```bash
+# 默认 INPUT 链中的规则匹配时跳转到自定义链 SSH-FIREWALL , 然后匹配 SSH-FIREWALL 链中的规则
+iptables -t filter INPUT -p tcp -dport 22 -j SSH-FIREWALL 
+``` 
+3. 在自定义链 SSH-FIREWALL 中定义规则
+```bash
+# 定义数据包来源地址是 129.12.0.0 网段的，能访问 22 端口
+iptables -t filter SSH-FIREWALL -s 129.12.0.0/16 -j ACCEPT
+# 定义数据包来源地址是 100.12.0.0 网段的禁止访问 22 端口
+iptables -t filter SSH-FILEWALL -s 129.12.0.0/16 -j DROP
+```
+### 3.2 重新命名自定义链
+```
+iptables -t [raw|mangle|nat|filter] -E <旧的自定义链名> <新的自定义链名>
+```
 
+### 3.3 删除自定义链
+删除自定链时，必须要先删除自定义链中的规则和删除默认链中关联的自定义链，删除自定义链的命令如下：
+```bash
+iptables -t [raw|mangle|nat|filter] -X <自定义链名> 
+```
 
 ## 4. 查看规则
 查看 iptables 表规则时使用如下参数：
-* -t 指定要查看的表，默认查看的是 filter 表
-* -L 查看指定链的规则，如果 -L 后面不指定链，则默认查看所有的规则
+* -t 指定要查看的表，不使用 -t 指定表时，默认查看的是 filter 表
+* -L 查看指定链的规则，如果 -L 后面不指定链，则默认查看 -t 指定表所有的规则
+* -S 查看指定链的规则，与 -L 的区别是 -S 显示的是规则的定义语句，如果 -S 后面不指定链，会默认查看 -t 指定表的所有链，不能和 -n 一起使用
 * -n 表示不对 IP 地址进行反查，加上这个参数显示速度将会加快 
 * -v 输出详细信息，包含通过该规则的数据包数量
 * –line-number 显示规则的序列号，删除或修改规则时会用到
