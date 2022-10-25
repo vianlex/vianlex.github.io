@@ -29,16 +29,17 @@ MySql 是从8.0版本之后开始支持开窗函数，开窗函数也叫分析�
     - start_expr 可选值如下：
         - unbounded preceding：over 分区排序后的第一行作为窗口的起始行
         - current row：以当前行作为窗口的起始行
-        - n preceding：以当前行的前面第 n(注意：是一个具体的数字) 行作为窗口的起始行；
-        - n following：以当前行的后面第 n 行作为窗口的起始行；
+        - n preceding：以当前行的前面第 n(注意：n 是一个具体的数字) 行作为窗口的起始行
+        - n following：以当前行的后面第 n 行作为窗口的起始行
     - end_expr 可选值如下：
-        - unbounded following：over 分区排序后的最后一行作为窗口终点；
-        - current row：以当前行作为窗口终点；；
-        - n preceding：以当前行的前面第 n 行作为窗口终点；；
-        - n following：以当前行的后面第 n 行作为窗口终点；；
+        - unbounded following：over 分区排序后的最后一行作为窗口终点
+        - current row：以当前行作为窗口终点
+        - n preceding：以当前行的前面第 n 行作为窗口终点
+        - n following：以当前行的后面第 n 行作为窗口终点
 
 
 
 ## 参考链接
 1、https://www.begtut.com/mysql/mysql-ntile-function.html
 2、https://www.ngui.cc/51cto/show-543033.html?action=onClick
+3、https://jishuin.proginn.com/p/763bfbd79587
