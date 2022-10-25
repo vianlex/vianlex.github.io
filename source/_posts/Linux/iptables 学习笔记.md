@@ -95,7 +95,7 @@ ptables -I INPUT -p tcp --dports 22,25,26 -j REJECT
 - LOG：会将访问日志记录到 /var/log/messages 文件中，只是做日记记录，所以会继续往下匹配规则，可选的参数如下：
     - --log-level 设定 iptables 日志的等级，可选值有 debug，info，notice，warning，err，emerg。默认是 info 级别。
     - --log-prefix 在日志消息中添加特定的字串前缀
-- RETURN 用于自定义链，返回上一级链
+- RETURN 如果在自定义链的规则中使用，则跳回默认链，然后往下匹配默认链的规则，如果默认链中使用，则跳转到默认策略。
 
 ### 2.5 定义规则例子
 ```bash
@@ -152,7 +152,9 @@ iptables -t filter INPUT -p tcp -dport 22 -j SSH-FIREWALL
 # 定义数据包来源地址是 129.12.0.0 网段的，能访问 22 端口
 iptables -t filter SSH-FIREWALL -s 129.12.0.0/16 -j ACCEPT
 # 定义数据包来源地址是 100.12.0.0 网段的禁止访问 22 端口
-iptables -t filter SSH-FILEWALL -s 129.12.0.0/16 -j DROP
+iptables -t filter SSH-FILEWALL -s 100.12.0.0/16 -j DROP
+# RETURN 动作在自定义链中使用，如果规则匹配，则跳回到默认链，并且往下匹配默认链的规则
+iptables -t filter SSH-FILEWALL -s 100.12.0.1 -j RETURN
 ```
 ### 3.2 重新命名自定义链
 ```
@@ -219,5 +221,5 @@ iptables -t filter -D INPUT 5
 
 ```
 
-
-
+## 参考连接
+1. https://www.frozentux.net/iptables-tutorial/cn/iptables-tutorial-cn-1.1.19.html#prelude
