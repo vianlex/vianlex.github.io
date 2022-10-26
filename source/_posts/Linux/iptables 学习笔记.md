@@ -5,7 +5,7 @@ title: iptables 学习笔记
 iptables 是 Linux 防火墙软件，虽然已经被 nftables 取代了，但是仍然广泛的运用着。iptables 防火墙的网络地址转换、数据包修改，以及过滤功能，是由 Linux 内核中的 netfilter 模块实现的，iptables 通过命令行去定义服务器流量的进出规则，然后由 netfilter 模块去执行。
 
 ## 2. iptables 过滤和转发数据包的流程
-流量数据流量包经过主机内核时，也就传输到内核的 TCP/IP 协议栈时，会经过 PREROUTING、INPUT、OUTPUT、FORWARD 和 POSTROUTING 链路节点，通过 iptable 可以在这些节点上配置过滤、转发规则，每一个节点上可以配置多个规则，多个规则串联起来形成一条链(chain)，在节点中的链规则是从上往下执行的，只要某一条规则匹配成功，就不继续往下匹配，并执行规则中配置的 ACCEPT 或者 DROP 等等动作，链中的规则，按规则作用分组，然后每一个分组可以看作一个表(table)，因此不同作用规则要定义到指定的表中，表的说明如下：
+流量数据流量包经过主机内核时，会经过 PREROUTING、INPUT、OUTPUT、FORWARD 和 POSTROUTING 链路节点，通过 iptable 可以在这些节点上配置过滤、转发规则，每一个节点上可以配置多个规则，多个规则串联起来形成一条链(chain)，在节点中的链规则是从上往下执行的，只要某一条规则匹配成功，就不继续往下匹配，并执行规则中配置的 ACCEPT 或者 DROP 等等动作，链中的规则，按规则作用分组，然后每一个分组可以看作一个表(table)，因此不同作用规则要定义到指定的表中，表的说明如下：
 - raw 表：控制 nat 表中连接追踪机制的启用状况，可以控制的链路节点有 PREROUTING、OUTPUT;
 - mangle 表：用于修改数据包中的数据，可以控制的链路节点有 PREROUTING、INPUT、OUTPUT、FORWARD 和 POSTROUTING;
 - nat 表：用于数据包的转发，可以控制的链路节点有 PREROUTING、INPUT、OUTPUT 和 POSTROUTING;
@@ -32,11 +32,16 @@ iptables -t <table> <command> <chain> <match-parameter> -j <target> <target-para
 - [!]-p 指定匹配的协议，不指定默认匹配所有跟 -p all 相同，可匹配的协议有 tcp、udp、udplite、icpm、esp、ah、sctp，其中可选 ! 符号表示取反，不匹配某个协议的意思
 - [!]-i 指定要匹配某个网卡进来的数据包，如 ` -i eth1 `，注意只能用在 PREROUTING 链、INPUT 链、FORWARD 链上
 - [!]-o 根据 -i 相反要匹配数据包从哪个网卡出去的
-- [!]-s 指定匹配数据包的来源 IP 地址, 指定多个 IP 需要用逗号隔开，或者指定一个网段如 192.10.0.0/16
-- [!]-d 与 -s 相反，用于指定匹配数据包访问的目标 IP 地址, 指定多个 IP 需要用逗号隔开，或者指定一个网段如 192.10.0.0/16
+- [!]-s,--source 指定匹配数据包的来源 IP 地址, 指定多个 IP 需要用逗号隔开，或者指定一个网段如 192.10.0.0/16
+- [!]-d,--destination 与 -s 相反，用于指定匹配数据包访问的目标 IP 地址, 指定多个 IP 需要用逗号隔开，或者指定一个网段如 192.10.0.0/16
 - [!]--sport 指定匹配数据包的来源端口，如果要指定多个端口，可以使用冒号隔开，如 --sport 22:25, 注意如果 :22 等同于 0:22 , 25: 等同于 25:65535
 - [!]--dport 指定匹配数据包访问的目标端口
+- -c, --set-counters 用于初始化规则的 PKTS(数据包)和 bytes (字节)计数器，如：`-c 0 0` 将经过规则的数据包和字节计数器置为0
 - --icmp-type 指定 icmp 类型，常用的可选值 8 或 echo-request 表示 ping 请求、0 或 echo-reply 表示 ping 应答
+- -j,--jump [target] 跳转到指定的动作或者用户定义链
+- -g,--goto [chain] 跳转到指定的链
+
+
 
 #### 2.3.1 扩展的匹配参数模块
 1. iprange 模块，用于指定连续的 ip 访问, 扩展的参数如下：
@@ -172,9 +177,10 @@ iptables -t [raw|mangle|nat|filter] -X <自定义链名>
 * -t 指定要查看的表，不使用 -t 指定表时，默认查看的是 filter 表
 * -L 查看指定链的规则，如果 -L 后面不指定链，则默认查看 -t 指定表所有的规则
 * -S 查看指定链的规则，与 -L 的区别是 -S 显示的是规则的定义语句，如果 -S 后面不指定链，会默认查看 -t 指定表的所有链，不能和 -n 一起使用
-* -n 表示不对 IP 地址进行反查，加上这个参数显示速度将会加快 
-* -v 输出详细信息，包含通过该规则的数据包数量
+* -n 将 IP 地址和端口号将以数字格式打印，默认显示为主机名、网络名或服务
+* -v, --verbose 输出详细信息，列出数据包和字节计数时会在后缀加 K、M 等单位
 * –line-number 显示规则的序列号，删除或修改规则时会用到
+* -x 显示数据包和字节计数器的展开值，不加单位 K、M 等单位
 ```
 # 查看 filter 表的所有规则
 iptables -t filter -nL 
@@ -202,8 +208,12 @@ iptables -t nat -nL --line-numbers
 - packets 表示当前链（上例为INPUT链）默认策略匹配到的包的数量，0 packets表示默认策略匹配到0个包。
 - bytes 表示当前链默认策略匹配到的所有包的大小总和。
 
-
-## 5. 删除规则
+## 5. 将所有链中的数据包和字节计数器清零
+```bash
+# 将所有链中的数据包和字节计数器清零
+iptables -t [table] [-Z | --zero ] [chain]
+```
+## 6. 删除规则
 删除整个表的规则命令 ` iptables -t <table>  -F ` 
 ```bash 
 # 删除整个 filter 表的规则，不用 -t 指定表就默认时操作 filter 表
@@ -223,3 +233,4 @@ iptables -t filter -D INPUT 5
 
 ## 参考连接
 1. https://www.frozentux.net/iptables-tutorial/cn/iptables-tutorial-cn-1.1.19.html#prelude
+2. https://ipset.netfilter.org/iptables-extensions.man.html
