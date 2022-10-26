@@ -26,6 +26,7 @@ MySql 是从8.0版本之后开始支持开窗函数，开窗函数也叫分析�
  - partition by 子句：按照指定字段进行分区，over 中不使用 partition by 时，则分区默认是按查询条件查出来的所有记录
  - order by 子句：按照指定字段进行排序，可以和 partition by 子句配合使用，也可以单独使用
  - frame 窗口：在 over 分区的基础上指定一个子集分区，语法格式：`rows | range between start_expr and end_expr`
+    - rows 和 range 区别是，rows 是按实际行数来计算的，range 会把 partition by 分组的字段值相同的看是同一个行
     - start_expr 可选值如下：
         - unbounded preceding：over 分区排序后的第一行作为窗口的起始行
         - current row：以当前行作为窗口的起始行
@@ -37,6 +38,36 @@ MySql 是从8.0版本之后开始支持开窗函数，开窗函数也叫分析�
         - n preceding：以当前行的前面第 n 行作为窗口终点
         - n following：以当前行的后面第 n 行作为窗口终点
 
+## 例子说明
+1. rows 和 range 分段窗口区别
+```
+SELECT 
+	`name`,`month`, `salary`,
+	SUM(salary) OVER(PARTITION BY `month`) AS month_salary,
+	SUM(salary) OVER(PARTITION BY `month` 
+	 ORDER BY salary
+	 rows between unbounded preceding AND 2 following )  AS rows_segment_salary,
+     SUM(salary) OVER(PARTITION BY `month` 
+	 ORDER BY salary
+	 range between unbounded preceding AND 2 following )  AS range_segment_salary
+FROM (
+SELECT '李思' AS `name`, 200 AS salary, '1月份' AS `month`
+UNION ALL 
+SELECT '张三' AS `name`, 300 AS salary, '1月份' AS `month`
+UNION ALL
+SELECT '李思' AS `name`, 300 AS salary, '2月份' AS `month`
+UNION ALL 
+SELECT '张三' AS `name`, 350 AS salary, '2月份' AS `month`
+UNION ALL 
+SELECT '小鱼' AS `name`, 300 AS salary, '1月份' AS `month`
+UNION ALL 
+SELECT '小鱼' AS `name`, 400 AS salary, '2月份' AS `month`
+UNION ALL
+SELECT '小明' AS `name`, 300 AS salary, '1月份' AS `month`
+UNION ALL 
+SELECT '小明' AS `name`, 450 AS salary, '2月份' AS `month`
+) t
+```
 
 
 ## 参考链接

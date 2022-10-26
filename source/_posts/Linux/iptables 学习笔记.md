@@ -233,4 +233,5 @@ iptables -t filter -D INPUT 5
 
 ## 参考连接
 1. https://www.frozentux.net/iptables-tutorial/cn/iptables-tutorial-cn-1.1.19.html#prelude
-2. https://ipset.netfilter.org/iptables-extensions.man.html
+2. https://ipset.netfilter.org/iptables.man.html#lbAH
+3. https://ipset.netfilter.org/iptables-extensions.man.html
