@@ -22,26 +22,45 @@ MySql 是从8.0版本之后开始支持开窗函数，开窗函数也叫分析�
 | NTILE() | 将排序分区中的行划分为特定数量的组，从每个组分配一个从一开始的桶号，对于每一行，NTILE()函数返回一个桶号，表示行所属的组 |
  
 ## 窗口函数语法
-开窗函数语法格式：`func_name([<字段名>]) over([partition by <分组字段>] [order by <排序字段>] [<window>]) `
- - over 函数中不包含 paritition by 子句，则开窗函数统计分析全部数据
- - partition by 子句：可以看作与 GROUP BY 相同，按照指定字段进行分组数据
- - order by 子句：按照指定字段排序 partition by 子句分组的数据，如果没有指定 partition by 则排序全部数据
- - window 子句：用于 order by 排序后指定起始行和结束行范围内的数据统计分析。使用 window 子句必须先排序，其语法格式：`rows | range between start_expr and end_expr`
-    - rows 和 range 区别是，rows 是按 order by 排序后的实际行号来计算行数范围的，range 会把 partition by 分组的字段值相同的看是同一个行
-    - start_expr 可选值如下：
-        - unbounded preceding：over 分区排序后的第一行作为窗口的起始行
-        - current row：以当前行作为窗口的起始行
-        - n preceding：以当前行的前面第 n(注意：n 是一个具体的数字) 行作为窗口的起始行
-        - n following：以当前行的后面第 n 行作为窗口的起始行
-    - end_expr 可选值如下：
-        - unbounded following：over 分区排序后的最后一行作为窗口终点
-        - current row：以当前行作为窗口终点
-        - n preceding：以当前行的前面第 n 行作为窗口终点
-        - n following：以当前行的后面第 n 行作为窗口终点
-
+开窗函数语法格式：`func_name([<column>]) OVER([PARTITION BY <column> | window_name] [ORDER BY <column>] [[ROWS | RANGE] BETWEEN frame_start AND frame_end])`
+ - OVER 函数中如果 paritition_clause 或者 window_name，则开窗函数统计分析全部数据
+ - PARTITION BY 子句：与 GROUP BY 类似，用于按照指定字段进行分组数据 
+ - ORDER BY 子句：按照指定字段排序 partition by 子句分组的数据，如果没有指定 partition by 则排序全部数据
+ - [ROWS | RANGE] BETWEEN frame_start AND frame_end 子句：在 PARTITION 分区的基础，再划分子分区
+    - ROWS: ROWS 划定的子分区是以当前行为基准，前后偏移行数的范围
+    - RANGE: 根据当前行的值划分子分区，注意 RANGE 的使用条件是 PARTITION 分区必须 ORDER BY  
+    - frame_start、frame_end 可选值如下：
+        - CURRENT ROW：以当前行作为 frame 的起始行
+        - UNBOUNDED PRECEDING：以 PARTITION 分区的第一行作为 frame 的起始行
+        - UNBOUNDED FOLLOWING：以 PARTITION 分区的最后一行作为 frame 终点
+        - expr PRECEDING：对于 ROWS，expr 值只能为数字，表示当前行的前前几行，对于 RANGE expr 值可以是数字或者时间表达式
+        - expr FOLLOWING：FOLLOWING 根据 PRECEDING 相对的，对于 ROWS 表示当前行的后几行
 ## 例子说明
-1. ROW_NUMBER、RANK、DENSE_RANK 排序区别
+1. 语法例子
+```sql
+# PARTITION BY 直接写在 OVER 函数中
+SELECT *, ROW_NUMBER() OVER(PARTITION BY `month` ORDER BY salary) AS `rownum`
+FROM (
+SELECT '2月' AS `month`, 3000 AS salary
+UNION ALL 
+SELECT '1月' AS `month`, 4000 AS salary
+) t
+
+# 使用 WINDOW 命名方式定义 PARTITION BY 字句和 ORDER BY 字句
+SELECT `month`, `salary`,
+	ROW_NUMBER() OVER(w1 ORDER BY salary) AS `rownum1`,
+	ROW_NUMBER() OVER(w2 ORDER BY salary) AS `rownum2`,
+	ROW_NUMBER() OVER w3 AS `rownum3`,
+	ROW_NUMBER() OVER w4 AS `rownum4`
+FROM (
+SELECT '2月' AS `month`, 3000 AS salary
+UNION ALL 
+SELECT '1月' AS `month`, 4000 AS salary
+) t WINDOW w1 AS (), w2 AS (PARTITION BY `month`), w3 AS ( ORDER BY salary), w4 AS (PARTITION BY `month` ORDER BY salary)
 ```
+
+2. ROW_NUMBER、RANK、DENSE_RANK 排序区别
+```sql
 SELECT salary,
 	ROW_NUMBER() OVER(ORDER BY salary) AS `rown_umber`,
 	RANK() OVER(ORDER BY salary ) AS `rank`,
@@ -71,8 +90,8 @@ SELECT 4000 AS salary
 | 4000 | 6 | 6 | 4 | 
 
 
-2. rows 和 range 分段窗口区别
-```
+3. rows 和 range 分段窗口区别
+```sql
 SELECT 
 	`name`,`month`, `salary`,
 	SUM(salary) OVER(PARTITION BY `month`) AS month_salary,
@@ -103,6 +122,4 @@ SELECT '小明' AS `name`, 450 AS salary, '2月份' AS `month`
 
 
 ## 参考链接
-1、https://www.begtut.com/mysql/mysql-ntile-function.html
-2、https://www.ngui.cc/51cto/show-543033.html?action=onClick
-3、https://jishuin.proginn.com/p/763bfbd79587
+1、https://dev.mysql.com/doc/refman/8.0/en/window-functions.html
