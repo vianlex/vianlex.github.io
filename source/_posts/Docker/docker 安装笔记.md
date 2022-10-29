@@ -2,25 +2,29 @@
 title: docker 安装笔记
 ---
 ## 使用 YUM 命令安装
-1. 添加 docker 软件源
+1. 安装 docker 依赖软件
+```bash
+yum install -y yum-utils device-mapper-persistent-data lvm2
+```
+2. 添加 docker 软件源
 ```bash 
 # 查看是否 docker 软件源文件, 不存在，则用 wget 下载
-list -il /etc/yum.repos.d/docker-ce.repo 
+ls -il /etc/yum.repos.d/docker-ce.repo 
 # 下载 docker 软件源文件，并保存到 /etc/yum.repos.d/docker-ce.repo
 wget https://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo -O /etc/yum.repos.d/docker-ce.repo
 ```
-2. 安装 docker 
+3. 安装 docker 
 ```
 # 查看可安装的版本 
 yum --showduplicates list docker-ce
 # 安装指定的版本
-yum -y install docker-ce-18.06.1.ce-3.el7
+yum -y install docker-ce-19.03.13-3.el8
 ```
-3. 设置 docker 开机自启,并启动 docker
+4. 设置 docker 开机自启,并启动 docker
 ```
 systemctl enable docker && systemctl start docker
 ```
-4. 查看 docker 版本，如果显示成功，表示安装成功
+5. 查看 docker 版本，如果显示成功，表示安装成功
 ```
 docker --version
 ```
@@ -84,7 +88,7 @@ Type=notify
 # the default is not to use systemd for cgroups because the delegate issues still
 # exists and systemd currently does not support the cgroup feature set required
 # for containers run by docker
-ExecStart=/usr/bin/dockerd -H fd:// --containerd=/run/containerd/containerd.sock
+ExecStart=/usr/bin/dockerd -H fd:// --containerd=/run/containerd/containerd.sock --exec-opt native.cgroupdriver=systemd
 ExecReload=/bin/kill -s HUP $MAINPID
 TimeoutSec=0
 RestartSec=2
