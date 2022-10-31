@@ -28,13 +28,13 @@ MySql 是从8.0版本之后开始支持开窗函数，开窗函数也叫分析�
  - ORDER BY 子句：按照指定字段排序 partition by 子句分组的数据，如果没有指定 partition by 则排序全部数据
  - [ROWS | RANGE] BETWEEN frame_start AND frame_end 子句：在 PARTITION 分区的基础，再划分子分区
     - ROWS: ROWS 划定的子分区是以当前行为基准，前后偏移行数的范围
-    - RANGE: 根据当前行的值划分子分区，注意 RANGE 的使用条件是 PARTITION 分区必须 ORDER BY  
-    - frame_start、frame_end 可选值如下：
-        - CURRENT ROW：以当前行作为 frame 的起始行
-        - UNBOUNDED PRECEDING：以 PARTITION 分区的第一行作为 frame 的起始行
-        - UNBOUNDED FOLLOWING：以 PARTITION 分区的最后一行作为 frame 终点
-        - expr PRECEDING：对于 ROWS，expr 值只能为数字，表示当前行的前前几行，对于 RANGE expr 值可以是数字或者时间表达式
-        - expr FOLLOWING：FOLLOWING 根据 PRECEDING 相对的，对于 ROWS 表示当前行的后几行
+    - RANGE: 根据当前行的值划分子分区，注意分区没有 ORDER BY 的话，只能使用 `RANGE BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING`  
+    - 子分区 frame_start(起始边界行)、frame_end(结束边界行) 可选值如下：
+        - CURRENT ROW：对于 ROWS 而言，以当前行作为边界行，对于 RANGE 而言，与当前行的值相同的都作为边界行
+        - UNBOUNDED PRECEDING：以 PARTITION 分区的第一行作为起始边界行
+        - UNBOUNDED FOLLOWING：以 PARTITION 分区的最后一行作为终点边界行
+        - expr PRECEDING：对于 ROWS 而言 expr 值只能为数字，边界行是当前行的前前几行，对于 RANGE 而言 expr 值可以是数字或者时间表达式，行值等于大于当前行的值减去表达式的值所得值的即为边界行
+        - expr FOLLOWING：FOLLOWING 根据 PRECEDING 相对的，对于 ROWS 而言边界行是当前行的后几行，对于 RANGE 而言，行值等于小于当前行的值加上表达的值所得值即为边界行
 ## 例子说明
 1. 语法例子
 ```sql
