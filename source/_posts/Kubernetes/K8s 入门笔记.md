@@ -71,6 +71,8 @@ spec:
 ```bash
 # 不存在的资源，需要指定 --dry-run 表示不是正在的创建资源，只是试运行，为了导出资源文件 
 kubectl create deployment web --image=nginx-o yaml --dry-run
+# 或者
+kubectl run Pod test-nginx --image=nginx --dry-run=client -o yaml
 # 根据存在的资源导出资源文件
 kubectl get pods [pod-name] -o yaml
 ```
@@ -97,7 +99,7 @@ kubectl create -f resource-file.yaml 或 resource-file.josn 或 http://xxx/xx/xx
 ```
 2. kubectl apply 命令，用于更新资源，不存在则创建新的资源，常用的可选参数
 - -f 指定创建资源使用的资源文件或者文件流
-- -k 指定创建资源使用某个目录下的资源文件
+- -k 指定使用某个目录下的 kustomization.yaml 文件创建或者更新资源
 ```bash
 # 根据指定的资源文件更新或者创建资源
 kubectl apply -f  resource-file.yml 或 resouce-file.json 或 https://xxx/xxx/resource-file.yml
@@ -109,6 +111,7 @@ kubectl apply -k  /home/resource-dir
 3. kubectl get 命令查看资源信息，常用参数
 - -A 指定查看全部命名空间的资源
 - -n 指定查看某个命名空间的资源，如 `-n kube-system `
+- --show-lables 查看资源的 label 
 - -o, --output 指定结果的输出格式，常用的可选值有 wide、yaml、json、name(只显示名称) 等等
 注意查看资源时，如果时需要命名空间隔离的资源，需要 `-n ` 参数指定命名空间或者 ` -A ` 指定查看全部命名空间的资源，如果指定命名空间，默认查看的是 default 命名空间的资源，可以使用命令 ` kubectl api-resources ` 查看资源是否需要命名空间隔离。
 ```bash
@@ -125,31 +128,70 @@ kubectl get pods kube-system
 # 根据名称查看某个 pod 
 kubectl get pod [pod-name] -o wide | yaml | josn 
 ```
+4. kubectl label 命令，用于新增、更新、删除资源标签，注意资源的每个标签都是 `key=value` 的形式
+命令的语法格式 `kubectl lable <resource-type : resource-file > <resouece-name> `
+```bash
+# 查看 node 节点标签
+kubectl get nodes --show-labels
+# 给名为 k8s-node01 的 node 节点打上 hello=world 标签
+kubectl label node k8s-node  hello=world
+# 修改标签，注意只能修改标签的value部分,如将标签 hello=world 改成标签 hello-node-world
+kubectl label node k8s-node --overwrite hello=node-world
+# 给所有node 节点都打上 test-k8s-node = true 标签
+kubectl label node --all  test-k8s-node = true 
+# 删除资源的标签，使用 key和减号，如删除所有节点中标签 key 等于 hello 的标签
+kubectl lable node --all hello- 
+
+# 查看 pods 的标签
+kubectl get pods --show--label
+# 为名 test-web 的 pod 打上 nginx-pod=true 标签
+kubectl lable pods test-web nginx-pod=true
+# 根据文件资源文件中定义的 kind、metadata.namespace、metadata.name 找到对应的 pod 打上 hello=world 标签
+kubectl label pod -f xxx.yaml hello=world
+```
+
+
+
+5. kubectl exec 命令，在宿主机执行 Pod 中容器的命令，跟 docker exec 类似
+命令语法格式：` kubectl exec <pod-name> [-n 命名空间] [ -c Pod 中容器名称 ] [ -it ]  -- <container-command>`
+- -n 指定命名空间，不指定的话，默认是 default 命名空间下的 Pod
+- pod-name 指定 Pod 的名称
+- -c 指定运行 Pod 中的哪个容器的命令，如果不指定默认随机运行一个
+- container-command 指定容器要运行的命令，如 bash、ls、cat、date 等等想要运行的命令
+
+```bash
+# 进入 default 命名空间下 test-web 内的 web01 容器中
+kubectl exec  test-web -c web01 -it -- /bin/sh 
+``
 
 
 ## 4. Pod
 Pod 是 k8s 的最小调度单位，Pod 包含一个或多个 Container(容器) ，K8s 创建 Pod 时，先默认创建运行一个 init 容器，然后在运行资源文件中定义的应用容器，应用容器使用的网络模式是 Docker 的 Container 模式，共享 init 容器的网络命名空间，所以 Pod 中运行的容器是共享网络的，所以使用 localhost 加端口就可以相互访问。注意 init 容器也是可以在资源文件中自定义，具体可以查看官方文档。
 kubernetes 本身的组件也可以通过容器化的方式运行在集群中，并且都存在于 kube-system 命名空间下。
+k8s 支持通过资源文件或者运行 kubectl run 创建 Pod 
 
-### 4.1 Pod 定义 
+### 4.1 定义 Pod 资源文件
 使用` kubectl explain pod ` 查看 pod 资源可以定义的属性和支持的版本
 ```yaml
 apiVersion: v1
-kind: Pod # 注意要大写
+# 注意要大写
+kind: Pod 
 metadata:
-  name: test-nginx
+  name: test-web
 spec:
-    # 指定容器的名称
-  - name: nginx-container 
-    # 指定容器运行的镜像
-    image: nginx
-    # 指定镜像拉取的策略
-    imagePullPolicy: IfNotPresent
-    ports:
-        # 容器 expose 的端口
-      - containerPort: 80
-        # 宿主机的端口，相当于 docker run -p 8000:80
-        hostPort: 8000 
+  # 定义 Pod 中的容器，可以多个
+  containers:
+      # 指定容器的名称, 注意 docker ps 查看容器的时候，看到的名字实际为： k8s_<pod容器名>_<pod名>_<命名空间>_<uid>_<Priority>
+    - name: web01
+      # 指定容器运行的镜像
+      image: nginx
+      # 指定镜像拉取的策略
+      imagePullPolicy: IfNotPresent
+      ports:
+          # 容器 expose 的端口
+        - containerPort: 80
+          # 宿主机的端口，相当于 docker run -p 8000:80
+          hostPort: 8000 
 ```
 ### 4.2 操作 Pod 的常用命令
 1. 创建和更新 pod
@@ -174,15 +216,55 @@ kubectl get pod -A
 # 根据名字查看指定的 pod 不指定命名空间，默认查看 default 命名空间的 pod 
 kubectl get pod [pod-name]
 ```
-第二种方式：kubectl describe pod [po-name] [-n 命名空间 | -A]，使用第二种方式，可以查看 pod 的 events 信息
+第二种方式：kubectl describe pod [po-name] [-n 命名空间 | -A]，使用第二种方式，可以查看 pod 详细信息和 events 事件
 ```bash
 # 查看 default 命名空间的下的所有 pod
 kubectl describe pod 
 # 根据名称查看 pod 信息，注意如果不指定命名空间，则默认查看 default 命名空间下的 pod 
 kubectl describe pod [pod-name]
 ```
-
-
+4. pod 端口映射到宿主机端口
+命令格式 ` kubectl port-forward [pod-name] [hostPort:containerPort] `, 注意要 pod 所在的 node 节点运行才行
+```bash
+# 将 pod 端口映射到宿主机的端口，注意要在 pod 在的 node 节点运行才行
+kubectl port-forward test-web 3000:80
+```
+5. 进入 Pod 内的容器
+```bash
+kubectl exec test-web -n default -c web01 -it -- /bin/sh
+```
+6. 查看 Pod 内的容器日志
+```
+kubectl logs test-web -n default -c web01 -f --tail=200
+```
+7. kubectl run 命令创建 Pod
+命令语法格式: `kubectl run <pod-name> --image=image [--dry-run=server|client] ` 具体查看帮助文档
+```bash
+# 通过 --dry-run 参数，指定显示 Pod 的创建资源文件信息，不实际运行 Pod
+kubectl run test-web  --image=nginx --dry-run=client -o yaml  
+```
+### 4.3 Pod 内的容器挂载目录到宿主机
+第一种方式：通过 volumes 和 volumeMounts 定义挂载的目录，如下
+```yaml
+apiVersion: v1
+kind: Pod 
+metadata:
+  name: test-web
+spec:
+  nodeSelector: hello=world # 指定将 Pod 资源创建在标签为 hello=world 的 node 主机节点中
+  volumes:
+    - name: nginx-data
+      hostPath: # 定义挂载的宿主机目录
+        # 注意该目录是 node 节点宿主机的目录，Pod 创建时调度到不确定的节点，所以 path 最好指定一个 nfs 文件共享目录，
+        # 或者通过 nodeSelector 指定 pod 部署的节点，才能保证，Pod 删除后重新创建时，挂载目录还是原 node 节点的主机目录  
+        path: /opt/xx/data 
+  containers:
+    - name: test-nginx # 容器名字
+      image: nginx # 镜像
+      volumeMounts:
+        - name: nginx-data # 注意 name 要跟上面 hostPath 的名字一样，因为是根据名字取匹配的
+          mountPath: /usr/share/nginx/html  # 指定容器的挂载目录
+```
 
 
 
