@@ -37,7 +37,7 @@ kubectl 的命令行语法格式 ` kubectl [command] [resource-type] [name] [fla
 - flags 
 
 ## 3. K8s resouce(资源)的理解
-K8s 组件是支持 K8s 平台运行的软件，是系统运行的进程，资源是通过组件去创建和管理的。跟 Linux 中一切皆文件, 在 K8S 中也有一切皆资源的概念。Resource 是 K8s 的一个基础概念，k8s 用 Resource 来表示集群中的各个资源。比如 Pod、Service、Deployment、namespace 等等都属于 K8s 的资源，尽管这个资源看起来差别很大，但它们都有许多共同的属性，如 name(名称)、kind(类型)、apiVersion(api版本)、metadata(元信息等)。
+K8s 组件是支持 K8s 平台运行的软件，是系统运行的进程，资源是通过组件去创建和管理的。跟 Linux 中一切皆文件, 在 K8S 中也有一切皆资源的概念。Resource 是 K8s 的一个基础概念，k8s 用 Resource 来表示集群中的各个资源。d都可以在资源文件中配置。比如 Pod、Service、Deployment、namespace 等等都属于 K8s 的资源，尽管这个资源看起来差别很大，但它们都有许多共同的属性，如 name(名称)、kind(类型)、apiVersion(api版本)、metadata(元信息等)。
 
 ### 3.1 查看 resource(资源)的命令
 ```bash
@@ -92,9 +92,12 @@ kubectl get [ns | namespaces] 空间名称 -o [wide | ymal | json ]
 kubectl delete [ns | namespaces]  空间名称
 ```
 ### 3.4 操作 resouce(资源)的常用命令
+需要命名空间隔离的资源，使用 kubectl 操作时，都是需要指定命名空间的，如果不指定命名空间，则默认操作的是 default 命名空间下的资源。使用命令 `kubectl api-resources ` 查看哪些资源是需要命名空间隔离的。
+
 1. kubectl create 命令，用于创建 k8s 资源，常用可选参数：
 - f 指定创建资源使用的资源文件或者流
 ```bash
+# 注意需要命名空间隔离的资源，如果没有指定命名空间的会默认将资源创建在 default 命令空间中
 kubectl create -f resource-file.yaml 或 resource-file.josn 或 http://xxx/xx/xx.yaml
 ```
 2. kubectl apply 命令，用于更新资源，不存在则创建新的资源，常用的可选参数
@@ -112,6 +115,7 @@ kubectl apply -k  /home/resource-dir
 - -A 指定查看全部命名空间的资源
 - -n 指定查看某个命名空间的资源，如 `-n kube-system `
 - --show-lables 查看资源的 label 
+- -w, --watch=<true|false> 实时显示资源信息，相当于 tail 中的 -f 
 - -o, --output 指定结果的输出格式，常用的可选值有 wide、yaml、json、name(只显示名称) 等等
 注意查看资源时，如果时需要命名空间隔离的资源，需要 `-n ` 参数指定命名空间或者 ` -A ` 指定查看全部命名空间的资源，如果指定命名空间，默认查看的是 default 命名空间的资源，可以使用命令 ` kubectl api-resources ` 查看资源是否需要命名空间隔离。
 ```bash
@@ -128,17 +132,19 @@ kubectl get pods kube-system
 # 根据名称查看某个 pod 
 kubectl get pod [pod-name] -o wide | yaml | josn 
 ```
-4. kubectl label 命令，用于新增、更新、删除资源标签，注意资源的每个标签都是 `key=value` 的形式
-命令的语法格式 `kubectl lable <resource-type : resource-file > <resouece-name> `
+4. kubectl label 命令，用于新增、更新、删除资源标签，资源的每个标签都是 `key=value` 的形式，注意在 yaml 中定义资源的标签时，使用的是` key : value ` 形式
+命令的语法格式 `kubectl lable <resource-type : resource-file > <resouece-name>... <key=label>... [--resource-version=version]` 其中 ... 表示可以指定多个然后用空格隔开 
 ```bash
 # 查看 node 节点标签
 kubectl get nodes --show-labels
 # 给名为 k8s-node01 的 node 节点打上 hello=world 标签
 kubectl label node k8s-node  hello=world
-# 修改标签，注意只能修改标签的value部分,如将标签 hello=world 改成标签 hello-node-world
+# --overwrite 表示打标签时，如果存在标签 key 相同的标签，则覆盖更新标签
 kubectl label node k8s-node --overwrite hello=node-world
 # 给所有node 节点都打上 test-k8s-node = true 标签
 kubectl label node --all  test-k8s-node = true 
+# 给名为 k8s-node01 和 k8s-node02 的节点都打上 hello=world 和 whoiam=node 标签
+kubectl label node k8s-node01 k8s-node02 hello=world whoiam=node
 # 删除资源的标签，使用 key和减号，如删除所有节点中标签 key 等于 hello 的标签
 kubectl lable node --all hello- 
 
@@ -150,8 +156,6 @@ kubectl lable pods test-web nginx-pod=true
 kubectl label pod -f xxx.yaml hello=world
 ```
 
-
-
 5. kubectl exec 命令，在宿主机执行 Pod 中容器的命令，跟 docker exec 类似
 命令语法格式：` kubectl exec <pod-name> [-n 命名空间] [ -c Pod 中容器名称 ] [ -it ]  -- <container-command>`
 - -n 指定命名空间，不指定的话，默认是 default 命名空间下的 Pod
@@ -162,8 +166,7 @@ kubectl label pod -f xxx.yaml hello=world
 ```bash
 # 进入 default 命名空间下 test-web 内的 web01 容器中
 kubectl exec  test-web -c web01 -it -- /bin/sh 
-``
-
+```
 
 ## 4. Pod
 Pod 是 k8s 的最小调度单位，Pod 包含一个或多个 Container(容器) ，K8s 创建 Pod 时，先默认创建运行一个 init 容器，然后在运行资源文件中定义的应用容器，应用容器使用的网络模式是 Docker 的 Container 模式，共享 init 容器的网络命名空间，所以 Pod 中运行的容器是共享网络的，所以使用 localhost 加端口就可以相互访问。注意 init 容器也是可以在资源文件中自定义，具体可以查看官方文档。
@@ -185,7 +188,7 @@ spec:
     - name: web01
       # 指定容器运行的镜像
       image: nginx
-      # 指定镜像拉取的策略
+      # 指定镜像拉取的策略，可选值分别为，Always(总是从远程仓库拉取)、IfNotPresent(本地没有镜像时，才会从远程仓库拉取)、Never(只使用本地镜像，没有就报错) 默认是 IfNotPresent
       imagePullPolicy: IfNotPresent
       ports:
           # 容器 expose 的端口
@@ -205,6 +208,8 @@ kubectl apply pod -f xxx.yaml
 ```bash
 # 根据名称删除 pod，如果不指定命名空间，则删除 default 命名空间下的 pod 
 kubectl delete pod [pod-name] [-n 命名空间]
+# 根据资源文件中的 kind、metadata.namespace、metadata.name 确定要删除的资源
+kubectl delete -f xxx.yaml
 ```
 3. 查看 pod
 第一种方式：使用 kubectl get pod [pod-name] [-o wide | yaml | json ] [-n 命名空间 | -A ]
@@ -231,7 +236,7 @@ kubectl port-forward test-web 3000:80
 ```
 5. 进入 Pod 内的容器
 ```bash
-kubectl exec test-web -n default -c web01 -it -- /bin/sh
+kubectl exec test-web -n default -c web01 -it -- bash
 ```
 6. 查看 Pod 内的容器日志
 ```
@@ -243,7 +248,7 @@ kubectl logs test-web -n default -c web01 -f --tail=200
 # 通过 --dry-run 参数，指定显示 Pod 的创建资源文件信息，不实际运行 Pod
 kubectl run test-web  --image=nginx --dry-run=client -o yaml  
 ```
-### 4.3 Pod 内的容器挂载目录到宿主机
+### 4.3 Pod 容器数据持久化，即容器挂载目录到宿主机，防止数据丢失
 第一种方式：通过 volumes 和 volumeMounts 定义挂载的目录，如下
 ```yaml
 apiVersion: v1
@@ -251,13 +256,19 @@ kind: Pod
 metadata:
   name: test-web
 spec:
-  nodeSelector: hello=world # 指定将 Pod 资源创建在标签为 hello=world 的 node 主机节点中
+  # 指定将 Pod 资源创建在标签为 hello=world 的 node 主机节点中，注意如果多个 node 节点都存在 hello=world 标签, k8s 会调度选定一个节点，
+  # 如果固定选择某个 node 节点，需要标签唯一
+  nodeSelector:
+    #注意在，在 yaml 中定义或者使用 label 时用 : 代替 = 
+    hello: world 
   volumes:
     - name: nginx-data
       hostPath: # 定义挂载的宿主机目录
-        # 注意该目录是 node 节点宿主机的目录，Pod 创建时调度到不确定的节点，所以 path 最好指定一个 nfs 文件共享目录，
-        # 或者通过 nodeSelector 指定 pod 部署的节点，才能保证，Pod 删除后重新创建时，挂载目录还是原 node 节点的主机目录  
-        path: /opt/xx/data 
+        # 注意该目录是 node 节点主机的目录，Pod 创建时调度到不确定的节点，最好使用 nfs、ceph、glusterfs 文件共享存储目录,
+        # 或者通过 nodeSelector 指定 pod 部署的节点，才能保证，Pod 删除后重新创建时，挂载目录还是固定的主机目录 
+        path: /opt/data 
+        # 指向一个目录，不存在时自动创建
+        type: DirectoryOrCreate     
   containers:
     - name: test-nginx # 容器名字
       image: nginx # 镜像
@@ -266,6 +277,72 @@ spec:
           mountPath: /usr/share/nginx/html  # 指定容器的挂载目录
 ```
 
+### 4.4 ## Pod 重启策略
+Pod 重启策略(RestartPolicy)，定义容器的重启规则，当 Pod 内某个容器异常退出或者探针健康检测失败时，kubelet 会根据重启策略(RestartPolicy)来进行相应的操作。Pod 的重启策略有三种分别是 Always、OnFailure、Never，默认值是 Always。
+- Always 当容器进程退出时，kubelet 总是会自动重启容器
+- OnFailure 当容器终止运行且退出码不为0时，kubelet 会自动重启容器
+- Never 当前容器运行状态如何，kubelet 都不会自动启动容器 
+
+```bash
+apiVersion: v1
+kind: Pod 
+metadata:
+  name: test-web
+  namespace: default
+spec:
+  restartPolicy: OnFailure
+  containers:
+    - name: busybox
+      image: busybox
+      # 命令正常执行成功返回的 0，设置退出码为 1 测试 OnFailure 重启策略
+      args: 
+        - /bin/sh
+        - c 
+        - sleep 10 && exit 1
+
+```
+
+### 4.5 容器 Probe(探针)
+probe(探针) 是由 kubelet 对容器定期执行的健康诊断。 诊断的方式是 kubelet 在容器内执行代码，或者发送一个网络请求。如果没有在资源文件中定义 prode 则 kubelet 会默认所有的诊断结果都是健康的。
+#### 4.5.1 探针检测的方式
+- exec 在容器内执行指定命令。如果命令退出时返回码为 0 则认为诊断成功。
+- gRPC 如果容器中实现 gRPC健康检查，可以使用 gRPC 执行一个远程过程调用。如果响应的状态是 SERVING，则认为诊断成功。
+- httpGet 对容器服务发起 HTTP GET 请求。如果响应的状态码大于等于 200 且小于 400，则任务诊断成功。
+- tcpSocket 对容器的指定端口执行 TCP 检查。如果端口打开，则诊断被认为成功
+
+#### 4.5.2 探测结果
+每次探测都将获得以下三种结果之一：
+- Success（成功） 容器通过了诊断。
+- Failure（失败）容器未通过诊断。
+- Unknown（未知） 诊断失败，不会采取任何行动。
+
+#### 4.5.3 探针的类型
+k8s 提供了三种容器探针，分别如下：
+- startupProbe 启动探针，用于诊断容器中的服务是否已经启动成功，如果探针检测返回失败结果，则 kubelet 会杀死容器，并且根据容器重启策略(RestartPolicy)决定是否重启。注意该探针如果诊断成功之前不会运行 livenessProbe 和 readinessProbe 探针，未资源文件中配置 startupProbe 探针，则 kubelet 默认是诊断成功的。
+- livenessProbe 存活探针，用于诊断容器是否已经挂掉了，如果探针检测返回失败结果，则 kubelet 会杀死容器，并且根据容器重启策略(RestartPolicy)决定是否重启。
+- readinessProbe 就绪(READY)探针，用于诊断容器中的服务是否能正常接收请求，如果探针检测返回失败结果，Endpoint 控制器将 Pod 从 Endpoint 对应的服务中移除，不会将任何请求发送该 Pod 上，直到探针检测返回成功结果为止。
+1. livenessProbe 存活探针例子，使用 `kubectl describe pod <pod-name>`命令查看检测是否成功，如果失败会有事件提示。
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: test-web
+spec:
+  containers:
+    - name: web01
+      image: nginx
+      ports:
+        - containerPort: 80
+      livenessProbe:
+        # kubectl 每3秒请求一次 /index 如果请求返回的状态码范围是 200 <= statuCode < 400 说检测成功
+        httpGet:
+          path: /index
+          port: 80
+        initialDelaySeconds: 5 # 表示容器运行5秒后，kubelet 开始检测
+        periodSeconds: 3 # 表示每隔 3 秒 kubelet 检测一次
+        successThreshold: 3 # 表示3次检测成功才算是检测成功，主要防止出现误差，默认值是 1
+        failureThreshold: 3 # 表示3次检测失败才算是检测失败，主要防止出现误差，默认值是 1
+```
 
 
 
