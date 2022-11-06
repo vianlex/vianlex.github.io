@@ -54,6 +54,10 @@ kind: pod
 metadata:   
   # 指定资源的名称
   name: test-nginx
+  # 指定资源的命名空间，指定的话，默认是 default
+  namespace: default
+  # 指定资源的版本
+  resourceVersion: "11012"
 # 定义资源的特定属性
 spec: 
   # 使用命令 kubectl explain resource.
@@ -132,7 +136,14 @@ kubectl get pods kube-system
 # 根据名称查看某个 pod 
 kubectl get pod [pod-name] -o wide | yaml | josn 
 ```
-4. kubectl label 命令，用于新增、更新、删除资源标签，资源的每个标签都是 `key=value` 的形式，注意在 yaml 中定义资源的标签时，使用的是` key : value ` 形式
+4. kubectl describe 命令展示资源详情信息
+```bash
+# 查看 Pod 的详情信息和 Pod 容器事件 Events
+kubectl describe pod [pod-name] [-n 命名空间]
+# 查看 node 节点的详细信息和节点的内存和 cpu 信息，以及 Pod 限制 cpu 和内存信息
+kubectl describe node [node-name]
+```
+5. kubectl label 命令，用于新增、更新、删除资源标签，资源的每个标签都是 `key=value` 的形式，注意在 yaml 中定义资源的标签时，使用的是` key : value ` 形式
 命令的语法格式 `kubectl lable <resource-type : resource-file > <resouece-name>... <key=label>... [--resource-version=version]` 其中 ... 表示可以指定多个然后用空格隔开 
 ```bash
 # 查看 node 节点标签
@@ -155,8 +166,7 @@ kubectl lable pods test-web nginx-pod=true
 # 根据文件资源文件中定义的 kind、metadata.namespace、metadata.name 找到对应的 pod 打上 hello=world 标签
 kubectl label pod -f xxx.yaml hello=world
 ```
-
-5. kubectl exec 命令，在宿主机执行 Pod 中容器的命令，跟 docker exec 类似
+6. kubectl exec 命令，在宿主机执行 Pod 中容器的命令，跟 docker exec 类似
 命令语法格式：` kubectl exec <pod-name> [-n 命名空间] [ -c Pod 中容器名称 ] [ -it ]  -- <container-command>`
 - -n 指定命名空间，不指定的话，默认是 default 命名空间下的 Pod
 - pod-name 指定 Pod 的名称
@@ -169,9 +179,8 @@ kubectl exec  test-web -c web01 -it -- /bin/sh
 ```
 
 ## 4. Pod
-Pod 是 k8s 的最小调度单位，Pod 包含一个或多个 Container(容器) ，K8s 创建 Pod 时，先默认创建运行一个 init 容器，然后在运行资源文件中定义的应用容器，应用容器使用的网络模式是 Docker 的 Container 模式，共享 init 容器的网络命名空间，所以 Pod 中运行的容器是共享网络的，所以使用 localhost 加端口就可以相互访问。注意 init 容器也是可以在资源文件中自定义，具体可以查看官方文档。
-kubernetes 本身的组件也可以通过容器化的方式运行在集群中，并且都存在于 kube-system 命名空间下。
-k8s 支持通过资源文件或者运行 kubectl run 创建 Pod 
+Pod 是 k8s 的最小调度单位，Pod 包含一个或多个 Container(容器) ，K8s 创建 Pod 时，Pod 内容器默认使用的 Container 网络模式，所以在运行 Pod 中定义的容器之前，会先默认创建运行一个 init 容器，其他容器使用 init 容器的网络命名空间, 从而实现 Pod 内容器共享网络。即 Pod 内容器使用 localhost 就可以相互访问。注意 init 容器也是可以在资源文件中自定义，具体可以查看官方文档。
+kubernetes 本身的组件也可以通过容器化的方式运行在集群中，并且都存在于 kube-system 命名空间下。注意 k8s 支持通过资源文件或者运行 kubectl run 创建 Pod。 
 
 ### 4.1 定义 Pod 资源文件
 使用` kubectl explain pod ` 查看 pod 资源可以定义的属性和支持的版本
@@ -237,6 +246,8 @@ kubectl port-forward test-web 3000:80
 5. 进入 Pod 内的容器
 ```bash
 kubectl exec test-web -n default -c web01 -it -- bash
+# 查看环境变量
+kubectl exec test-web -n default -c web01 env 
 ```
 6. 查看 Pod 内的容器日志
 ```
@@ -277,7 +288,7 @@ spec:
           mountPath: /usr/share/nginx/html  # 指定容器的挂载目录
 ```
 
-### 4.4 ## Pod 重启策略
+### 4.4 Pod 重启策略
 Pod 重启策略(RestartPolicy)，定义容器的重启规则，当 Pod 内某个容器异常退出或者探针健康检测失败时，kubelet 会根据重启策略(RestartPolicy)来进行相应的操作。Pod 的重启策略有三种分别是 Always、OnFailure、Never，默认值是 Always。
 - Always 当容器进程退出时，kubelet 总是会自动重启容器
 - OnFailure 当容器终止运行且退出码不为0时，kubelet 会自动重启容器
@@ -343,6 +354,210 @@ spec:
         successThreshold: 3 # 表示3次检测成功才算是检测成功，主要防止出现误差，默认值是 1
         failureThreshold: 3 # 表示3次检测失败才算是检测失败，主要防止出现误差，默认值是 1
 ```
+
+### 4.6 Pod 容器资源限制
+Pod 内容器运行依赖的硬件资源，最重要的指标就是 cpu 和内存，k8s 提供 requests 和 limits 两种参数类型来分配和限制容器使用的资源。它们的区别如下：
+- requests 限制的资源只是作为 k8s 创建 Pod 时调度到指定节点的判断依据，不限制容器运行资源，只有主机节点的可分配资源大于等于 requests 限制的资源时，才允许 Pod 调度到此节点。
+- limits 限制 Pod 内容器能使用的最大资源，如果容器使用的内存超出设置值，则会报 OOM。如果内存和 cpu 的值都设置为 0 则 表示资源不作限制。
+```yaml
+...
+sepc:
+  containers:
+    - name: web01
+      image: nginx
+      resource:
+        # 使用命令 kubectl describe node [node-name] 能查看主机节点的内存和 cpu 
+        requests:
+          memory: 200Mi
+          cpu: 50m
+        limits:
+          memory: 500Mi
+          cpu: 100m 
+```
+### 4.7 Pod 状态和生命周期
+#### 4.7.1 生命周期
+```mermaid
+gantt
+  title Pod 生命周期
+  dateFormat ss
+  axisFormat %Ss
+  pod start : milestone, s1, 00, 0s
+  section Init Container
+  # 内容，颜色、标签、起始点，
+  init Container-01 : i1, 00, 3s
+  init Container-02 : i1, 01, 3s
+  init Container-03 : i1, 02, 3s
+  section Main Container
+  post start hook:  m1, 05, 2s
+  main container: m1, 05, 6s
+  livenessProbe: m1, 07, 2s
+  readinessProbe: m1, 07, 2s
+  pre stop hook: m1, 09, 2s
+  section  
+  pod stop : milestone, crit, s1, 11, 0s
+```
+Pod 资源对象从创建到结束的时间段称为 Pod 的生命周期，Pod 周期过程和钩子函数说明如下：
+1. Pod 创建过程
+2. 运行初始化容器(init container)过程
+3. 运行主容器(main container)过程
+    - 容器启动后执行的钩子函数（post start），容器终止前执行的钩子函数（ pre stop）
+    - 容器的存活性探测(liveness probe)、就绪性探测(readiness probe)
+4. Pod 终止过程
+
+```yaml
+
+
+
+```
+
+#### 4.7.2 Pod 状态和容器状态
+1. Pod 生命周期中各种状态说明
+- Pending（等待中）	Pod 已被 Kubernetes 系统接受，但有一个或者多个容器尚未创建亦未运行。此阶段包括等待 Pod 被调度的时间和通过网络下载镜像的时间。
+- Running（运行中）	Pod 已经绑定到了某个节点，Pod 中所有的容器都已被创建。至少有一个容器仍在运行，或者正处于启动或重启状态。
+- Succeeded（成功）	Pod 中的所有容器都已成功终止，并且不会再重启。
+- Failed（失败）	Pod 中的所有容器都已终止，并且至少有一个容器是因为失败终止。也就是说，容器以非 0 状态退出或者被系统终止。
+- Unknown（未知）	因为某些原因无法取得 Pod 的状态。这种情况通常是因为与 Pod 所在主机通信失败。
+
+2. Pod 内容器生命周期状态
+- Waiting （等待） 容器运行前的等待状态，如拉取容器镜像，或者向容器应用 Secret 数据等等。
+- Running（运行中） 表明容器正在执行状态并且没有问题发生。
+- Terminated（已终止） 容器已经开始执行并且或者正常结束或者因为某些原因失败。
+
+### 4.8 静态 Pod 
+静态 Pod 指的是 kubelet 自动创建的 Pod，不需要我们使用` kubectl <create|apply> `手动创建。静态 Pod 的 yaml 是存放在 ` /etc/kubernetes/manifests/ ` 中的，kubectl 会自动扫描该目录的 yaml 文件并自动创建，创建的 Pod 即为静态 Pod。如果我们想创建静态 Pod 直接将 yaml 放到该目录即可，kubectl 会自动创建。
+
+
+## 5. ConfigMap 和 Secret
+k8s 提供 ConfigMap 和 Secret 两种不同类型的资源，来实现业务配置信息的统一管理。在静态 Pod 中无法使用配置资源。
+1. ConfigMap 用于管理不敏感的配置项。ConfigMap 资源的定义如下：
+```yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: test-web-config
+  # 不指定命名空间的话，资源默认在 default 命名空间下
+  namespace: default
+# 定义应用中使用的配置项 
+data:
+  # 配置项的值要加引号，不然创建资源时会报错
+  redis_host: "127.0.0.1"
+  redis_port: "6739"
+
+```
+2. Secret 用于管理中的配置信息，如账号密码，等等敏感配置信息。Secret 资源的定义如下：
+```yaml 
+apiVersion: v1
+kind: Secret
+metadata:
+  name: test-web-secret
+  # 不指定命名空间的话，资源默认在 default 命名空间下
+  namespace: default 
+# type 指定 data 能定义哪些配置项，Opaque 表示用户可以定义的任意数据，当类型为 kubernetes.io/service-account-token 时 data 中只能配置 k8s 服务账号令牌
+# 具体查看： https://kubernetes.io/zh-cn/docs/concepts/configuration/secret/#secret-types
+type: Opaque
+# 定义应用使用的配置项
+data:
+  # 与configMap的区别是。配置项的值需要 base64 编码
+  db_username: "bc9uZd81c2By"
+  db_password: "bc9uZd91c2By"
+```
+3. 创建和查看 configMap 和 Secret 跟 Pod 一样操作即可
+```bash
+# 创建资源
+kubectl create -f test-web-config.yaml
+# 查看资源, 不指定命名空间，默认查看的是 default 命名空间的
+kubectl get <configmap | cm> [资源名]
+或者
+kubectl describe <configmap | cm> [资源名]
+```
+4. 通过内容为 `key=value ` 格式的文件创建 configMap 资源
+```bash
+# 通过 key=value 文件创建 configMap 资源
+kubectl create configmap test-web-config -n default --from-env-file=configs.txt
+# 通过 key=value 文件创建 secret 注意文件中的 value 是需要 base64 的
+kubectl create configmap ggeneric test-web-config -n default --from-env-file=configs.txt
+# configs.txt 的文件内容格式如下
+hello="world"
+lang="en"
+```
+5. Pod 内容器服务使用 ConfigMap 和 Secret 资源中的配置项，方式如下：
+- 作为环境变量使用
+使用命令  `kubectl exec test-web -c web01  -- env ` 可以查看容器环境变量
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: test-web
+spec:
+  containers:
+    - name: web01
+      image: nginx
+      env:
+        # 定义环境变量 db_url
+        - name: db_url
+          value: jdbc://mysql/xxx//xx/xx
+          # 定义环境变量 db_password，变量的值从 Secret 资源中获取
+        - name: db_password
+          valueFrom:
+              secretKeyRef:
+                # Secret 的资源名
+                name: test-web-secret
+                # 获取 Secret 资源中 db_password 的值
+                key: db_password
+        - name: redis_port
+          valueFrom:
+            configMapKeyRef:
+              name: test-web-configmap
+              key: redis_port
+```
+- 将配置资源挂载为容器文件
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: test-web
+  namespace: default
+spec:
+  containers:
+  - name: test-nginx
+    image: nginx
+    volumeMounts:
+    - name: myConfigs
+      # 
+      mountPath: "/etc/config"
+      readOnly: true
+  volumes:
+  - name: myConfigs
+    secret:
+      secretName: test-web-secret
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
