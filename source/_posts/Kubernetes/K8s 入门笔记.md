@@ -458,8 +458,8 @@ type: Opaque
 # 定义应用使用的配置项
 data:
   # 与configMap的区别是。配置项的值需要 base64 编码
-  db_username: "bc9uZd81c2By"
-  db_password: "bc9uZd91c2By"
+  db_username: "YWRtaW4K"
+  db_password: "MTIzNDU2Cg=="
 ```
 3. 创建和查看 configMap 和 Secret 跟 Pod 一样操作即可
 ```bash
@@ -515,19 +515,19 @@ spec:
 apiVersion: v1
 kind: Pod
 metadata:
-  name: test-web
+  name: test-web-02
   namespace: default
 spec:
   containers:
   - name: test-nginx
     image: nginx
     volumeMounts:
-    - name: myConfigs
-      # 
+    - name: secret-config
+      # test-web-secret 中的 data 的每一个配置项都会在容器目录 /etc/config 中生成文件，key 作为文件名，value 是文件的内容  
       mountPath: "/etc/config"
       readOnly: true
   volumes:
-  - name: myConfigs
+  - name: secret-config
     secret:
       secretName: test-web-secret
 ```
