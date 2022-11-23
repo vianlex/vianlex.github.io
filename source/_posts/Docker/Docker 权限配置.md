@@ -5,7 +5,7 @@ title: Docker 权限配置
 ## 新增 docker 用户组
 查看 docker 用户组是否存在
 ```
-sudo /etc/group | grep docker
+sudo cat /etc/group | grep docker
 ``` 
 docker 用户组不存在则新建一个
 ```
@@ -20,7 +20,7 @@ sudo a+rw /var/run/docker.sock
 sudo gpasswd -a ${USER}  docker
 ```
 
-## 刷新用户组权限
+## 临时切换到 docker 组
 ```
 newgrp  docker
 
