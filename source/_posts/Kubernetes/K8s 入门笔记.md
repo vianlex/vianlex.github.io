@@ -107,6 +107,7 @@ kubectl create -f resource-file.yaml 或 resource-file.josn 或 http://xxx/xx/xx
 2. kubectl apply 命令，用于更新资源，不存在则创建新的资源，常用的可选参数
 - -f 指定创建资源使用的资源文件或者文件流
 - -k 指定使用某个目录下的 kustomization.yaml 文件创建或者更新资源
+- --record 将当前执行的命令，记录在资源的annotation(注释)中，记录的格式为 ` kubernetes.io/change-cause: <kubectl 执行的命令>` 
 ```bash
 # 根据指定的资源文件更新或者创建资源
 kubectl apply -f  resource-file.yml 或 resouce-file.json 或 https://xxx/xxx/resource-file.yml
@@ -200,9 +201,9 @@ spec:
       # 指定镜像拉取的策略，可选值分别为，Always(总是从远程仓库拉取)、IfNotPresent(本地没有镜像时，才会从远程仓库拉取)、Never(只使用本地镜像，没有就报错) 默认是 IfNotPresent
       imagePullPolicy: IfNotPresent
       ports:
-          # 容器 expose 的端口
+          # 容器 expose 的端口，在集群集群内，可以使用 Pod 分配的 ip 访问
         - containerPort: 80
-          # 宿主机的端口，相当于 docker run -p 8000:80
+          # 宿主机的端口，相当于 docker run -p 8000:80，可以使用 Pod 所在节点的 Ip 访问
           hostPort: 8000 
 ```
 ### 4.2 操作 Pod 的常用命令
@@ -240,8 +241,8 @@ kubectl describe pod [pod-name]
 4. pod 端口映射到宿主机端口
 命令格式 ` kubectl port-forward [pod-name] [hostPort:containerPort] `, 注意要 pod 所在的 node 节点运行才行
 ```bash
-# 将 pod 端口映射到宿主机的端口，注意要在 pod 在的 node 节点运行才行
-kubectl port-forward test-web 3000:80
+# 将 pod 端口映射到宿主机的端口, 注意 ip 地址要执行命令运行节点的才行
+kubectl port-forward test-web --address localhost,192.168.204.3  3000:80
 ```
 5. 进入 Pod 内的容器
 ```bash
@@ -403,12 +404,10 @@ Pod 资源对象从创建到结束的时间段称为 Pod 的生命周期，Pod �
     - 容器启动后执行的钩子函数（post start），容器终止前执行的钩子函数（ pre stop）
     - 容器的存活性探测(liveness probe)、就绪性探测(readiness probe)
 4. Pod 终止过程
-
-```yaml
-
-
-
-```
+    - 执行删除命令，k8s 给需要删除的 Pod 发出 SIGTERM 信号，Pod 状态变为 Terminating
+    - kube-proxy watch 监控到 Pod 的状态不是 READY 状态，将 Pod 从 service 的 endpoint 列表中摘除掉，新的流量不再转发到该 Pod
+    - kubelet watch 监控到 Terminating 状态，则开始销毁 Pod，如果 Pod 中的容器配置了  preStop Hook 将会执行，
+      发送 SIGTERM 信号给容器内主进程以通知容器进程开始停止，并等待 container 中的主进程完全停止，如果在 terminationGracePeriodSeconds 内 (默认 30s) 还未完全停止，就发送 SIGKILL 信号将其强制杀死，所有容器进程终止，清理 Pod 资源，完成 Pod 删除
 
 #### 4.7.2 Pod 状态和容器状态
 1. Pod 生命周期中各种状态说明
@@ -426,9 +425,8 @@ Pod 资源对象从创建到结束的时间段称为 Pod 的生命周期，Pod �
 ### 4.8 静态 Pod 
 静态 Pod 指的是 kubelet 自动创建的 Pod，不需要我们使用` kubectl <create|apply> `手动创建。静态 Pod 的 yaml 是存放在 ` /etc/kubernetes/manifests/ ` 中的，kubectl 会自动扫描该目录的 yaml 文件并自动创建，创建的 Pod 即为静态 Pod。如果我们想创建静态 Pod 直接将 yaml 放到该目录即可，kubectl 会自动创建。
 
-
 ## 5. ConfigMap 和 Secret
-k8s 提供 ConfigMap 和 Secret 两种不同类型的资源，来实现业务配置信息的统一管理。在静态 Pod 中无法使用配置资源。
+k8s 提供 [ConfigMap](https://kubernetes.io/zh-cn/docs/tasks/configure-pod-container/configure-pod-configmap/) 和 Secret 两种不同类型的资源，来实现业务配置信息的统一管理。在静态 Pod 中无法使用配置资源。
 1. ConfigMap 用于管理不敏感的配置项。ConfigMap 资源的定义如下：
 ```yaml
 apiVersion: v1
@@ -437,12 +435,31 @@ metadata:
   name: test-web-config
   # 不指定命名空间的话，资源默认在 default 命名空间下
   namespace: default
-# 定义应用中使用的配置项 
+# 定义配置项，注意如果 Pod 是以挂载文件的方式引用 configMap 则 data 中的每 key-value 键值对都会单独生成一个文件，key 作为文件名，vlaue 作为文件内容 
 data:
-  # 配置项的值要加引号，不然创建资源时会报错
+  # 简单键值对配置项，注意值要加引号，不然会报错
   redis_host: "127.0.0.1"
   redis_port: "6739"
-
+  # 类似文件的配置项
+  # | 在 yaml 中表示每一行都保留换行符号 \n
+  game.properties: |   
+    enemy.types=aliens,monsters
+    player.maximum-lives=5    
+  user-interface.properties: |
+    color.good=purple
+    color.bad=yellow
+    allow.textmode=true  
+  test-web.conf: |
+    server {
+      listen       81;
+      listen  [::]:81;
+      server_name  localhost;
+      #access_log  /var/log/nginx/host.access.log  main;
+      location / {
+        root   /usr/share/nginx/html;
+        index  index.html index.htm;
+      }
+    }
 ```
 2. Secret 用于管理中的配置信息，如账号密码，等等敏感配置信息。Secret 资源的定义如下：
 ```yaml 
@@ -481,7 +498,7 @@ hello="world"
 lang="en"
 ```
 5. Pod 内容器服务使用 ConfigMap 和 Secret 资源中的配置项，方式如下：
-- 作为环境变量使用
+- 作为环境变量使用，注意 Pod 和 ConfigMap 必须要在同一个命名空间中
 使用命令  `kubectl exec test-web -c web01  -- env ` 可以查看容器环境变量
 ```yaml
 apiVersion: v1
@@ -492,11 +509,20 @@ spec:
   containers:
     - name: web01
       image: nginx
+      # 使用 envFrom 将所有 ConfigMap 的数据定义为容器环境变量
+      envFrom:
+        - configMapRef:
+            name: test-web-config
       env:
         # 定义环境变量 db_url
         - name: db_url
           value: jdbc://mysql/xxx//xx/xx
-          # 定义环境变量 db_password，变量的值从 Secret 资源中获取
+        - name: test-env-json  
+          value: | 
+            {
+              "hello":90
+            }
+        # 定义环境变量 db_password，变量的值从 Secret 资源中获取
         - name: db_password
           valueFrom:
               secretKeyRef:
@@ -507,8 +533,31 @@ spec:
         - name: redis_port
           valueFrom:
             configMapKeyRef:
-              name: test-web-configmap
+              name: test-web-config
               key: redis_port
+      volumeMounts:
+        - name: config-file-demo
+          mountPath: "/etc/web-config"
+          readOnly: true
+        - name: nginx-config-file
+          mountPath: "/etc/nginx/conf.d"
+          readOnly: true
+  volumes:
+    - name: config-file-demo
+      configMap:
+        name: test-web-config
+        # 指定哪些 key 可以在容器 /etc/web-config 目录下生成文件，不指定的话，所有 Key 都会生成文件 
+        items:
+        - key: "game.properties"
+          path: "game.properties"
+        - key: "user-interface.properties"
+          path: "user-interface.properties"
+    - name: nginx-config-file
+      configMap:
+        name: test-web-config
+        items:
+        - key: "test-web.conf"
+          path: "test-web.conf"
 ```
 - 将配置资源挂载为容器文件
 ```yaml
@@ -525,13 +574,157 @@ spec:
     - name: secret-config
       # test-web-secret 中的 data 的每一个配置项都会在容器目录 /etc/config 中生成文件，key 作为文件名，value 是文件的内容  
       mountPath: "/etc/config"
-      readOnly: true
   volumes:
   - name: secret-config
     secret:
       secretName: test-web-secret
 ```
 
+## 6. 工作负载(Workload)
+工作负载又称 Pod 控制器用于管理 Pod，比如创建 Pod 副本、扩容或者升级版本等等，确保 Pod 资源能处于预期的工作状态中，Pod 资源遇到故障时能，会根据策略自动重启或者重新新建 Pod
+资源，k8s 提供的工作负载资源有以下几种：
+- ReplicaSet 自动创建指定数量的 Pod 副本，并且支持滚动式自动扩容和缩容功能
+- Deployment 以 ReplicaSet 为基础，进一步的封装，用于管理无状态的应用，支持副本创建伸缩的同时，支持滚动更新和回滚功能
+- DaemonSet 用于确集群中的每一个 Node 节点都运行特定的 Pod 副本，比如用于定义每个节点上都运行日志收集类的 Pod，因为每一个节点的日志都需要收集
+- Job 用于管理运行完就退出的 Pod，不需要重启或者重建的 Pod 资源
+- CronJob 用于运行周期性任务的 Pod，不需要后台持久性运行
+- StatefulSet 用于管理有状态的应用
+
+### 6.1 工作负载如何控制 Pod
+工作负载(Workload)是通过标签去关联 Pod 的，工作负载通过属性 spec.selector.matchLabels 指定要管理的 Pod 的标签
+```mermaid
+flowchart TB
+    A(["工作负载(Workload)"])
+    A -- lables: app:nginx --> P1["Pod"]
+    A -- lables: app:nginx --> P2["Pod"]
+    A -- lables: app:nginx --> P3["Pod"]
+```
+
+### 6.2 Deployment 工作负载
+### 6.2.1 创建 Deployment
+1. Deployment 的声明式文件如下：
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+  namespace: default
+  labels:
+    app: nginx
+spec:
+  # 指定 Pod 的副本个数
+  replicas: 3
+  # 根据标签选择要控制的 Pod
+  selector:
+    matchLabels:
+      app: nginx
+  # template 属性声明定义 Pod 的信息 
+  template:
+    metadata:
+      # 定义 Pod 的标签 
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx
+        ports:
+        - containerPort: 80
+```
+2. 声明式文件创建 Deployment 使用如下命令：
+```
+# 执行创建或更新资源命令时加上 --record=true 参数，k8s 会将当前执行的创建或者更新命令记录在资源的 annotations 属性中
+kubectl create -f nginx-deployment.yaml --record=true
+# 或者
+kubectl apply -f nginx-deployment.yaml
+```
+3. 命令行方式创建 Deployment 的方式如下：
+```
+kubectl create deployment nginx-depoyment --image=nginx --replicas=3
+```
+4. 查看 Deployment 信息
+```bash
+# 查看默认命名空间下的所有 deployment 
+kubectl get deployments
+
+# 根据名称查看默认命名空间下的 deployment
+kubectl get deployments nginx-deployment
+
+# deployment 是 replicasets 的扩展封装，在创建 Deployment 的同时创建了 ReplicaSet
+kubectl get replicasets  -o wide
+
+# 查看 deployment 信息和事件 
+kubectl describe deployment nginx-deployment
+
+```
+5. 删除 Deloyment 
+```bash
+# 方式一，通过 yaml 文件删除
+kubectl delete -f nginx-deployment.yaml
+
+# 方式二，通过 deloyment 名称删除
+kubectl delete depolyment nginx-deloyment
+```
+
+
+### 6.2.2 更新 Deployment 
+
+1. 更新副本数量
+
+```bash
+# 第一种方式，命令行通过指定 --replicas 参数，来修改
+kubectl scale deployment nginx-deployment --replicas=2
+
+# 第二种方式，修改 yaml 文件中的 replicas 属性，然后执行更新
+kubectl apply -f nginx-deloyment.yaml
+
+# 第三种方式，通过 kubectl edit 命令直接修改 replicas 属性，即可生效
+kubectl edit deployment nginx-deployment
+
+```
+注意，创建 Deployment 资源时，也会创建 replicaset ，如果想通过修改 replicaset 资源的副本数量，去改变 Deployment 创建的副本数量是行不通，如下： 
+```bash
+# deployment 的副本数量并不会变
+kubectl scale replicaset nginx-deployment-687df7cddc --replicas=2
+```
+
+2. 更新镜像版本
+```bash
+# 第一种方式，直接修改 yaml 文件，然后更新
+kubectl apply -f nginx-deployment.yaml
+
+# 第二种方式，kubectl edit 命令直接修改
+kubectl edit deployment nginx-deployment
+
+# 第三种方式，使用 kubectl set image 命令
+kubectl set image deployment nginx-deployment nginx=nginx:1.9.1 # 将所有 nginx 镜像改成 nginx:1.9.1
+kubectl set image deployment nginx-deployment busybox=busybox nginx=nginx:1.9.1 # 将所有 busybox 和 nginx 镜像分别改成busybox 和 nginx:1.9.1
+kubectl set image deployment nginx-deployment *=nginx:1.9.1 # 将所有 deployment 中的镜像都改成 nginx:1.9.1
+
+# 第四种方式使用命令 kubectl patch 使用补丁的方式修改更新资源的字段
+kubectl patch deployment nginx-deployment --patch '{"spec": {"template": {"spec": {"containers": [{"name": "nginx","image":"nginx:1.9.1"}]}}}}'
+```
+
+### 6.2.3 Deployment 查看历史和回滚
+Deployment 资源中 Pod 信息的更改时，才会记录历史记录，比如修改镜像的名称、版本号等都是记录为历史记录，但是 Deployment 副本的伸缩或者其他非 Pod 信息改动不会记录历史版本，只是会将版本号递增
+
+1. 查看历史记录
+```bash
+# 查看历史记录版本列表，其中结果列 CHANGE-CAUSE 显示的是 delopyment 资源 annotations 属性下的 kubernetes.io/change-cause 属性，如果不存在会显示为 <none>
+# annotations.kubernetes.io/change-cause 属性是执行创建或者更新资源命令添加 --record 参数，才指定增加的属性
+kubectl rollout history deployment test-k8s-deployment
+# 查看历史记录的详细信息需要指定版本，注意只有详细信息里面的属性改动时才会记录历史记录，其他的改动只会改变版本号
+kubectl rollout history deployment test-k8s-deployment --revision=1
+# 查看历史版本详情信息
+kubectl rollout history deployment test-k8s-deployment -oyaml
+```
+2. 回滚
+```bash
+#回滚到指定历史版本
+kubectl rollout undo deployment nginx-deployment --to-revision=1
+```
+
+### 6.2.4 滚动升级
 
 
 
@@ -564,3 +757,4 @@ spec:
 
 ## 参考连接
 1. https://kubernetes.io/zh-cn/docs/concepts/workloads/pods/init-containers/
+2. https://kubernetes.io/zh-cn/docs/tasks/configure-pod-container/configure-pod-configmap/
