@@ -656,7 +656,10 @@ kubectl get replicasets  -o wide
 # 查看 deployment 信息和事件 
 kubectl describe deployment nginx-deployment
 
+# 查看 Depoyment 的状态
+kubectl rollout status deployment nginx-deployment
 ```
+
 5. 删除 Deloyment 
 ```bash
 # 方式一，通过 yaml 文件删除
@@ -666,6 +669,10 @@ kubectl delete -f nginx-deployment.yaml
 kubectl delete depolyment nginx-deloyment
 ```
 
+6. 重启 Deployment 
+```bash
+kubectl rollout restart deployment nginx-deployment
+```
 
 ### 6.2.2 更新 Deployment 
 
@@ -705,6 +712,14 @@ kubectl set image deployment nginx-deployment *=nginx:1.9.1 # 将所有 deployme
 kubectl patch deployment nginx-deployment --patch '{"spec": {"template": {"spec": {"containers": [{"name": "nginx","image":"nginx:1.9.1"}]}}}}'
 ```
 
+3. 暂停和恢复 Pod 资源更新
+```bash
+# 将 deployment 的状态标记为 pause 状态时，更新镜像时则会被暂停，当使用 kubectl rollout resume 命令恢复状态时，会继续执行之前暂停的更新命令
+kubectl rollout pause deployment nginx-deployment
+# 将 Deployment 从 pause 状态恢复到 kubectl rollout status 查看到的状态
+kubectl rollout resume deployment test-k8s-deployment
+```
+
 ### 6.2.3 Deployment 查看历史和回滚
 Deployment 资源中 Pod 信息的更改时，才会记录历史记录，比如修改镜像的名称、版本号等都是记录为历史记录，但是 Deployment 副本的伸缩或者其他非 Pod 信息改动不会记录历史版本，只是会将版本号递增
 
@@ -724,13 +739,28 @@ kubectl rollout history deployment test-k8s-deployment -oyaml
 kubectl rollout undo deployment nginx-deployment --to-revision=1
 ```
 
-### 6.2.4 滚动升级
+### 6.2.4 更新策略(strategy)
+Deployment 控制器提供了两种更新策略，分别是：
+- Recreate  在更新新的 Pod 之前，先把旧的 Pod 全部先删除掉
+- RollingUpdate  滚动更新，根据指定的规则先创建新的 Pod 在删除旧的 Pods
 
+Deployment 默认使用的是 RollingUpdate 策略，它是一种平滑的滚动更新方式，可以保证服务的高可用，使RollingUpdate 策略时，需要设置 maxUnavailable 和 maxSurge 参数值，说明如下：
+- maxUnavailable 表示在更新过程中，最多有多少个 Pod 不可用，值可以是数值或者百分比，默认值是 25%，计算结果向下取整
+- maxSurge 表示在更新过程中，Pod 的个数最大峰值，值可以是数值或者百分比，默认值是 25%，注意计算结果向上取整，跟 maxUnavailable 的取整结果相反
 
-
-
-
-
+列如有 8 个 Pods 需要更新，如果 maxUnavailable 和 maxSurge 都按默认值 25 % 来计算，那么得出以下规则：
+- 在更新过程中，Pods 的数量最大值为 10 = (8 + 8 * 0.25maxSurge)
+- 在更新过程中，Ready 状态 Pods 数量至少大于等于 6 = (8 - 8*0.25maxUnavailable) 
+使用 `kubectl describe deployment nginx-deployment ` 命令查看 Deployment 的升级事件，如下：
+![滚动升级事件](/images/滚动升级事件.png)
+由可以看到滚动升级的过程如下：
+- 启动 maxSurge 个 Pods
+- 关闭 maxUnavailable 个 pods
+- 启动 maxUnavailable 个 Pods 
+- 关闭 1 个 Pod
+- 启动 1 个 Pod 
+- 关闭 1 个 Pod
+- 启动 1 个 Pod，后面一直重复，启动一个关闭一个，直到 Pods 版本更新完成
 
 
 
