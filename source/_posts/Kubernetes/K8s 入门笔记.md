@@ -762,16 +762,98 @@ Deployment 默认使用的是 RollingUpdate 策略，它是一种平滑的滚动
 - 关闭 1 个 Pod
 - 启动 1 个 Pod，后面一直重复，启动一个关闭一个，直到 Pods 版本更新完成
 
+## 7. Service
+k8s 的 Service 资源为 Pods 提供一个网络服务层，主要为解决以下问题：
+- Pods 的重建或者版本更新时 Pod 的名字和 IP 地址都会发生改变的问题
+- 控制流量不转发到非 Ready 状态的 Pods 上的问题
+- Deployment 部署多个副本的 Pods 如何做负载均衡的问题
+
+Service 主要有以下特性：
+- Service 是通过 label 去关联对应的 Pods
+- Servcie 只会监控 Ready 状态的 Pods
+- 提供了负载均衡功能，能自动转发流量到不同 Pod 副本上
+- 集群内所有的 Pods 的内部都可以通过服务名字或者服务的 IP 访问，但在节点中只能使用 IP 访问，注意在 Pod 内部使用服务名访问时，如果是不同的命名空间下，需要在服务名后面加命名空间
+
+### 7.1 Service 资源文件式声明定义
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  # 在其他 Pods 内部可以使用 name 访问 Service 资源负载均衡的 Pods
+  # 如 curl test-k8s:8888 或者 curl test-k8s.default:8888, 服务名作为 host 访问时是由 K8s 的 DNS 组件去解析的
+  name: test-k8s
+spec:
+  # 根据 label 关联 Pods, 并根据 label 实时 Watch Pods 的状态
+  # 如果 Pod 是 Ready 状态，就将 Pod 加入 Service 的 Endpoints 中，不是就将其从 Service 的 Endpoints 中剔除 
+  selector:
+    app: test-k8s-pod
+  # type 支持四种类型分别是 ClusterIP、NodePort、LoadBalancer、ExternalName
+  type: ClusterIP
+  ports:
+    # 本 Service 的端口
+    - port: 8888
+      # Pod 应用的端口
+      targetPort: 80
+      nodePort:   # 节点端口，范围固定 30000 ~ 32767
+# 三个横线表示是将文件分成多个 yamll 文件
+--- 
+apiVersion: v1
+kind: Service
+metadata:
+  name: test-k8s
+spec:
+  selector:
+    app: test-k8s-pod
+  # 表示除了可以通过使用 Service 的名称和IP 访问该 Service 负载均衡的 Pods 外
+  # 还可以通过通过每个节点的 IP 加 nodePort 访问
+  type: NodePort
+  # ports 指定多个端口时，必须指定 name
+  ports:
+    # 本 Service 的端口
+    - port: 8888
+      # Pod 应用的端口
+      targetPort: 80
+      # 节点端口，如果不指定的话，创建时会默认从范围 30000 ~ 32767 中指定一个
+      # 集群节点的端口，注意每一个节点都会监听改端口，所有每个节点的 IP 都可以访问
+      nodePort:  30458
+      name: test-service-001
+    - port: 8889
+      # Pod 应用的端口，如果 Pod 应用的 ports 属性定义 name 则 targetPort 的值也可以设置为 Pod 端口的 name
+      targetPort: 81
+      nodePort: 30459
+      name: test-service-002
+```
+
+Service 资源的的 Type 说明如下：
+- ClusterIP：通过集群的内部 IP 暴露服务，选择该值时服务只能够在集群内部访问。 这也是默认的 ServiceType。
+- NodePort：通过每个节点上的 IP 和静态端口（NodePort）暴露服务。 NodePort 服务的访问实际是路由到自动创建的 ClusterIP 服务上。
+- LoadBalancer：使用云提供商的负载均衡器向外部暴露服务。 外部负载均衡器可以将流量路由到自动创建的 NodePort 服务和 ClusterIP 服务上。
+- ExternalName：通过返回 CNAME 和对应值，可以将服务映射到 externalName 字段的内容（例如，foo.bar.example.com）。 无需创建任何类型代理。
 
 
+### 7.1.2 操作资源的常用命令
+```bash
+# 通过资源配置文件创建资源
+kubectl apply -f [test-service.yaml]
 
+# 查看默认命名空间下的资源信息
+kubectl get service -owide
 
+# 查看服务详情和 Endpoints(Pods 的应用的访问地址)
+kubectl describe svc [资源名]
 
+# 查看服务资源的 endpoints
+kubectl get endpoints
 
+# 根据资源配置文件删除资源
+kebectl delete -f [test-service.yaml]
+# 通过资源名称删除资源
+kubectl delete service [test-service]
+```
 
-
-
-
+## 8. Ingress
+Ingress 为外部访问集群提供了一个 统一 入口，避免了对外暴露集群端口，功能类似 Nginx，可以根据域名、路径把请求转发到不同的 Service 资源。
+![Ingress网络](/images/Ingress-网络.png)
 
 
 
