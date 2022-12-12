@@ -855,7 +855,7 @@ kubectl delete service [test-service]
 Ingress 为外部访问集群提供了一个 统一入口，避免了对外暴露集群端口，可以根据域名、路径把请求转发到不同的 Service 资源。Ingress 资源主要用于定义统一的访问配置和转发规则，去适配不同的负载均衡器，目前支持负载均衡器有 nginx、Haproxy, trafik, lstios 等等。
 
 Ingress 资源只是提供访问转发路由的配置，实际访问配置和负责转发工作的是 Ingress 控制器，也就是底层的负载均衡器，ingress 控制器通过和 k8s API 交互，动态监控 ingress 资源中配置的规则。并将其更新到 ingress 控器 Pod 内的负载均衡应用中。如使用 ningx 控制器(ingress-nginx-controller)时，nginx 控制器通过 k8s API 实时监控 ingress 资源中配置的转发规则，当监控到 ingress 中
-的配置规则时，会生成 nginx 配置文件，然后写到 ingress-nginx-controller 的 Pod 里的 nginx 服务的 nginx.config 文件中。
+的配置规则时，会将 ingress 规则转发 nginx 配置规则，并实时写到 ingress-nginx-controller 的 Pod 里的 nginx 服务的 nginx.config 文件中和在控制器中运行` nginx -s reload `动态实时生效配置。
 
 ![Ingress网络](/images/Ingress-网络.png)
 
@@ -870,17 +870,39 @@ metadata:
     # 表示闭 https 连接，只使用 http 连接
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
 spec:
+  # 如果规则不指定 host 则表示匹配所有域名
   rules:
     - http:
-
+        paths:
+          - path: /hello
+            # 匹配路径的规则有三个可选值，Prefix 表示按路径前缀匹配，区分大小写，Exact 表示全路径精准匹配，区分大小写，ImplementationSpecific 需要 IngressClass 资源来规定匹配规则
+            pathType: Prefix
+            # 指定规则匹配后跳转到的 service 名称和端口
+            backend:
+              # 支持两种写法，第一种写法
+              service:
+                name: test-service
+                port:
+                  number: 3000
+      # host 支持 * 通配符号
+    - host: ecm.jintiantong.com
+      http: 
+        paths:
+          path: /
+          pathType: Prefix
+          backend:
+            # 第二种写法
+            serviceName: test-service-01
+            servicePort: 3000
 ```
 
 ### 8.1 安装 Ingress 控制器
+注意安装 Ingress 控制器的时候，可以更该 Pod 的配置 nodeSelector 表示需要将 Ingress 控制器的 Pod 部署在那个节点，默认是选择部署在有标签 kubernetes.io/os=linux 的节点
 安装 ingress-nginx-controller 其资源文件如下：
+
 <details>
-  <summary>Ingress-nginx-controller资源文件</summary>
-  <pre>
-    <code>apiVersion: v1
+```
+apiVersion: v1
 kind: Namespace
 metadata:
   labels:
@@ -1538,10 +1560,8 @@ webhooks:
     resources:
     - ingresses
   sideEffects: None
-  </code>
-  </pre>
+```
 </details>
-
 
 
 
