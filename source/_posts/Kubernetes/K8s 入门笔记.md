@@ -855,7 +855,9 @@ kubectl delete service [test-service]
 Ingress 为外部访问集群提供了一个 统一入口，避免了对外暴露集群端口，可以根据域名、路径把请求转发到不同的 Service 资源。Ingress 资源主要用于定义统一的访问配置和转发规则，去适配不同的负载均衡器，目前支持负载均衡器有 nginx、Haproxy, trafik, lstios 等等。
 
 Ingress 资源只是提供访问转发路由的配置，实际访问配置和负责转发工作的是 Ingress 控制器，也就是底层的负载均衡器，ingress 控制器通过和 k8s API 交互，动态监控 ingress 资源中配置的规则。并将其更新到 ingress 控器 Pod 内的负载均衡应用中。如使用 ningx 控制器(ingress-nginx-controller)时，nginx 控制器通过 k8s API 实时监控 ingress 资源中配置的转发规则，当监控到 ingress 中
-的配置规则时，会将 ingress 规则转发 nginx 配置规则，并实时写到 ingress-nginx-controller 的 Pod 里的 nginx 服务的 nginx.config 文件中和在控制器中运行` nginx -s reload `动态实时生效配置。
+的配置规则时，会将 ingress 规则转发 nginx 配置规则，并实时写到 ingress-nginx-controller 的 Pod 里的 nginx 服务的 nginx.config 文件中和在控制器中运行` nginx -s reload `动态实时生效配置。外部流量访问时，访问的是 ingress-nginx 控制器中 pod 的 nginx 服务，所以部署 ingress-nginx 控制器时候要指定 Deployment 中 Pod 的网络默认为 host 或者将 Service 中的类型改成 NodePort。
+
+注意Ingress 通过 Service 关联已经是 Ready 状态的 Pods，如下图所示：
 
 ![Ingress网络](/images/Ingress-网络.png)
 
@@ -875,8 +877,7 @@ spec:
     - http:
         paths:
           - path: /hello
-            # 匹配路径的规则有三个可选值，Prefix 表示按路径前缀匹配，区分大小写，Exact 表示全路径精准匹配，区分大小写，ImplementationSpecific 需要 IngressClass 资源来规定匹配规则
-            pathType: Prefix
+            # 匹配路径的规则有三个可选值，Prefix 表示按路径前缀匹配，区分大小写，Exact 表示全路径精准匹配，区分大小写，ImplementationSpecific 匹配方法取决于 IngressClass 即取决于Ingress 控制器
             # 指定规则匹配后跳转到的 service 名称和端口
             backend:
               # 支持两种写法，第一种写法
@@ -897,9 +898,9 @@ spec:
 ```
 
 ### 8.1 安装 Ingress 控制器
-注意安装 Ingress 控制器的时候，可以更该 Pod 的配置 nodeSelector 表示需要将 Ingress 控制器的 Pod 部署在那个节点，默认是选择部署在有标签 kubernetes.io/os=linux 的节点
-安装 ingress-nginx-controller 其资源文件如下：
+注意安装 Ingress 控制器的时候，可以更该 Pod 的配置 nodeSelector 表示需要将 Ingress 控制器的 Pod 部署在那个节点，默认是选择部署在有标签 kubernetes.io/os=linux 的节点，注意要将 ingress 控制器的 Pod 应用网络默认改成 host 默认，不然无法访问到 ingress 控制器里面的负载均衡器的。
 
+安装 ingress-nginx-controller 其资源文件如下：
 <details>
 ```
 apiVersion: v1
