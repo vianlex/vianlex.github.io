@@ -898,9 +898,9 @@ spec:
 ```
 
 ### 8.1 安装 Ingress 控制器
-注意安装 Ingress 控制器的时候，可以更该 Pod 的配置 nodeSelector 表示需要将 Ingress 控制器的 Pod 部署在那个节点，默认是选择部署在有标签 kubernetes.io/os=linux 的节点，注意要将 ingress 控制器的 Pod 应用网络默认改成 host 默认，不然无法访问到 ingress 控制器里面的负载均衡器的。
+注意安装 Ingress 控制器的时候，可以更该 Pod 的配置 nodeSelector 表示需要将 Ingress 控制器的 Pod 部署在那个节点，默认是选择部署在有标签 kubernetes.io/os=linux 的节点
 
-安装 ingress-nginx-controller 其资源文件如下：
+注意要将 ingress-nginx-controller 配置文件中的 Deployment 资源中将 Pods 网络默认改成 host 默认，或者 Service 资源的类型改成 NodePort, 不然无法访问到 ingress 控制器里面的负载均衡器的。安装 ingress-nginx-controller 的资源文件如下：
 <details>
 ```
 apiVersion: v1
