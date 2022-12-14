@@ -28,13 +28,13 @@ MySql 是从8.0版本之后开始支持开窗函数，开窗函数也叫分析�
  - ORDER BY 子句：按照指定字段排序 partition by 子句分组的数据，如果没有指定 partition by 则排序全部数据
  - [ROWS | RANGE] BETWEEN frame_start AND frame_end 子句：在 PARTITION 分区的基础，再划分子分区
     - ROWS: ROWS 划定的子分区是以当前行为基准，前后偏移行数的范围
-    - RANGE: 根据当前行的值划分子分区，注意分区没有 ORDER BY 的话，只能使用 `RANGE BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING`  
+    - RANGE: 根据当前行的值划分子分区，注意如果使用 expr PRECEDING/FOLLOWING 必须要 ORDER BY 一个数字或者时间类型的字段
     - 子分区 frame_start(起始边界行)、frame_end(结束边界行) 可选值如下：
         - CURRENT ROW：对于 ROWS 而言，以当前行作为边界行，对于 RANGE 而言，与当前行的值相同的都作为边界行
         - UNBOUNDED PRECEDING：以 PARTITION 分区的第一行作为起始边界行
         - UNBOUNDED FOLLOWING：以 PARTITION 分区的最后一行作为终点边界行
-        - expr PRECEDING：对于 ROWS 而言 expr 值只能为数字，边界行是当前行的前前几行，对于 RANGE 而言 expr 值可以是数字或者时间表达式，行值等于大于当前行的值减去表达式的值所得值的即为边界行
-        - expr FOLLOWING：FOLLOWING 根据 PRECEDING 相对的，对于 ROWS 而言边界行是当前行的后几行，对于 RANGE 而言，行值等于小于当前行的值加上表达的值所得值即为边界行
+        - expr PRECEDING：对于 ROWS 而言 expr 值只能为数字，边界行是当前行的前前几行，对于 RANGE 而言 expr 值可以是数字或者时间表达式，行值等于大于ORDER BY 字段当前行的值减去表达式的值所得值的即为边界行
+        - expr FOLLOWING：FOLLOWING 根据 PRECEDING 相对的，对于 ROWS 而言边界行是当前行的后几行，对于 RANGE 而言，行值等于小于 ORDER BY 字段当前行的值加上 expr 表达式的值即为边界行
 ## 例子说明
 1. 语法例子
 ```sql
@@ -89,20 +89,45 @@ SELECT 4000 AS salary
 | 3000 | 5 | 4 | 3 | 
 | 4000 | 6 | 6 | 4 | 
 
+3. range 子分区窗口使用说明
+```SQL
+/* 注意 range 是 parition by 分区下的子分区，如果没有 paritiion by 则默认是所有记录下的子分析，
+使用 expr following 必须要 order by 时间或者数字类型的字段 */
+SELECT 
+   `name`,`month`, `salary`,
+   /*  在 month 分区下，计算子分区为(当前行month值 <= month <= 当前行month值 + 1)内的行 */
+   SUM(salary) OVER(PARTITION BY month ORDER BY month RANGE BETWEEN CURRENT ROW AND 1 FOLLOWING) orderMonth,
+   /*  在 month 分区下，计算子分区(当前行salary的值 <= salary <= 当前行salary值+100  )内的行 */
+   SUM(salary) OVER(PARTITION BY month ORDER BY salary RANGE BETWEEN CURRENT ROW AND 100 FOLLOWING) orderSalary,
+   /*  没有 parition by 则表示，在所有记录的分区下，计算子分区(当前行month值 <= month <= 当前行month值 + 1)内的行 */
+	SUM(salary) OVER(ORDER BY month RANGE BETWEEN CURRENT ROW AND 1 FOLLOWING)
+FROM (
+SELECT '李思' AS `name`, 300 AS salary, 1 AS `month`
+UNION ALL 
+SELECT '张三' AS `name`, 300 AS salary, 1 AS `month`
+UNION ALL
+SELECT '李思' AS `name`, 300 AS salary, 2 AS `month`
+UNION ALL 
+SELECT '张三' AS `name`, 350 AS salary, 2 AS `month`
+UNION ALL 
+SELECT '小鱼' AS `name`, 300 AS salary, 1 AS `month`
+UNION ALL 
+SELECT '小鱼' AS `name`, 400 AS salary, 2 AS `month`
+UNION ALL
+SELECT '小明' AS `name`, 300 AS salary, 1 AS `month`
+UNION ALL 
+SELECT '小明' AS `name`, 450 AS salary, 2 AS `month`
+) t
+```
 
-3. rows 和 range 分段窗口区别
+3. rows 子分区窗口使用说明
 ```sql
 SELECT 
-	`name`,`month`, `salary`,
-	SUM(salary) OVER(PARTITION BY `month`) AS month_salary,
-	SUM(salary) OVER(PARTITION BY `month` 
-	 ORDER BY salary
-	 rows between unbounded preceding AND 2 following )  AS rows_segment_salary,
-     SUM(salary) OVER(PARTITION BY `month` 
-	 ORDER BY salary
-	 range between unbounded preceding AND 2 following )  AS range_segment_salary
+   `month`, `salary`,
+   /*在 month 分区下，计算的子分区为当前行和（当前行 + 1）行范围内的行 */
+   SUM(salary) OVER(PARTITION BY `month` ORDER BY `month` ROWS BETWEEN CURRENT ROW AND 1 FOLLOWING)
 FROM (
-SELECT '李思' AS `name`, 200 AS salary, '1月份' AS `month`
+SELECT '李思' AS `name`, 300 AS salary, '1月份' AS `month`
 UNION ALL 
 SELECT '张三' AS `name`, 300 AS salary, '1月份' AS `month`
 UNION ALL
