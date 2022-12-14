@@ -124,8 +124,12 @@ SELECT '小明' AS `name`, 450 AS salary, 2 AS `month`
 ```sql
 SELECT 
    `month`, `salary`,
-   /*在 month 分区下，计算的子分区为当前行和（当前行 + 1）行范围内的行 */
-   SUM(salary) OVER(PARTITION BY `month` ORDER BY `month` ROWS BETWEEN CURRENT ROW AND 1 FOLLOWING)
+   ROW_NUMBER() OVER(),
+   SUM(salary) OVER(ROWS BETWEEN CURRENT ROW AND 1 FOLLOWING),
+   /*在 month 分区下，计算的子分区的范围是(当前行的row_number  <= row_number <= 当前行的row_number + 1)之间的行*/
+   SUM(salary) OVER(PARTITION BY `month` ORDER BY `month` ROWS BETWEEN CURRENT ROW AND 1 FOLLOWING),
+   ROW_NUMBER() OVER(PARTITION BY `month` ORDER BY `month` )
+
 FROM (
 SELECT '李思' AS `name`, 300 AS salary, '1月份' AS `month`
 UNION ALL 
