@@ -1592,12 +1592,25 @@ kube-scheduler 给一个 Pod 做调度时包含两个阶段：
 - 过滤，过滤阶段会将所有满足 Pod 调度需求的节点选出来。
 - 打分，打分阶段，调度器会为 Pod 从所有可调度节点中选取一个最合适的节点。 根据当前启用的打分规则，调度器会给每一个可调度节点进行打分。最后，kube-scheduler 会将 Pod 调度到得分最高的节点上。 如果存在多个得分最高的节点，kube-scheduler 会从中随机选取一个。
 
-### 9.2 节点选择器
-在 Pods 资源配置文件，通过 nodeSelector 选择带有指定标签的节点，k8s 会将 Pod 调度到特定节点或节点组上，nodeSelector 节点选择器 k8s 是最简单的调度方式。
+
+### 9.2 控制 k8s 调度
+一般情况下 Pods 会部署在哪些 node 上，我们并不需要去关心和控制，kube-scheduler 会自动进行合理的调度。但是有时候，我们想去控制 pods 调度部署到指定的 node 节点上时，可以通过 nodeSelector 选择或者亲和性和反亲和性的配置去控制 pods 的调度。
+
+#### 9.2.1 nodeSelector 节点选择
+在 Pods 资源配置文件，通过 nodeSelector 选择带有指定标签的节点，k8s 会将 Pod 调度到特定节点或节点组上，nodeSelector 节点选择器是限制 k8s 调度最简单的一种方式。
+
+#### 9.2.1  nodeAffinity 节点亲和性
+nodeselector 是一种比较简单的控制 k8s 调度的方式，如果想控制粒度更细致的话，则需要用到 nodeAffinity(节点亲和性)定义策略去控制。注意， 如果配置了 nodeSelector 和 nodeAffinity，那么两者必须都要满足， 才能将 Pod 调度到候选节点上。亲和性的调度可以分成软策略和硬策略两种方式，如下：
+- requiredDuringSchedulingIgnoredDuringExecution 硬策略，表示只会将 pods 调度到满足策略的节点上，如果没有满足策略的节点，将会一直重试匹配策略直到有满足策略的节点出现才调度部署 pods。 
+- preferredDuringSchedulingIgnoredDuringExecution 软策略，表示如果你没有满足调度要求的节点的话，pod 就会忽略这条规则，继续完成调度过程，说白了就是满足条件最好了，没有的话也无所谓了的策略
 
 
-### 9.3 亲和性和反亲和性
 
+
+
+
+
+亲和性、反亲和性比 nodeSelector 属性提供了对选择逻辑的更强控制能力。
 
 
 
