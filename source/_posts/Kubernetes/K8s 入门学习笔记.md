@@ -1594,27 +1594,61 @@ kube-scheduler 给一个 Pod 做调度时包含两个阶段：
 
 
 ### 9.2 控制 k8s 调度
-一般情况下 Pods 会部署在哪些 node 上，我们并不需要去关心和控制，kube-scheduler 会自动进行合理的调度。但是有时候，我们想去控制 pods 调度部署到指定的 node 节点上时，可以通过 nodeSelector 选择或者亲和性和反亲和性的配置去控制 pods 的调度。
+一般情况下 Pods 会部署在哪些 node 上，我们并不需要去关心和控制，kube-scheduler 会自动进行合理的调度。但是有时候，我们想去控制 pods 调度部署到指定的 node 节点上时，可以通过 nodeSelector 选择或者亲和性和反亲和性的配置去控制 pods 的调度。**注意 nodeselector 和亲和性都是通过标签匹配的**。
 
 #### 9.2.1 nodeSelector 节点选择
 在 Pods 资源配置文件，通过 nodeSelector 选择带有指定标签的节点，k8s 会将 Pod 调度到特定节点或节点组上，nodeSelector 节点选择器是限制 k8s 调度最简单的一种方式。
 
 #### 9.2.1  nodeAffinity 节点亲和性
-nodeselector 是一种比较简单的控制 k8s 调度的方式，如果想控制粒度更细致的话，则需要用到 nodeAffinity(节点亲和性)定义策略去控制。注意， 如果配置了 nodeSelector 和 nodeAffinity，那么两者必须都要满足， 才能将 Pod 调度到候选节点上。亲和性的调度可以分成软策略和硬策略两种方式，如下：
+nodeselector 是一种比较简单的控制 k8s 调度的方式，如果想控制粒度更细致的话，则需要用到 nodeAffinity(节点亲和性)定义策略去控制。亲和性的调度可以分成软策略和硬策略两种方式，如下：
 - requiredDuringSchedulingIgnoredDuringExecution 硬策略，表示只会将 pods 调度到满足策略的节点上，如果没有满足策略的节点，将会一直重试匹配策略直到有满足策略的节点出现才调度部署 pods。 
-- preferredDuringSchedulingIgnoredDuringExecution 软策略，表示如果你没有满足调度要求的节点的话，pod 就会忽略这条规则，继续完成调度过程，说白了就是满足条件最好了，没有的话也无所谓了的策略
+- preferredDuringSchedulingIgnoredDuringExecution 软策略，表示会优先将 pods 调度到满足策略的节点上，如果没有满足策略的节点，k8s 也会自动调度到不满足策略的节点上。
 
+labels 标签在 K8s 中是一个很重要的概念，k8s 资源之间的关联都是通过 label 来实现的如 Service、Deployment、Pods 之间的关联。节点亲和性控制 pods 的调度也是通过匹配 node 节点标签来实现，亲和性匹配 labels 语法支持的运算符有：In、NotIn、Exists、DoesNotExist、Gt、Lt。 
 
+nodeAffinity 节点亲和性使用例子如下：
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: test-node-affinity
+spec:
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        # 支持多个匹配表达式(matchExpressions)，表达式之间属于 or 的关系
+        nodeSelectorTerms:
+          # 支持匹配多个 key，多个 key 的匹配规则是 and 的关系
+        - matchExpressions:
+            # 匹配标签 key 等于 topology.kubernetes.io/zone 且标签值等于 antarctica-east1 或 antarctica-west1 的节点
+          - key: topology.kubernetes.io/zone
+            operator: In
+            values:
+            - antarctica-east1
+            - antarctica-west1
+            # 匹配标签 key 等于 node.kubernetes.io/host 且标签值等于 192.168.204.3 或 192.168.204.4 的节点
+          - key: node.kubernetes.io/host
+            operator: In
+            values:
+            - 192.168.204.3
+            - 192.168.204.4
+      preferredDuringSchedulingIgnoredDuringExecution:
+      - weight: 1
+        preference:
+          matchExpressions:
+          - key: another-node-label-key
+            operator: In
+            values:
+            - another-node-label-value
+  containers:
+  - name: test-node-affinity
+    image: nginx:latest
+```
 
-
-
-
-
-亲和性、反亲和性比 nodeSelector 属性提供了对选择逻辑的更强控制能力。
-
-
-
-
+**注意多条件匹配规则如下**：
+- 如果你同时指定了 nodeSelector 和 nodeAffinity，两者 必须都要满足， 才能将 Pod 调度到候选节点上。
+- 如果你在与 nodeAffinity 类型关联的 nodeSelectorTerms 中指定多个条件， 只要其中一个 nodeSelectorTerms 满足（各个条件按逻辑或操作组合）的话，Pod 就可以被调度到节点上。
+- 如果你在与 nodeSelectorTerms 中的条件相关联的单个 matchExpressions 字段中指定多个表达式， 则只有当所有表达式都满足（各表达式按逻辑与操作组合）时，Pod 才能被调度到节点上。
 
 
 
