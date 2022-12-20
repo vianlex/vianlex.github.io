@@ -1,5 +1,5 @@
 ---
-title: K8s 入门笔记
+title: K8s 入门学习笔记
 ---
 ## 1. 介绍
 Kubernetes 的简称 K8s，Kubernetes 是 Google 开源的容器编排工具。kubernetes 的本质是一组服务器集群，集群的每个节点上运行特定的程序组件，通过组件去实现资源管理的自动化。
@@ -517,7 +517,9 @@ spec:
         # 定义环境变量 db_url
         - name: db_url
           value: jdbc://mysql/xxx//xx/xx
+        # 定义环境变量 test-env-json 
         - name: test-env-json  
+          # | 符号，表示值可以换行和值中保留换行符号        
           value: | 
             {
               "hello":90
@@ -535,6 +537,17 @@ spec:
             configMapKeyRef:
               name: test-web-config
               key: redis_port
+          # 定义环境变量
+        - name: apiversion
+          # 将 Pod 信息存到环境变量中 
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+          # 环境变量中获取 Pod IP
+        - name: pod_ip
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
       volumeMounts:
         - name: config-file-demo
           mountPath: "/etc/web-config"
@@ -869,6 +882,8 @@ kind: Ingress
 metadata:
   name: hello-ingress
   annotations:
+    # 指定要使用的控制器类，ingress-nginx 控制器需要在 pods 容器的启动参数中设置 –-ingress-class=nginx 
+    kubernetes.io/ingress.class: nginx 
     # 表示闭 https 连接，只使用 http 连接
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
 spec:
@@ -900,7 +915,11 @@ spec:
 ### 8.1 安装 Ingress 控制器
 注意安装 Ingress 控制器的时候，可以更该 Pod 的配置 nodeSelector 表示需要将 Ingress 控制器的 Pod 部署在那个节点，默认是选择部署在有标签 kubernetes.io/os=linux 的节点
 
-注意要将 ingress-nginx-controller 配置文件中的 Deployment 资源中将 Pods 网络默认改成 host 默认，或者 Service 资源的类型改成 NodePort, 不然无法访问到 ingress 控制器里面的负载均衡器的。安装 ingress-nginx-controller 的资源文件如下：
+注意要将 ingress-nginx-controller 配置文件中的 Deployment 资源中将 Pods 网络默认改成 host 模式，或者 Service 资源的类型改成 NodePort, 如果 service 资源需要安装一个LB(负载均衡器，可以使用开源的 MetalLB)，通过 LB 在将流量转发到集群内部的Serive ClusterIP, 不然无法访问到 ingress 控制器里面的负载均衡器的。
+
+注意 ingress-nginx-controller 资源安装文件中，可以 Pod 的控制器由 Deployment 改成 DaemonSet 控制，Pod 使用 host 模式时可以删除 service 资源配置不创建 Service 资源。
+
+安装 ingress-nginx-controller 的资源文件如下：
 <details>
 ```
 apiVersion: v1
@@ -1563,6 +1582,21 @@ webhooks:
   sideEffects: None
 ```
 </details>
+
+
+## 9.0 Pods 调度
+调度指的是将 Pod 部署到合适的节点上，kube-scheduler 是 Kubernetes 集群的默认调度器。
+
+### 9.1 kube-scheduler 调度器
+kube-scheduler 给一个 Pod 做调度时包含两个阶段：
+- 过滤，过滤阶段会将所有满足 Pod 调度需求的节点选出来。
+- 打分，打分阶段，调度器会为 Pod 从所有可调度节点中选取一个最合适的节点。 根据当前启用的打分规则，调度器会给每一个可调度节点进行打分。最后，kube-scheduler 会将 Pod 调度到得分最高的节点上。 如果存在多个得分最高的节点，kube-scheduler 会从中随机选取一个。
+
+### 9.2 节点选择器
+在 Pods 资源配置文件，通过 nodeSelector 选择带有指定标签的节点，k8s 会将 Pod 调度到特定节点或节点组上，nodeSelector 节点选择器 k8s 是最简单的调度方式。
+
+
+### 9.3 亲和性和反亲和性
 
 
 
