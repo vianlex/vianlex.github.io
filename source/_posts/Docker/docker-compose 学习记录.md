@@ -1,5 +1,5 @@
 ---
-title: docker-compose 学习记录
+title: Docker-compose 学习记录
 ---
 
 ## docker-compose 介绍
