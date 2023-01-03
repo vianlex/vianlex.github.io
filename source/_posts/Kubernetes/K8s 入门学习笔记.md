@@ -875,7 +875,7 @@ Ingress 资源只是提供访问转发路由的配置，实际访问配置和负
 ![Ingress网络](/images/Ingress-网络.png)
 
 ### 8.2 Ingress 
-Ingress 资源文件定义
+Ingress 资源文件定义如下，注意 k8s 在 1.18 版本之前可以使用注解指定使用那种控制器，1.18 版本之后使用 ingressClassName
 ```yaml
 apiVersion: networking.k8s.io/v1
 kind: Ingress
@@ -1632,6 +1632,10 @@ spec:
             values:
             - 192.168.204.3
             - 192.168.204.4
+          - key: node.kubernetes.io/disk
+            operator: Exists
+            values:
+            - ssd
       preferredDuringSchedulingIgnoredDuringExecution:
       - weight: 1
         preference:
@@ -1651,11 +1655,68 @@ spec:
 - 如果你在与 nodeSelectorTerms 中的条件相关联的单个 matchExpressions 字段中指定多个表达式， 则只有当所有表达式都满足（各表达式按逻辑与操作组合）时，Pod 才能被调度到节点上。
 
 
+### 9.2.2 Pod 间亲和性与反亲和性
+Pod 间亲和性与反亲和性与 Node 节点的亲和性类似，也有两种策略类型，不同的是 requiredDuringSchedulingIgnoredDuringExecution 用来设置亲和性，preferredDuringSchedulingIgnoredDuringExecution 用来设置反亲和性。实际使用例子如下：
 
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: with-pod-affinity
+spec:
+  affinity:
+    # pod 亲和性
+    podAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+      - labelSelector:
+          matchExpressions:
+            # 注意匹配该标签要匹配的是 Pods 的标签
+          - key: security
+            operator: In
+            values:
+            - S1
+        topologyKey: topology.kubernetes.io/zone
+    # pod 反亲和性
+    podAntiAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+      - weight: 100
+        podAffinityTerm:
+          labelSelector:
+            matchExpressions:
+            - key: security
+              operator: In
+              values:
+              - S2
+          topologyKey: topology.kubernetes.io/zone
+  containers:
+  - name: with-pod-affinity
+    image: nginx:latest
+```
 
+### 9.2.3 污点（taints）与容忍（tolerations）
+nodeSelector 或者 nodeAffinity(节点亲和性)都是想要将 Pods 调度到预期的节点上，taints(污点)则恰好与之相反，如果将一个 node 节点标记为 taints ，则 Pods 将不会调度到该 node 节点上，除非 Pods 标识为可以容忍污点。
 
+1. 查看节点是否有污点(taints)标签
+```bash
+# 如果 node 节点 taints 属性不为 <node> 说明已经有污点标签
+kubectl describe node | grep -i taints
+# 或者
+kubectl describe node k8s-node01 | grep -i taints
+```
+2. 将为节点打上污点
+```bash
+# 为 k8s-node01 节点打上 key1=value1 标签节点，并驱逐 k8s-node01 节点上的 Pods 到其他 node 节点上，并且新的 Pods 如果未设置污点容忍，则无法调度到此节点。 
+kubectl taint nodes k8s-node01 key1=value1:NoExecute
+# 为 k8s-node01 节点打上 key=value1 标签，不驱逐 k8s-node01 节点上的 Pods, 新的 Pods 如果未设置污点容忍，则无法调度到此节点。 
+kubectl taint nodes k8s-node01 key1=value1:NoSchedule
 
-
+# 查看 node 节点是否已经打上污点标签
+kubectl describe node k8s-node01 | grep -i taints
+```
+3. 删除节点污点标签
+```bash
+kubectl taint nodes k8s-node01 key1=value1:NoExecute-
+```
 
 
 ## 参考连接
