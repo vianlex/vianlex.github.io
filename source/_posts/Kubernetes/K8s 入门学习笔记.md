@@ -1655,7 +1655,7 @@ spec:
 - 如果你在与 nodeSelectorTerms 中的条件相关联的单个 matchExpressions 字段中指定多个表达式， 则只有当所有表达式都满足（各表达式按逻辑与操作组合）时，Pod 才能被调度到节点上。
 
 
-### 9.2.2 Pod 间亲和性与反亲和性
+#### 9.2.2 Pod 间亲和性与反亲和性
 Pod 间亲和性与反亲和性与 Node 节点的亲和性类似，也有两种策略类型，不同的是 requiredDuringSchedulingIgnoredDuringExecution 用来设置亲和性，preferredDuringSchedulingIgnoredDuringExecution 用来设置反亲和性。实际使用例子如下：
 
 ```yaml
@@ -1693,7 +1693,7 @@ spec:
     image: nginx:latest
 ```
 
-### 9.2.3 污点（taints）与容忍（tolerations）
+#### 9.2.3 污点（taints）与容忍（tolerations）
 nodeSelector 或者 nodeAffinity(节点亲和性)都是想要将 Pods 调度到预期的节点上，taints(污点)则恰好与之相反，如果将一个 node 节点标记为 taints ，则 Pods 将不会调度到该 node 节点上，除非 Pods 标识为可以容忍污点。
 
 1. 查看节点是否有污点(taints)标签
@@ -1717,6 +1717,25 @@ kubectl describe node k8s-node01 | grep -i taints
 ```bash
 kubectl taint nodes k8s-node01 key1=value1:NoExecute-
 ```
+
+## 10. Helm 
+
+Helm 是部署 Kubernetes 应用包管理工具，通过 Helm Chart 就能实现 Pods, Deployment, Service 等资源自动化部署。Helm Chart 可以手动创建，也可以从 Helm 仓库查找和使用别人配置好的 Helm Chart。
+
+### 10.1 安装 Helm
+#### 10.1.1 离线安装包安装
+1. 下载对应系统的安装 `https://github.com/helm/helm/releases` 这里下载的是 `linux-amd64.tar.gz`
+2. 解压离线包 `tar -zxvf linux-amd64.tar.gz`
+3. 将解压后的 helm 可执行文件复制到 `/usr/local/bin` 或者 `/usr/bin` 目录
+4. 验证是否安装成功 `helm help`
+
+### 10.2 手动创建 Helm Chart
+
+
+
+
+
+
 
 
 ## 参考连接
