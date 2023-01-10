@@ -1,5 +1,5 @@
 ---
-title: docker 安装笔记
+title: Docker 安装笔记
 ---
 ## 使用 YUM 命令安装
 1. 安装 docker 依赖软件

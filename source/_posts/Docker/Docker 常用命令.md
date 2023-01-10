@@ -12,13 +12,44 @@ docker images 语法格式 `docker images [OPTIONS] [REPOSITORY[:TAG]]`，可选
 # 查看所有镜像
 docker images 
 
-# 只查看某个镜像 docker images [REPOSITORY[:TAG]]
-docker images nginx # 查看所有版本
-docker images nginx:latest
+# 根据 <REPOSITORY>[:TAG] 显式的过滤查看镜像，注意当使用 * 模糊匹配时，无法匹配 / 符号，如匹配 vianlex/nginx:dev-latest 镜像，支持以下方式匹配
+docker images vianlex/nginx
+docker images vianlex/nginx:dev-latest
+docker images "*/nginx*"
+docker images "*/nginx:dev-*"
+
 
 # 只是查看镜像的 id
 docker images -q
+
+# 匹配标签(tag)为<none>的镜像
+docker images -f="dangling=true"
+
+# 根据 reference=<REPOSITORY>[:TAG] 模糊匹配镜像，注意匹配时，reference=<REPOSITORY>[:TAG] 中的 / 符号不能无法使用 * 模糊匹配，如匹配镜像 vianlex/nginx:dev-latest
+docker images -f="reference=*/nginx" 或者 docker images -f "reference=*/nginx"
+docker images -f=reference="*/nginx" 或者 docker images -f  reference="*/nginx" 
+#或者
+docker images -f="reference=*/nginx:dev-*"
+docker images -f=reference="*/nginx:dev-*"
+
+# 根据 before 或者 since 过滤镜像，格式为 before=<REPOSITORY>[:TAG] 或者 before=image-id
+docker images -f before="eb4d124f64cd" # 根据镜像 ID 查找创建时间大的镜像
+docker images -f since="vianlex/nginx:dev-latest" # 根据镜像名称查找创建时间小的镜像
+
+# 根据 label=<key> 或者 label=<key>=<value> 过滤镜像，label 是在 dockerfile 中定义的，可以使用 docker inpsect 命令可以查看镜像的 labels
+docker images -f="label=version"
+#或者
+docker images -f="label=version=v1"
+
+# 格式镜像列表的输出格式
+docker images --format "{{.Repository}} -- {{.ID}} -- {{.Size}}"
+# 或者
+docker images --format "{{.Repository}} {{.ID}} {{.Size}} {{.di}}"
+# 或者 
+docker images --fotmat "{{.ID}}"
 ```
+
+
 ### 2. docker rmi 命令删除 docker 镜像
 docker rmi 命令语法格式：`docker rmi [ repository:tag | imageId  ] `，可选参数 -f 指定强制删除
 ```bash
