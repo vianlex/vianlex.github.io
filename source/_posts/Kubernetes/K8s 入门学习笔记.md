@@ -1720,16 +1720,22 @@ kubectl taint nodes k8s-node01 key1=value1:NoExecute-
 
 ## 10. Helm 
 
-Helm 是部署 Kubernetes 应用包管理工具，通过 Helm Chart 就能实现 Pods, Deployment, Service 等资源自动化部署。Helm Chart 可以手动创建，也可以从 Helm 仓库查找和使用别人配置好的 Helm Chart。
+Helm 是部署 Kubernetes 应用包管理工具，比如有多个应用服务，部署的时候如果不使用 Helm 则需要手动的一个个的编写 Pods, Deployment, Service 等资源文件，相当繁琐，并且版本更新的时候也繁琐。Helm 是使用 Chart 将 Pods, Deployment, Service 等资源的 yaml 文件作为一个整体管理，相当于 docker 去管理 image 一样，我们可以自己创建 Chart ，也可以从 Helm 仓库查找和使用别人配置好的 Chart。
 
-### 10.1 安装 Helm
-#### 10.1.1 离线安装包安装
+### 10.1 Helm 的三个重要概念
+- Helm 是命令行工具
+- Chart 应用服务的资源的 yaml 配置文件集合
+- Release 是 Chart 的部署实体，运行部署使用命令` helm install ` 
+
+### 10.2 安装 Helm
+#### 10.2.1 离线安装包安装
 1. 下载对应系统的安装 `https://github.com/helm/helm/releases` 这里下载的是 `linux-amd64.tar.gz`
 2. 解压离线包 `tar -zxvf linux-amd64.tar.gz`
 3. 将解压后的 helm 可执行文件复制到 `/usr/local/bin` 或者 `/usr/bin` 目录
 4. 验证是否安装成功 `helm help`
 
-### 10.2 手动创建 Helm Chart
+### 10.3 Helm Chart 常用命令
+
 
 
 
