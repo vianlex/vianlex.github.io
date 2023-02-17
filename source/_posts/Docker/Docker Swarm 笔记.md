@@ -44,8 +44,8 @@ docker swarm remove
 ```
 
 
-## Swarm 中部署服务
-1. 通过 ` docker service create `命令创建服务，命令语法格式：`docker service create <--name 服务名字> <--replicas task副本数> <image> [容器运行后要执行的命令]`，常用可选参数如下：
+## 部署服务
+通过 ` docker service create `命令可以快速部署服务，该命令语法格式为：`docker service create <--name 服务名字> <--replicas task副本数> <image> [容器运行后要执行的命令]`，常用可选参数如下：
 - --name 指定服务的名字
 - --replicas 指定 Task 的副本数量
 -  -w, --workdir 指定容器的工作目录
@@ -56,6 +56,7 @@ docker swarm remove
 - --update-parallelism 每次并发更新的任务数量
 - --mode 指定服务的运行模式可选值有：replicated(按一定规则调度 task 到合适的 node), global(每个工作节点都运行一个 task), replicated-job, global-job
 
+1. 创建服务
 ```bash
 # 创一个名 test-swarm 的服务，运行2个副本任务容器
 docker service create --name test-swarm  -p 2000:80  --replicas 2 nginx:latest
@@ -102,8 +103,8 @@ docker service rm test-swarm
 docker service logs -f --tail=200 test-swarm
 ```
 
-## 使用 docker stack 和 docker-compose 文件部署多个服务
-docker stack 是 docker serice 在基础上封装了一层，一个 stack 管理着多个 serivces，docker stack 常用命令如下：
+## 部署多个服务
+批量部署多个服务需要使用 docker stack 命令和 docker-compose.yaml 配置文件，docker stack 是 docker serice 在基础上封装了一层，一个 stack 管理着多个 serivces，docker stack 常用命令如下：
 - docker stack deploy 部署或者更新 stack 
 - docker stack ls 查看已部署的 stack 列表
 - docker stack ps 查看 stack 部署的服务下的任务列表  
@@ -144,15 +145,11 @@ services:
 docker stack -c docker-compose.yml mystack 
 ```
 
-
-
-
-
 ## 服务发现和负载均衡
 Service 相当于它的所有 Task 的一个反向代理，Service 的服务发现和负载均衡是利用 Linux 内核的 iptables 和 IPVS 的功能来实现。
 
 
-Docker Swarm 提供了网格路由(routing mesh)功能，并且所有的节点包含工作节点(worker)和管理节点(manager)都参与到网格路由中。当服务通过 --publish 暴露端口时，在网格路由(routing mesh)模式下，所有的节点都是监听该端口，因此访问集群中的任何节点都可以访问到服务。 如果不想每个节点都监听端口，则指定 host 模式，来禁用路由网格，如 `--publish published=8080,target=80,mode=host `。
+Docker Swarm 提供了网格路由(routing mesh)功能，并且所有的工作节点(worker)和管理节点(manager)都参与到网格路由中。当部署的服务通过 `--publish` 暴露端口时，由于所有的节点都在网格路由(routing mesh)中，所以全部的节点都会是监听` --publish `暴露的端口，因此访问集群中的任何节点都可以访问到服务。 如果不想每个节点都监听服务暴露的端口，则需要将暴露的模式指定为 host 模式，来禁用路由网格，如 `--publish published=8080,target=80,mode=host `。
 ![网格路由](/images/docker-swarm网络路由.png)
 
 
