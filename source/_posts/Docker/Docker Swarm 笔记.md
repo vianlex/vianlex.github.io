@@ -35,12 +35,13 @@ docker node ls
  docker swarm join-token manager
 ```
 3. 节点脱离 swarm 集群
+```bash
+# -- force 表示强制离开集群
+docker swarm leave [--force]
 ```
-docker swarm leave
-```
-4. 删除集群节点
-```
-docker swarm remove
+4. 删除集群某个节点
+```bash
+docker node remove <节点名称|节点ID>
 ```
 
 
@@ -60,6 +61,8 @@ docker swarm remove
 ```bash
 # 创一个名 test-swarm 的服务，运行2个副本任务容器
 docker service create --name test-swarm  -p 2000:80  --replicas 2 nginx:latest
+
+ endpoint_mode=dnsrr
 ```
 2. 查看正在运行的 services，使用如下命令
 ```bash
@@ -146,11 +149,14 @@ docker stack -c docker-compose.yml mystack
 ```
 
 ## 服务发现和负载均衡
-Service 相当于它的所有 Task 的一个反向代理，Service 的服务发现和负载均衡是利用 Linux 内核的 iptables 和 IPVS 的功能来实现。
+Service 相当于它的所有 Task 的一个反向代理，Service 的服务发现和负载均衡是利用 Linux 内核的 iptables 和 IPVS 的功能来实现。Docker Swarm 提供了两种不同机制的服务发现，分别是：
+- VIP(Virtual IP)：Swarm 创建应用服务时，会创建一个应用服务的虚拟 IP，Docker 内嵌的 DNS 服务会维护该虚拟 IP 和应用服务名记录，同时在每个应用服务容器内创建一个 ingress_sbox 网络命令空间，然后利用 Linux 内核的 iptables 和 IPVS 在 ingress_sbox 网络命名空间通过 VIP 转发请求到服务容器的 IP，从而实现负载均衡。 
+- DRR(DNS round-robin)：通过 Docker 引擎提供的内嵌 DNS 服务，维护服务名对应 task 容器的 IP 地址列表，当前请求访问服务时，Docker DNS 解析服务名，获取服务所有任务容器的 IP 地址列表，然后将请求转发到其中任意一个(一般默认是第一)，从而实现负载均衡。
 
-
-Docker Swarm 提供了网格路由(routing mesh)功能，并且所有的工作节点(worker)和管理节点(manager)都参与到网格路由中。当部署的服务通过 `--publish` 暴露端口时，由于所有的节点都在网格路由(routing mesh)中，所以全部的节点都会是监听` --publish `暴露的端口，因此访问集群中的任何节点都可以访问到服务。 如果不想每个节点都监听服务暴露的端口，则需要将暴露的模式指定为 host 模式，来禁用路由网格，如 `--publish published=8080,target=80,mode=host `。
+Docker Swarm 通过  ingress overlay 网络实现了网格路由(routing mesh)功能。在 Swarm 集群中所有的工作节点(worker)和管理节点(manager)都会参与到网格路由中。当部署的服务通过 `--publish` 暴露端口时，由于所有的节点都在网格路由(routing mesh)中，所以全部的节点都会是监听` --publish `暴露的端口，因此访问集群中的任何节点都可以访问到服务。 如果不想每个节点都监听服务暴露的端口，则需要将暴露的模式指定为 host 模式，来禁用路由网格，如 `--publish published=8080,target=80,mode=host `。
 ![网格路由](/images/docker-swarm网络路由.png)
+
+路由网格模式只支持 VIP 的服务发现模式，如果使用 DRR 模式是不起作用的。可以通过 `--endpoint_mode: vip | drr` 指定服务选择那种服务发现，默认是 vip
 
 
 ## 管理节点和工作节点的心跳
