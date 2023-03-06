@@ -188,8 +188,8 @@ public class User {
 
 ### 6.4 编写规则文件
 Drools 规则引擎默认递归查找 Maven 工程 resource 目录下的所有规则文件，加载到 Production Memory（规则库）中，Drools 是以逻辑 package 去组织规则的，跟规则文件名和存放路径无关，故可以任意命名。
-```xml
-<!-- 定义规则的包名，逻辑上的包名，与规则路径无关联 -->
+```java
+// 定义规则的包名，逻辑上的包名，与规则路径无关联 
 package com.github.drools.rules
 
 import com.github.drools.model.User
@@ -197,8 +197,10 @@ import com.github.drools.model.User
 rule "rule1"
     no-loop true
 when
+    // 匹配工作内存中的 username 等于 admin 的 User 事实对象，只要存在一个就返回 true
     u1: User(username=="admin")
 then
+    // 但 when 条件为真时，执行 then 语句
     System.out.println("execute rule1, I am " + u1.getUsername());
 end
 
@@ -211,15 +213,16 @@ end
 
 ```
 
-
-### 6.3 编写 kiemodule.xml 文件
+### 6.5 编写 kiemodule.xml 文件
 在 Maven 工程中创建文件 `resource/META-INF/kiemodule.xml` 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <kmodule
         xmlns="http://www.drools.org/xsd/kmodule">
 
+    <!-- 指定规则的逻辑包 -->
     <kbase packages="com.github.drools">
+        <!-- 指定能操作和执行该逻辑包规则的 Session -->
         <ksession default="true" name="session01" type="stateful"/>
     </kbase>
 
@@ -231,11 +234,50 @@ end
 
 ```
 
+### 6.6 规则测试代码
+```java
+
+import com.github.drools.model.User;
+import org.junit.Test;
+import org.kie.api.KieServices;
+import org.kie.api.runtime.KieContainer;
+import org.kie.api.runtime.KieSession;
+import org.kie.api.runtime.StatelessKieSession;
+
+public class DroolsTest {
 
 
+    @Test
+    public void testStateless() {
+        KieServices kieServices = KieServices.Factory.get();
+        KieContainer kieClasspathContainer = kieServices.getKieClasspathContainer();
+        // 获取默认有状态的 Session
+        KieSession session1 = kieClasspathContainer.newKieSession();
+        User user = new User();
+        user.setUsername("admin");
+        // 插入事实对象，存在规则引擎的工作内存中
+        session1.insert(user);
+        // 执行规则
+        session1.fireAllRules();
+        // 有状态session 需要手动销毁
+        session1.dispose();
 
+        // 获取默认的无状态 Session
+        StatelessKieSession session2 = kieClasspathContainer.newStatelessKieSession();
+        /*
+         * 无状态 session，不会维护工作内存，每次执行规则时，
+         * 都需要将所有需要的事实重新插入到 KieSession 中，且插入和执行规则的方法跟有状态的不相同
+         */
+        user.setUsername("dev");
+        session2.execute(user);
+        user.setUsername("admin");
+        session2.execute(user);
+    }
+}
 
-## 三、语法格式规则
+```
+
+## 七、语法格式规则
 ```java
 //定义规则包，注意只是逻辑上的包，实际上并不要求规则文件存放路径跟包路径一样
 package com.rule
@@ -271,7 +313,7 @@ rule "rule2 name"
    
 end
 ```
-### 3.1 function 语法 
+### 7.1 function 语法 
 ```java
 function String hello(String applicantName) {
     return "Hello " + applicantName + "!";
@@ -285,7 +327,7 @@ rule "Using a function"
 end
 ```
 
-## 3.2 query 语法
+## 7.2 query 语法
 query 用于在规则中定义 Fact 查询过滤语句，然后在 Java 代码中通过` ksession.getQueryResults("name") ` 方式引用。
 
 1. 规则查询语句定义如下：
@@ -314,7 +356,7 @@ for ( QueryResultsRow row : results ) {
     System.out.println( person.getName() + "\n" );
 }
 ```
-## 3.3 declare 语句
+## 7.3 declare 语句
 declare 语句用于在规则文件中定义类型，如下定义一个 Person 类对象：
 ```java
 package com.rules
@@ -340,7 +382,7 @@ end
 
 ```
 
-## 3.4 Global 语句
+## 7.4 Global 语句
 Global 用于定义规则文件中的全局变量，在同一个规则文件中，所有的 rule 中都能引用到，使用列子如下：
 
 先在 Java 代码中定义规则的全局变量
@@ -362,7 +404,7 @@ rule "Using a global"
 end
 ```
 
-## 3.5  Rule attributes 语句
+## 7.5  Rule attributes 语句
 规则属性，可以限制和修改规则的行为属性，具体可以查看官网 [Rule attributes](https://docs.drools.org/7.73.0.Final/drools-docs/html_single/index.html#rules-attributes-ref_drl-rules) 介绍，Drools 支持的规则属性如下：
 
 |  Attribute  |  Value      |
@@ -397,7 +439,7 @@ rule "rule_name"
 end
 ```
 
-## 3.6 when 语句
+## 7.6 when 语句
 when 语句用于判断条件是否满足，条件满足时，就会执行 then 动作语句，注意当 when 语句的条件为空时，等于同于 eval(true) 表示条件为真，会执行 then 动作语句。[when 语句官网参考](https://docs.drools.org/7.73.0.Final/drools-docs/html_single/index.html#drl-rules-WHEN-con_drl-rules)
 
 3.6.1 条件为空的规则
@@ -443,26 +485,10 @@ when
 then 
 end 
 
-
-
 ```
 
   
 
-
-
-
-
-
-### 4.2 Drools 引擎的 API 说明
-4.2.1 kieServices：是 KIE 构建和运行的相关对象， 可以获取 KieContainer，利用 KieContainer 来访问 KBase 和 KSession 等信息；可以获取 KieRepository 对象，利用 KieRepository 来管理 KieModule 等。
-- kieContainer
-- kieSession
-
-
-https://blog.csdn.net/wo541075754/article/details/75004575
-
-https://einverne.github.io/post/2020/06/kie-api-notes.html
 
 ## 参考连接
 1. https://docs.drools.org/7.73.0.Final/drools-docs/html_single/index.html#_droolslanguagereferencechapter
