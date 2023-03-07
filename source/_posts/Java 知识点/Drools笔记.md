@@ -188,9 +188,9 @@ public class User {
 ```
 
 ### 6.4 编写规则文件
-Drools 规则引擎默认递归查找 Maven 工程 resource 目录下的所有规则文件，加载到 Production Memory（规则库）中，Drools 是以逻辑 package 去组织规则的，跟规则文件名和存放路径无关，故可以任意命名。
+Drools 规则引擎默认递归查找当前 Maven 工程 resource 目录和 Jar 中 resource 目录的所有规则文件，加载到 Production Memory（规则库）中，Drools 是以逻辑 package 去组织规则的，跟规则文件名和存放路径无关，故可以任意命名。
 ```java
-// 定义规则的包名，逻辑上的包名，与规则路径无关联 
+// 定义规则的包名，逻辑上的包名，与规则路径无关联，包名是规则的命名空间，不同规则的文件可以使用相同的包，但是在同一个包即命名空间下，rule 的名称不能相同的
 package com.github.drools.rules
 
 import com.github.drools.model.User
@@ -198,7 +198,7 @@ import com.github.drools.model.User
 rule "rule1"
     no-loop true
 when
-    // 匹配工作内存中的 username 等于 admin 的 User 事实对象，只要存在一个就返回 true
+    // 匹配工作内存中的 username 等于 admin 的 User 事实对象，只要存在一个就返回 true，比匹配到的时候对象赋值给 u1
     u1: User(username=="admin")
 then
     // 但 when 条件为真时，执行 then 语句
@@ -280,7 +280,7 @@ public class DroolsTest {
 
 ## 七、语法格式规则
 ```java
-//定义规则包，注意只是逻辑上的包，实际上并不要求规则文件存放路径跟包路径一样
+//定义规则包，注意只是逻辑上的包，实际上并不要求规则文件存放路径跟包路径一样，在不同的规则文件中包是可以相同的，包是规则的命名空间，在同一个包即一个命名空间下 rule 的名字不能重复
 package com.rule
 
 // 导入需要引用的 Java Class 
@@ -467,29 +467,24 @@ end
 ```java
 rule "rule1"
 when 
-    // 匹配任何事实对象
-     
-     
+    // 表示匹配到任意一个事实对象，就返回真
      Object() 
 then 
 end 
 
 when 
-    // 匹配所有 Person 事实对象
+    // 匹配到任意一个 Person 事实对象，就返回真
     Person() 
 then 
 end 
 
 when 
-    // 匹配 username = "admin" 的 Person 事实对象
+    // 匹配任意一个 username = "admin" 的 Person 事实对象，就返回真
     Person(username="admin")
 then 
 end 
 
 ```
-
-  
-
 
 ## 参考连接
 1. https://docs.drools.org/7.73.0.Final/drools-docs/html_single/index.html#_droolslanguagereferencechapter
