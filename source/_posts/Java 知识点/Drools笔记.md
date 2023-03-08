@@ -221,7 +221,7 @@ end
 <kmodule
         xmlns="http://www.drools.org/xsd/kmodule">
 
-    <!-- 指定规则的逻辑包 -->
+    <!-- 指定规则的逻辑包，会将不同规则文件但包相同的规则都整合加到 kbase 中 -->
     <kbase packages="com.github.drools">
         <!-- 指定能操作和执行该逻辑包规则的 Session -->
         <ksession default="true" name="session01" type="stateful"/>
@@ -254,10 +254,14 @@ public class DroolsTest {
         KieContainer kieClasspathContainer = kieServices.getKieClasspathContainer();
         // 获取默认有状态的 Session
         KieSession session1 = kieClasspathContainer.newKieSession();
-        User user = new User();
-        user.setUsername("admin");
+        User adminUser = new User();
+        adminUser.setUsername("admin");
         // 插入事实对象，存在规则引擎的工作内存中
-        session1.insert(user);
+        session1.insert(adminUser);
+        // 每一次 insert 都会重新从头开始匹配规则包中的所有规则，如果 insert 的是相同的 Fact 事实对象，则不会。
+        User devUser = new User();
+        devUser.setUsername("admin");
+        session1.insert(devUser);
         // 执行规则
         session1.fireAllRules();
         // 有状态session 需要手动销毁
@@ -271,6 +275,7 @@ public class DroolsTest {
          */
         user.setUsername("dev");
         session2.execute(user);
+
         user.setUsername("admin");
         session2.execute(user);
     }
@@ -485,6 +490,115 @@ then
 end 
 
 ```
+
+### 7.7 Drools 内置方法
+Drools 规则语法中也提供了插入、删除、更新工作内存 Fact 事实数据的内置方法，来方便在规则中控制规则引擎的执行。通过内置方法操作 Fact 事实数据后，规则引擎会把同一个包下的相关规则重新匹配执行。
+
+
+### update 方法
+update 内置方法的作用是更新工作内存中的 Fact 事实对象，并让规则引擎重新匹配同一个包下的其他相关规则。如下例子，第一个文件的规则触发后，使用 update 内置方法后，会连锁把第二个文件的所以也触发了。
+
+1. 规则文件 user1.drl
+```java
+
+package com.github.drools.rules
+
+import com.github.drools.model.User
+
+rule "username eq admin"
+    when 
+        u1: User(username=="admin")
+    then 
+        System.out.println("用户名为 admin 触发了规则");
+        u1.setAge(19);
+        //update 方法更新 Fact 事实对象后，把同一个包下的除本条规则外的所有规则重新匹配执行一次。
+        update(u1);
+end
+```
+
+2. 规则文件 user2.drl
+```java
+package com.github.drools.rules
+
+import com.github.drools.model.User
+
+rule "age lt 20 rule"
+    when
+        u1: User(age < 20)
+    then
+        System.out.println( u1.getUsername()+"用户的年龄大于20岁，触发规则");
+        u1.setAge(25);
+        update(u1);
+end
+
+rule "age ge 20 rule"
+    when
+        u1: User(age >= 20)
+    then
+        System.out.println( u1.getUsername()+"用户的年龄大于20岁，触发规则");
+end
+
+```
+
+#### insert 方法
+
+insert 内置方法的作用是在工作内存中插入 Fact 事实对象，并让规则引擎重新匹配执行包下所有规则， 如以下列子，在第一个规则触发后，在 insert 新的事实对象后，重新匹配规则，则第二个规则就会执行。注意要插入的是新的 Fact 事实对象实例，如果是工作内存中已存在的事实对象重复插入，不会重新匹配执行规则。
+
+```java
+package com.github.drools.rules
+
+import com.github.drools.model.User
+
+rule "rule1"
+    // 限制本条规则，只能匹配一次，不管是在 Java 中还是在规则文件只要调用  insert 事实对象，都是从头开始执行所有规则，当多次 insert 不同的事实实例对象时，如果 when 条件都满足会重复执行，故而需要该属性来限制只能执行一次。
+    no-loop true 
+    when 
+        u1: User(username=="admin")
+    then 
+        System.out.println("用户名为 admin 触发了规则");
+        User user = new User();
+        // 如果将用名字设置为 admin 的话，该 rule1 规则会死循环执行，当出现这种情况时，需要通过规则属性 no-loop 限制规则不能重复执行。
+        user.setUsername("dev");
+        // insert 事实对象后，会重新匹配执行包的所有规则（包含本条规则在内）
+        insert(user);
+end
+
+rule "rule2"
+    when 
+        u2: User(username=="dev")
+    then
+        System.out.println("用户名为 dev 触发了规则");   
+end 
+```
+
+#### retract 方法
+retract 内置方法的作用是删除工作内存中的 Fact 事实对象，并让规则引擎重新匹配执行规则。
+```java
+package com.github.drools.rules
+
+import com.github.drools.model.User
+
+rule "rule1"
+    // 设置规则优先级，值越大优先级越高
+    salience 10
+    when 
+        u1:User(age == 20)
+    then 
+        System.out.println( u1.getUsername()+"用户的年龄等于20岁，触发规则");
+        // 删除 u1 事实对象，规则引擎会重新匹配规则，则 rule2 规则将不会执行。
+        retract(u2);
+end 
+
+rule "rule2"
+    salience 9
+    when 
+        u1:User(age >= 20)
+    then 
+        System.out.println( u1.getUsername()+"用户的年龄大于等于20岁，触发规则");
+end 
+
+```
+
 
 ## 参考连接
 1. https://docs.drools.org/7.73.0.Final/drools-docs/html_single/index.html#_droolslanguagereferencechapter
