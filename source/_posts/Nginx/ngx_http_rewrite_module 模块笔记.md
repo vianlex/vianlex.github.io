@@ -78,7 +78,7 @@ If the specified regular expression matches a request URI, URI is changed as spe
 如果指定的 regex 正则表达式匹配请求的 URI, URI 将会被替换成指定 replacement 字符串。重写指令按照它们在配置文件中出现的顺序依次执行。可以使用标志符来终止对指令的进一步处理。如果 repalcement 字符串以 "http://"、"https://" 或 "$scheme" 开头，则停止处理并将重定向返回给客户。
 
 falg 可选值说明：
-- last：表示 regex 正则表达式匹配到 URI 后立即停止处理当前 ngx_http_rewrite_module 指令集合，并用 replactment 后的 URI 匹配查找 location。
+- last：表示 regex 正则表达式匹配到 URI 后立即停止处理当前 ngx_http_rewrite_module 指令集合，并用 replactment 后的 URI 匹配查找 location
 - break：表示 regex 正则表达式匹配到 URI 停止处理当前 ngx_http_rewrite_module 指令集合，如同处理 break 指令一样
 - redirect：返回一个状态是 302 的临时重定向
 - permanent：返回一个状态是 301 的永久重定向
@@ -107,6 +107,13 @@ http{
         rewrite ^/last /last1 last;
         rewrite ^/last1 /last2 last;
         rewrite ^/last2 / last3 last;
+
+
+        # 注意, 如果重写的 URI 使用的是 http 协议开头，则相当于临时重定向，会直接返回给浏览器，浏览器在重定向请求新的 URL。只有重写请求的 URI 部分，nginx 才会去重新执行后续的 rewrite 或者匹配查找 location
+        rewrite ^/redirect http://127.0.0.1/test.com;
+        rewrite ^/redirect/last http://127.0.0.1/test.com ;
+        rewrite ^/redirect/break http://127.0.0.1/test.com ;
+
 
         # 如访问访问 127.0.0.1/hello 也是先匹配 rewrite 集合如果匹配不到，再匹配查找 location，如果都匹配不到的话，nginx 会直接返回 404 
         location /hello {
