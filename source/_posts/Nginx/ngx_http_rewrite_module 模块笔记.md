@@ -26,23 +26,36 @@ http {
     # server 指令和 location 指令语句块中， ngx_http_rewrite_module 模块中的所有指令的优先级比 ngx_http_core_module 模块中的指令高。
     server {
 
-        # 执行到 break 指令，会直接返回 404
-        # break;
+       
+        # 访问 127.0.0.1/b3 时，依次顺序执行 ngx_http_rewrite_module 指令，执行 break 执行后，将无法在执行后面的  rewrite ^/b3 /test/b3 指令，故会返回 404。
+        rewrite ^/b1 /test/b1;
+        rewrite ^/(b2) /test/$1;
+        # 执行到 break 指令, 将不会执行下面的 rewrite，因为 break 指令会终止 ngx_http_rewrite_module 模块中的指令执行
+        break;
+        rewrite ^/b3 /test/b3;
 
-        if ($host == "old.test.com"  ) {
-            # 如果直接到 break 指令直接返回 404
-            break;
+    
+        location /test/b3 {
+            add_header Content-Type 'text/html; charset=utf-8';
+            return 200 "Hello My is test-b3";
         }
 
         location /test {
-            # 注意 break 只能终止 ngx_http_rewrite_module 集合，这里使用 break 后, return 不会在执行，但是会执行 pass_proxy
+            # 注意 break 只能终止 ngx_http_rewrite_module 指令集合，所以执行 break 指令后, return 不会在执行，但是会执行 pass_proxy
             break;
             return 200 "this test break ";
             pass_proxy: 127.0.0.1/xxx/
-        }        
-
-
-
+        }     
+        
+        location /break {
+            # 通过 break 语句，控制改走 return 还是走 pass_proxy
+            if ( $uri == '/break/xx') {
+                break;
+            }
+            # 上面的 if 指令满足后，执行 break 指令，会终止 return 执行，然后运行 pass_proxy 执行，如果条件不满足，不执行 break 则会执行 return 语句直接返回，就会执行不到 pass_proxy 指令
+            return 200 "this test break ";
+            pass_proxy: 127.0.0.1/break
+        }
     }
 }
 
