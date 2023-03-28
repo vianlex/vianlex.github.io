@@ -74,7 +74,7 @@ location ~* \.(gif|jpg|jpeg)$ {
 
 The “/” request will match configuration A, the “/index.html” request will match configuration B, the “/documents/document.html” request will match configuration C, the “/images/1.gif” request will match configuration D, and the “/documents/1.jpg” request will match configuration E.
 
-此 ` / ` 请求会匹配 configuration A，此 ` /index.html ` 请求会匹配 configuration B，此 `/documents/document.htm` 会匹配 configuration C，此 `/images/1.gif` 请求会匹配 configuration D，和此 `/documents/1.jpg` 请求会匹配 configuration E。
+访问 ` / ` 请求会匹配 configuration A，访问 ` /index.html ` 请求会匹配 configuration B，访问 `/documents/document.htm` 会匹配 configuration C，访问 `/images/1.gif` 请求会匹配 configuration D，和访问 `/documents/1.jpg` 请求会匹配 configuration E。
 
 The “@” prefix defines a named location. Such a location is not used for a regular request processing, but instead used for request redirection. They cannot be nested, and cannot contain nested locations.
 
@@ -96,12 +96,6 @@ location = /user {
 }
 
 ```
-
-常用例子说明：
-```
-
-```
-
 
 ## 参考链接
 1. https://nginx.org/en/docs/http/ngx_http_core_module.html#location

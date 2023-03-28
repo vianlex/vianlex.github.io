@@ -1,5 +1,5 @@
 ---
-title: ngx_http_rewrite_module 模块笔记
+title: ngx_http_rewrite_module 模块学习笔记
 ---
 
 ## 介绍
@@ -12,6 +12,14 @@ ngx_http_rewrite_module 主要用于改变请求的 URI，通过 PCRE 正则表�
 
 一个 URL 请求到达 nginx 时，nginx 先会顺序执行 server 指令语句块中的 ngx_http_rewrite_module 指令集合，如果执行到 break 指令会直接返回 404，执行到 return 指令也会直接返回，执行到 rewrite 如果匹配 rewrite 表达式,将会重写请求的 URI 然后使用重写后的 URI 再去匹配 location。如果 server 指令语句块中没有 ngx_http_rewrite_module 指令集合或者有匹配不到的情况下，请求的 URL 则会去匹配 location。
 
+
+ngx_http_rewrite_module 模块指令日志记录，记录在 error_log 文件中的，且日志的级别需要改成 notice 级别。rewrite 指令的日志还需要开启 rewrite_log。
+```
+rewrite_log on;
+error_log  logs/error.log notice;
+
+``` 
+
 ## break 指令
 break 指令的官网语法如下：
 ```
@@ -19,11 +27,11 @@ Syntax:	break;
 Default:	—
 Context:	server, location, if
 ```
-break 用于终止 ngx_http_rewrite_module 指令集合。使用例子说明如下：
+break 用于终止 ngx_http_rewrite_module 指令集合,即同一个指令块作用域内的指令集合。使用例子说明如下：
 ```lua
 http {
 
-    # server 指令和 location 指令语句块中， ngx_http_rewrite_module 模块中的所有指令的优先级比 ngx_http_core_module 模块中的指令高。
+    # ngx_http_rewrite_module 模块中的指令的优先级比 ngx_http_core_module 模块中的指令高。
     server {
 
        
@@ -111,8 +119,8 @@ http{
 
         # 注意, 如果重写的 URI 使用的是 http 协议开头，则相当于临时重定向，会直接返回给浏览器，浏览器在重定向请求新的 URL。只有重写请求的 URI 部分，nginx 才会去重新执行后续的 rewrite 或者匹配查找 location
         rewrite ^/redirect http://127.0.0.1/test.com;
-        rewrite ^/redirect/last http://127.0.0.1/test.com ;
-        rewrite ^/redirect/break http://127.0.0.1/test.com ;
+        rewrite ^/redirect/last http://127.0.0.1/test.com last;
+        rewrite ^/redirect/break http://127.0.0.1/test.com break;
 
 
         # 如访问访问 127.0.0.1/hello 也是先匹配 rewrite 集合如果匹配不到，再匹配查找 location，如果都匹配不到的话，nginx 会直接返回 404 
@@ -149,7 +157,8 @@ location /break {
 location /last {
     # location 中的 rewrite 如果使用 last 标识，根 server 指令中的效果一致 
     rewrite ^/break /test last;
-   
+    # 匹配不通过就走 return, 因为 return 的优先级比 pass_proxy 高
+    pass_proxy 127.0.0.1/hello;
     return 200 "Hello this is last";
 }
 
