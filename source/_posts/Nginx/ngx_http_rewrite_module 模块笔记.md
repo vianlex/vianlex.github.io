@@ -70,7 +70,96 @@ http {
 ```
 
 ## if 指令
+if 指令的官方语法如下：
+```
+Syntax:	if (condition) { ... }
+Default:	—
+Context:	server, location
+```
+if 指令支持的判断条件如下：
 
+1. 空字符串和 0 默认 false，在1.0.1版本之前，任何以 0开头的字符串也被认为是 false
+```lua
+set $var 0;
+location /test {
+     add_header Content-Type 'text/html; charset=utf-8';
+    if ($var) {
+       return 200 "this is true";
+    }
+    return 200 "this is flase";
+}
+
+```
+
+2. 变量和字符串比较只支持 = 和 != 符号
+```lua
+location /test {
+    add_header Content-Type 'text/html; charset=utf-8';
+    if ($request_method = POST) {
+        return 200 "this is POST method";
+    }
+    # 变量支持在字符串中使用
+    return 200 "unkown $request_method method";
+}
+
+```
+
+3. 支持变量和正则表达式匹配，`~` 符号表示区分大小写匹配，`~*` 表示不区分大小写匹配，正则匹配支持非运算符 `!~` 和 `!~*`，同时支持捕获组，捕获组可通过 $1..$9 变量获取值。
+   如果正则表示式包含 `}` 和 `;` 符号，那么正则表达式必须使用引号包起来。
+```lua
+location /test {
+     add_header Content-Type 'text/html; charset=utf-8';
+    if ($http_cookie ~* "id=([^;]+)(?:;|$)") {
+       return 200 "id = $0";
+    }
+    return 200 "hello world";
+}
+```
+
+4. 支持使用 `-f` 和 `!-f` 符号检查文件是否存在 
+```lua
+location /exists {
+    add_header Content-Type 'text/html; charset=utf-8';
+    if (-f C:/DevTools/nginx-1.22.1/html/index.html) {
+        return 200 "file is exists";
+    }
+    return 200 "file is not exists";
+}
+```
+
+5. 支持使用 `-d` 和 `!-d` 符号检查目录是否存在 
+```lua
+location /exists {
+    add_header Content-Type 'text/html; charset=utf-8';
+    if (-d C:/DevTools/nginx-1.22.1/html) {
+        return 200 "dir is exists";
+    }
+    return 200 "dir is not exists";
+}
+```
+
+6. 支持使用 `-e` 和 `!-e` 运算符检查文件、目录或符号链接是否存在
+```lua
+location /exists {
+    add_header Content-Type 'text/html; charset=utf-8';
+    if (-e C:/DevTools/nginx-1.22.1/html/index.html) {
+        return 200 "dir is exists";
+    }
+    return 200 "dir is not exists";
+}
+```
+
+7. 支持使用 `-x` 和 `-x` 运算符检查可执行文件
+```lua
+location /exec {
+    add_header Content-Type 'text/html; charset=utf-8';
+    if (-x C:/DevTools/nginx-1.22.1/nginx.exe) {
+        return 200 "file is exec";
+    }
+    return 200 "file is not exec";
+}
+```
+8. 不支持与或逻辑判断
 
 
 
@@ -145,9 +234,9 @@ http{
 ```
 
 在 location 指令中的 rewrite 指令例子：
-```
+```lua
 location /break {
-    # location 中的 rewrite 使用 break 标识，如果匹配了，就会去访问 nginx html 目录的 test/page 文件
+    # location 中的 rewrite 使用 break 标识，如果匹配了，就会去访问 nginx 安装目录下 html 目录的 test/page 文件
     rewrite ^/break /test/page break;
     # 如果 rewrite 不匹配，执行 return 
     add_header Content-Type 'text/html; charset=utf-8';
@@ -215,7 +304,30 @@ location /return3 {
 
 ```
 
+## set 指令
+set 指令用于定义变量，其官方语法如下：
+```
+Syntax:	set $variable value;
+Default:	—
+Context:	server, location, if
+```
 
+常用例子如下：
+```lua
+http {
+
+    set hostname xx.test.com;
+
+    server {
+
+        location / {
+
+        }
+    }
+
+}
+
+```
 
 
 

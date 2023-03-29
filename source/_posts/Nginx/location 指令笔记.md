@@ -49,27 +49,32 @@ Let’s illustrate the above by an example:
 
 让我们通过一个例子来说明以上内容：
 
-```
+```lua
+# 精准匹配，完整的匹配请求的 URI
 location = / {
     [ configuration A ]
 }
-
+# 普通前缀匹配
 location / {
     [ configuration B ]
 }
-
+# 普通前缀匹配
 location /documents/ {
     [ configuration C ]
 }
-
+# 普通前缀匹配，^~ 符号表示，最长普通前缀匹配到后，就不再匹配正则表达式
 location ^~ /images/ {
     [ configuration D ]
 }
-
+# 不区分大小写正则表达式匹配
 location ~* \.(gif|jpg|jpeg)$ {
     [ configuration E ]
 }
 
+# 区分大小写正则表达式匹配
+location ~ \.(css|js)$ {
+    [ configuration F ]
+}
 ```
 
 The “/” request will match configuration A, the “/index.html” request will match configuration B, the “/documents/document.html” request will match configuration C, the “/images/1.gif” request will match configuration D, and the “/documents/1.jpg” request will match configuration E.
@@ -96,6 +101,7 @@ location = /user {
 }
 
 ```
+
 
 ## 参考链接
 1. https://nginx.org/en/docs/http/ngx_http_core_module.html#location
