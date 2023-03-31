@@ -159,7 +159,23 @@ location /exec {
     return 200 "file is not exec";
 }
 ```
-8. 不支持与或逻辑判断
+8. 不支持与或逻辑符号判断,但是可以通过变量拼接字符串的形式实现
+```lua
+set $flag  "";
+location /test {
+    if ($request_method = POST) {
+        set $flag "$flag1";
+    }
+    if ($protocol = HTTP) {
+        set $flag "$flag1";
+    }
+    if ($flag = "11") {
+        return 200 "this is and ";
+    }
+    return 200 "hello world"
+}
+
+```
 
 
 
