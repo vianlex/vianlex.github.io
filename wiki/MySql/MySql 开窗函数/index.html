@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <meta charset="utf-8">
+    
+    <title>MySql 开窗函数 | Vianlex&#39;s Wiki</title>
+    
+    
+        <meta name="keywords" content="MySql 开窗函数" />
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <meta name="description" content="简介MySql 是从8.0版本之后开始支持开窗函数，开窗函数也叫分析函数。 窗口函数除了聚合函数可以作为开窗函数， MySql 还提供了以下开窗函数。用于解决复杂报表统计需求的功能强大的函数。    函数名 函数作用    ROW_NUMBER() 行号   RANK() 排名   DENSE_RANK() 密集排名   PRECENT_RANK() 用于计算分区或结果集中行的百分位数   CUM">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MySql 开窗函数">
+<meta property="og:url" content="http://example.com/wiki/MySql/MySql%20%E5%BC%80%E7%AA%97%E5%87%BD%E6%95%B0/index.html">
+<meta property="og:site_name" content="Vianlex&#39;s Wiki">
+<meta property="og:description" content="简介MySql 是从8.0版本之后开始支持开窗函数，开窗函数也叫分析函数。 窗口函数除了聚合函数可以作为开窗函数， MySql 还提供了以下开窗函数。用于解决复杂报表统计需求的功能强大的函数。    函数名 函数作用    ROW_NUMBER() 行号   RANK() 排名   DENSE_RANK() 密集排名   PRECENT_RANK() 用于计算分区或结果集中行的百分位数   CUM">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-05-31T13:39:26.110Z">
+<meta property="article:modified_time" content="2023-05-31T13:39:26.110Z">
+<meta property="article:author" content="Vianlex">
+<meta name="twitter:card" content="summary">
+    
+
+    
+
+    
+        <link rel="icon" href="/favicon.ico" />
+    
+
+    
+<link rel="stylesheet" href="/libs/font-awesome/css/font-awesome.min.css">
+
+    
+<link rel="stylesheet" href="/libs/open-sans/styles.css">
+
+    
+<link rel="stylesheet" href="/libs/source-code-pro/styles.css">
+
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    
+<script src="/libs/jquery/2.1.3/jquery.min.js"></script>
+
+    
+<script src="/libs/jquery/plugins/cookie/1.4.1/jquery.cookie.js"></script>
+
+    
+    
+        
+<link rel="stylesheet" href="/libs/lightgallery/css/lightgallery.min.css">
+
+    
+    
+        
+<link rel="stylesheet" href="/libs/justified-gallery/justifiedGallery.min.css">
+
+    
+    
+    
+    
+
+
+    
+        <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    
+<meta name="generator" content="Hexo 6.3.0"><link rel="alternate" href="/atom.xml" title="Vianlex's Wiki" type="application/atom+xml">
+</head>
+
+<body>
+    <div id="container">
+        <header id="header">
+    <div id="header-main" class="header-inner">
+        <div class="outer">
+            <a href="/" id="logo">
+                <i class="logo"></i>
+                <span class="site-title">Vianlex&#39;s Wiki</span>
+            </a>
+            <nav id="main-nav">
+                
+                    <a class="main-nav-link" href="/">首页</a>
+                
+                    <a class="main-nav-link" href="/archives">归档</a>
+                
+                    <a class="main-nav-link" href="/categories">分类</a>
+                
+                    <a class="main-nav-link" href="/tags">标签</a>
+                
+                    <a class="main-nav-link" href="/about">关于</a>
+                
+            </nav>
+            
+            <div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="Search" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="Type something..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: 'Posts',
+            PAGES: 'Pages',
+            CATEGORIES: 'Categories',
+            TAGS: 'Tags',
+            UNTITLED: '(Untitled)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+
+</div>
+        </div>
+    </div>
+    <div id="main-nav-mobile" class="header-sub header-inner">
+        <table class="menu outer">
+            <tr>
+                
+                    <td><a class="main-nav-link" href="/">首页</a></td>
+                
+                    <td><a class="main-nav-link" href="/archives">归档</a></td>
+                
+                    <td><a class="main-nav-link" href="/categories">分类</a></td>
+                
+                    <td><a class="main-nav-link" href="/tags">标签</a></td>
+                
+                    <td><a class="main-nav-link" href="/about">关于</a></td>
+                
+                <td>
+                    
+    <div class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="Search" />
+    </div>
+
+                </td>
+            </tr>
+        </table>
+    </div>
+</header>
+
+        <div class="outer">
+            
+            
+                <aside id="sidebar">
+   
+        
+    <div class="widget-wrap" id='categories'>
+        <h3 class="widget-title">
+            <span>分类目录</span>
+            &nbsp;
+            <a id='allExpand' href="#">
+                <i class="fa fa-angle-double-down fa-2x"></i>
+            </a>
+        </h3>
+        
+        
+        
+         <ul class="unstyled" id="tree" > 
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            Apache POI
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/Apache%20POI/Excel%20%E8%AE%BE%E7%BD%AE%E8%A1%8C%E9%AB%98%E5%92%8C%E6%8D%A2%E8%A1%8C%E9%97%AE%E9%A2%98/">Excel 设置行高和换行问题</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            Docker
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/Docker/Docker%20Swarm%20%E7%AC%94%E8%AE%B0/">Docker Swarm 笔记</a></li>  <li class="file"><a href="/wiki/Docker/Docker%20%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0/">Docker 入门笔记</a></li>  <li class="file"><a href="/wiki/Docker/Docker%20%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/">Docker 常用命令</a></li>  <li class="file"><a href="/wiki/Docker/Docker%20%E6%9D%83%E9%99%90%E9%85%8D%E7%BD%AE/">Docker 权限配置</a></li>  <li class="file"><a href="/wiki/Docker/Dockerfile%20%E4%BD%BF%E7%94%A8%E8%AF%B4%E6%98%8E/">Dockerfile 使用说明</a></li>  <li class="file"><a href="/wiki/Docker/docker%20%E5%AE%89%E8%A3%85%E7%AC%94%E8%AE%B0/">Docker 安装笔记</a></li>  <li class="file"><a href="/wiki/Docker/docker-compose%20%E5%AD%A6%E4%B9%A0%E8%AE%B0%E5%BD%95/">Docker-compose 学习记录</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            Golang
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/Golang/Go%20%E5%9F%BA%E7%A1%80%E8%AF%AD%E6%B3%95/">Go 基础语法</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            Java 知识点
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/Java%20%E7%9F%A5%E8%AF%86%E7%82%B9/Class%E5%AF%B9%E8%B1%A1%E5%92%8CTpye%E5%AF%B9%E8%B1%A1/">Class 对象和 Tpye 对象知识笔记</a></li>  <li class="file"><a href="/wiki/Java%20%E7%9F%A5%E8%AF%86%E7%82%B9/Instrumentation%20%E7%9F%A5%E8%AF%86%E7%AC%94%E8%AE%B0/">Instrumentation 知识笔记</a></li>  <li class="file"><a href="/wiki/Java%20%E7%9F%A5%E8%AF%86%E7%82%B9/Java%20main%20%E5%92%8C%20classpath/">main 方法和 classpath 说明</a></li>  <li class="file"><a href="/wiki/Java%20%E7%9F%A5%E8%AF%86%E7%82%B9/Javassist%20%E7%9F%A5%E8%AF%86%E7%AC%94%E8%AE%B0/">Javassist 知识笔记</a></li>  <li class="file"><a href="/wiki/Java%20%E7%9F%A5%E8%AF%86%E7%82%B9/SecurityManager%20%E7%AC%94%E8%AE%B0/">SecurityManager 笔记</a></li>  <li class="file"><a href="/wiki/Java%20%E7%9F%A5%E8%AF%86%E7%82%B9/byteBuddy%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0/">ByteBuddy 入门笔记</a></li>  <li class="file"><a href="/wiki/Java%20%E7%9F%A5%E8%AF%86%E7%82%B9/Drools%E7%AC%94%E8%AE%B0/">Drools 笔记</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            Java 设计模式
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/Java%20%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/%E4%BB%A3%E7%90%86%E6%A8%A1%E5%BC%8F/">代理模式</a></li>  <li class="file"><a href="/wiki/Java%20%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/%E5%B7%A5%E5%8E%82%E6%A8%A1%E5%BC%8F/">工厂模式</a></li>  <li class="file"><a href="/wiki/Java%20%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/%E6%A8%A1%E6%9D%BF%E6%A8%A1%E5%BC%8F/">模板模式(模板方法模式)</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            Jemeter
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/Jemeter/Jemeter%20%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0/">Jemeter 入门笔记</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            Kubernetes
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/Kubernetes/kubeadm%20%E5%BF%AB%E9%80%9F%E9%83%A8%E7%BD%B2%20k8s%20%E9%9B%86%E7%BE%A4%E6%B5%8B%E8%AF%95%E7%8E%AF%E5%A2%83/">kubeadm 快速部署 kubernetes 集群测试环境</a></li>  <li class="file"><a href="/wiki/Kubernetes/kubeadm%E5%AE%89%E8%A3%85%20k8s%20%E9%97%AE%E9%A2%98%E8%AE%B0%E5%BD%95/">kubeadm安装 k8s 问题记录</a></li>  <li class="file"><a href="/wiki/Kubernetes/K8s%20%E5%85%A5%E9%97%A8%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">K8s 入门学习笔记</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            Linux
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/Linux/SSH%20%E5%AF%86%E7%A0%81%E7%99%BB%E5%BD%95%E5%92%8C%E5%AF%86%E9%92%A5%E9%85%8D%E7%BD%AE%E8%AF%B4%E6%98%8E/">SSH 密码登录和密钥配置说明</a></li>  <li class="file"><a href="/wiki/Linux/ECS%20%E4%BA%91%E6%9C%8D%E5%8A%A1%E5%99%A8%E6%8C%82%E8%BD%BD%E6%95%B0%E6%8D%AE%E7%9B%98/">ECS 云服务器挂载数据盘</a></li>  <li class="file"><a href="/wiki/Linux/Linux%20%E6%9C%8D%E5%8A%A1%E5%99%A8%E6%8C%82%E8%BD%BD%E7%A1%AC%E7%9B%98/"></a></li>  <li class="file"><a href="/wiki/Linux/SSH%20%E7%AB%AF%E5%8F%A3%E8%BD%AC%E5%8F%91/">SSH 端口转发用法说明</a></li>  <li class="file"><a href="/wiki/Linux/dnf%E8%BD%AF%E4%BB%B6%E5%8C%85%E7%AE%A1%E7%90%86%E5%B7%A5%E5%85%B7/">dnf 软件包管理工具</a></li>  <li class="file"><a href="/wiki/Linux/iptables%20%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">iptables 学习笔记</a></li>  <li class="file"><a href="/wiki/Linux/yum%20%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/">YUM 常用命令</a></li>  <li class="file"><a href="/wiki/Linux/%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4%E8%AE%B0%E5%BD%95/">Linux 常用命令记录</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            Maven
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/Maven/Maven%20%E9%97%AE%E9%A2%98%E8%AE%B0%E5%BD%95/">Maven 问题记录</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory open">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder-open"></i>
+                            &nbsp;
+                            MySql
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/MySql/MySql%20%E5%B8%B8%E7%94%A8%E5%87%BD%E6%95%B0/">MySql 常用函数</a></li>  <li class="file active"><a href="/wiki/MySql/MySql%20%E5%BC%80%E7%AA%97%E5%87%BD%E6%95%B0/">MySql 开窗函数</a></li>  <li class="file"><a href="/wiki/MySql/Mysql%20%E9%83%A8%E5%88%86%E8%AF%8D%E6%B1%87%E5%90%AB%E4%B9%89/">Mysql 部分词汇含义</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            Nginx
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/Nginx/Nginx%20%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/">Nginx 常用命令</a></li>  <li class="file"><a href="/wiki/Nginx/Tengine%E5%AE%89%E8%A3%85%E7%AC%94%E8%AE%B0/"></a></li>  <li class="file"><a href="/wiki/Nginx/location%20%E6%8C%87%E4%BB%A4%E7%AC%94%E8%AE%B0/">location 和 rewrite 笔记</a></li>  <li class="file"><a href="/wiki/Nginx/ngx_http_proxy_module%E6%A8%A1%E5%9D%97%E7%AC%94%E8%AE%B0/">ngx_http_proxy_module 模块学习笔记</a></li>  <li class="file"><a href="/wiki/Nginx/ngx_http_rewrite_module%20%E6%A8%A1%E5%9D%97%E7%AC%94%E8%AE%B0/">ngx_http_rewrite_module 模块学习笔记</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            NodeJs
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/NodeJs/Node%20%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE%E8%AE%B0%E5%BD%95/">Node 环境配置说明</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            PowerDesigner
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/PowerDesigner/%E4%BD%BF%E7%94%A8%E9%97%AE%E9%A2%98%E8%AE%B0%E5%BD%95/">使用出现问题记录</a></li>  <li class="file"><a href="/wiki/PowerDesigner/%E9%80%86%E5%90%91%E5%AF%BC%E5%85%A5%E9%97%AE%E9%A2%98%E8%AE%B0%E5%BD%95/">SQL 逆向导入生成 PDM</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            Redis
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/Redis/Redis%20%E7%BC%93%E5%AD%98%E7%A9%BF%E9%80%8F%E3%80%81%E5%87%BB%E7%A9%BF%E3%80%81%E9%9B%AA%E5%B4%A9/">Redis 缓存穿透、缓存击穿、缓存雪崩</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            Shell
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/Shell/Awk%20%20%E5%9F%BA%E7%A1%80%E7%94%A8%E6%B3%95/">Awk 基础用法</a></li>  <li class="file"><a href="/wiki/Shell/Sed%20%E5%9F%BA%E7%A1%80%E7%94%A8%E6%B3%95/">Sed 基础用法</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            SpringBoot
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/SpringBoot/SpringBoot%20%E5%B1%9E%E6%80%A7%E9%85%8D%E7%BD%AE/">SpringBoot 属性配置</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            Xml
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/Xml/Dom4j%20%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0/">Dom4j 入门笔记</a></li>  <li class="file"><a href="/wiki/Xml/XPath%20%E7%AC%94%E8%AE%B0/">XPath 笔记</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            other
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/other/%E8%BD%AF%E4%BB%B6%E5%90%8D%E7%A7%B0%E8%AE%B0%E5%BD%95/">软件名称记录</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            计算机网络
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/%E7%BD%91%E7%BB%9C%E8%AE%BE%E5%A4%87%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0/">网络设备入门笔记</a></li>  </ul> 
+                    </li> 
+                     <li class="file"><a href="/wiki/index/"></a></li>  </ul> 
+    </div>
+    <script>
+        $(document).ready(function() {
+            var iconFolderOpenClass  = 'fa-folder-open';
+            var iconFolderCloseClass = 'fa-folder';
+            var iconAllExpandClass = 'fa-angle-double-down';
+            var iconAllPackClass = 'fa-angle-double-up';
+            // Handle directory-tree expansion:
+            // 左键单独展开目录
+            $(document).on('click', '#categories a[data-role="directory"]', function (event) {
+                event.preventDefault();
+
+                var icon = $(this).children('.fa');
+                var expanded = icon.hasClass(iconFolderOpenClass);
+                var subtree = $(this).siblings('ul');
+                icon.removeClass(iconFolderOpenClass).removeClass(iconFolderCloseClass);
+                if (expanded) {
+                    if (typeof subtree != 'undefined') {
+                        subtree.slideUp({ duration: 100 });
+                    }
+                    icon.addClass(iconFolderCloseClass);
+                } else {
+                    if (typeof subtree != 'undefined') {
+                        subtree.slideDown({ duration: 100 });
+                    }
+                    icon.addClass(iconFolderOpenClass);
+                }
+            });
+            // 右键展开下属所有目录
+            $('#categories a[data-role="directory"]').bind("contextmenu", function(event){
+                event.preventDefault();
+                
+                var icon = $(this).children('.fa');
+                var expanded = icon.hasClass(iconFolderOpenClass);
+                var listNode = $(this).siblings('ul');
+                var subtrees = $.merge(listNode.find('li ul'), listNode);
+                var icons = $.merge(listNode.find('.fa'), icon);
+                icons.removeClass(iconFolderOpenClass).removeClass(iconFolderCloseClass);
+                if(expanded) {
+                    subtrees.slideUp({ duration: 100 });
+                    icons.addClass(iconFolderCloseClass);
+                } else {
+                    subtrees.slideDown({ duration: 100 });
+                    icons.addClass(iconFolderOpenClass);
+                }
+            })
+            // 展开关闭所有目录按钮
+            $(document).on('click', '#allExpand', function (event) {
+                event.preventDefault();
+                
+                var icon = $(this).children('.fa');
+                var expanded = icon.hasClass(iconAllExpandClass);
+                icon.removeClass(iconAllExpandClass).removeClass(iconAllPackClass);
+                if(expanded) {
+                    $('#sidebar .fa.fa-folder').removeClass('fa-folder').addClass('fa-folder-open')
+                    $('#categories li ul').slideDown({ duration: 100 });
+                    icon.addClass(iconAllPackClass);
+                } else {
+                    $('#sidebar .fa.fa-folder-open').removeClass('fa-folder-open').addClass('fa-folder')
+                    $('#categories li ul').slideUp({ duration: 100 });
+                    icon.addClass(iconAllExpandClass);
+                }
+            });  
+        });
+    </script>
+
+    
+    <div id="toTop" class="fa fa-angle-up"></div>
+</aside>
+            
+            <section id="main"><article id="post-MySql/MySql 开窗函数" class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
+                
+                    <div class="article-meta">
+                        
+    <div class="article-category">
+    	<i class="fa fa-folder"></i>
+        <a class="article-category-link" href="/categories/MySql/">MySql</a>
+    </div>
+
+                        
+                        
+    <div class="article-date">
+        <i class="fa fa-calendar"></i>
+        <a href="/wiki/MySql/MySql%20%E5%BC%80%E7%AA%97%E5%87%BD%E6%95%B0/">
+            <time datetime="2023-05-31T13:39:26.110Z" itemprop="datePublished">2023-05-31</time>
+        </a>
+    </div>
+
+
+                        
+                            <i class="fa fa-bar-chart"></i>
+                            <span id="busuanzi_container_site_pv"><span id="busuanzi_value_page_pv"></span></span>    
+                        
+                        
+                            <div class="article-meta-button">
+                                <a target="_blank" rel="noopener" href='https://github.com/Vianlex/blog/raw/gh-pages/source/_posts/MySql/MySql 开窗函数.md'> Source </a>
+                            </div>
+                            <div class="article-meta-button">
+                                <a target="_blank" rel="noopener" href='https://github.com/Vianlex/blog/edit/gh-pages/source/_posts/MySql/MySql 开窗函数.md'> Edit </a>
+                            </div>
+                            <div class="article-meta-button">
+                                <a target="_blank" rel="noopener" href='https://github.com/Vianlex/blog/commits/gh-pages/source/_posts/MySql/MySql 开窗函数.md'> History </a>
+                            </div>
+                        
+                    </div>
+                
+                
+    
+        <h1 class="article-title" itemprop="name">
+            MySql 开窗函数
+        </h1>
+    
+
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+        
+            
+        
+        
+            <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>MySql 是从8.0版本之后开始支持开窗函数，开窗函数也叫分析函数。</p>
+<h2 id="窗口函数"><a href="#窗口函数" class="headerlink" title="窗口函数"></a>窗口函数</h2><p>除了聚合函数可以作为开窗函数， MySql 还提供了以下开窗函数。用于解决复杂报表统计需求的功能强大的函数。</p>
+<table>
+<thead>
+<tr>
+<th>函数名</th>
+<th>函数作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>ROW_NUMBER()</td>
+<td>行号</td>
+</tr>
+<tr>
+<td>RANK()</td>
+<td>排名</td>
+</tr>
+<tr>
+<td>DENSE_RANK()</td>
+<td>密集排名</td>
+</tr>
+<tr>
+<td>PRECENT_RANK()</td>
+<td>用于计算分区或结果集中行的百分位数</td>
+</tr>
+<tr>
+<td>CUME_DIST()</td>
+<td>返回一组值中值的累积分布，表示值小于或等于行的值除以总行数的行数</td>
+</tr>
+<tr>
+<td>LAG()</td>
+<td>用于统计窗口内往上第 n 行值</td>
+</tr>
+<tr>
+<td>LEAD()</td>
+<td>用于统计窗口内往下第 n 行值</td>
+</tr>
+<tr>
+<td>FIRST_VALUE()</td>
+<td>选择窗口框架，分区或结果集的第一行</td>
+</tr>
+<tr>
+<td>LAST_VALUE()</td>
+<td>返回有序行集中的最后一行</td>
+</tr>
+<tr>
+<td>NTH_VALUE(expression, N)</td>
+<td>从有序行集中的第N行获取值</td>
+</tr>
+<tr>
+<td>NTILE()</td>
+<td>将排序分区中的行划分为特定数量的组，从每个组分配一个从一开始的桶号，对于每一行，NTILE()函数返回一个桶号，表示行所属的组</td>
+</tr>
+</tbody></table>
+<h2 id="窗口函数语法"><a href="#窗口函数语法" class="headerlink" title="窗口函数语法"></a>窗口函数语法</h2><p>开窗函数语法格式：<code>func_name([&lt;column&gt;]) OVER([PARTITION BY &lt;column&gt; | window_name] [ORDER BY &lt;column&gt;] [[ROWS | RANGE] BETWEEN frame_start AND frame_end])</code></p>
+<ul>
+<li>OVER 函数中如果 paritition_clause 或者 window_name，则开窗函数统计分析全部数据</li>
+<li>PARTITION BY 子句：与 GROUP BY 类似，用于按照指定字段进行分组数据 </li>
+<li>ORDER BY 子句：按照指定字段排序 partition by 子句分组的数据，如果没有指定 partition by 则排序全部数据</li>
+<li>[ROWS | RANGE] BETWEEN frame_start AND frame_end 子句：在 PARTITION 分区的基础，再划分子分区<ul>
+<li>ROWS: ROWS 划定的子分区是以当前行为基准，前后偏移行数的范围</li>
+<li>RANGE: 根据当前行的值划分子分区，注意如果使用 expr PRECEDING&#x2F;FOLLOWING 必须要 ORDER BY 一个数字或者时间类型的字段</li>
+<li>子分区 frame_start(起始边界行)、frame_end(结束边界行) 可选值如下：<ul>
+<li>CURRENT ROW：对于 ROWS 而言，以当前行作为边界行，对于 RANGE 而言，与当前行的值相同的都作为边界行</li>
+<li>UNBOUNDED PRECEDING：以 PARTITION 分区的第一行作为起始边界行</li>
+<li>UNBOUNDED FOLLOWING：以 PARTITION 分区的最后一行作为终点边界行</li>
+<li>expr PRECEDING：对于 ROWS 而言 expr 值只能为数字，边界行是当前行的前前几行，对于 RANGE 而言 expr 值可以是数字或者时间表达式，行值等于大于ORDER BY 字段当前行的值减去表达式的值所得值的即为边界行</li>
+<li>expr FOLLOWING：FOLLOWING 根据 PRECEDING 相对的，对于 ROWS 而言边界行是当前行的后几行，对于 RANGE 而言，行值等于小于 ORDER BY 字段当前行的值加上 expr 表达式的值即为边界行</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="例子说明"><a href="#例子说明" class="headerlink" title="例子说明"></a>例子说明</h2><ol>
+<li><p>语法例子</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"># <span class="keyword">PARTITION</span> <span class="keyword">BY</span> 直接写在 <span class="keyword">OVER</span> 函数中</span><br><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span>, <span class="built_in">ROW_NUMBER</span>() <span class="keyword">OVER</span>(<span class="keyword">PARTITION</span> <span class="keyword">BY</span> `<span class="keyword">month</span>` <span class="keyword">ORDER</span> <span class="keyword">BY</span> salary) <span class="keyword">AS</span> `rownum`</span><br><span class="line"><span class="keyword">FROM</span> (</span><br><span class="line"><span class="keyword">SELECT</span> <span class="string">&#x27;2月&#x27;</span> <span class="keyword">AS</span> `<span class="keyword">month</span>`, <span class="number">3000</span> <span class="keyword">AS</span> salary</span><br><span class="line"><span class="keyword">UNION</span> <span class="keyword">ALL</span> </span><br><span class="line"><span class="keyword">SELECT</span> <span class="string">&#x27;1月&#x27;</span> <span class="keyword">AS</span> `<span class="keyword">month</span>`, <span class="number">4000</span> <span class="keyword">AS</span> salary</span><br><span class="line">) t</span><br><span class="line"></span><br><span class="line"># 使用 <span class="keyword">WINDOW</span> 命名方式定义 <span class="keyword">PARTITION</span> <span class="keyword">BY</span> 字句和 <span class="keyword">ORDER</span> <span class="keyword">BY</span> 字句</span><br><span class="line"><span class="keyword">SELECT</span> `<span class="keyword">month</span>`, `salary`,</span><br><span class="line">	<span class="built_in">ROW_NUMBER</span>() <span class="keyword">OVER</span>(w1 <span class="keyword">ORDER</span> <span class="keyword">BY</span> salary) <span class="keyword">AS</span> `rownum1`,</span><br><span class="line">	<span class="built_in">ROW_NUMBER</span>() <span class="keyword">OVER</span>(w2 <span class="keyword">ORDER</span> <span class="keyword">BY</span> salary) <span class="keyword">AS</span> `rownum2`,</span><br><span class="line">	<span class="built_in">ROW_NUMBER</span>() <span class="keyword">OVER</span> w3 <span class="keyword">AS</span> `rownum3`,</span><br><span class="line">	<span class="built_in">ROW_NUMBER</span>() <span class="keyword">OVER</span> w4 <span class="keyword">AS</span> `rownum4`</span><br><span class="line"><span class="keyword">FROM</span> (</span><br><span class="line"><span class="keyword">SELECT</span> <span class="string">&#x27;2月&#x27;</span> <span class="keyword">AS</span> `<span class="keyword">month</span>`, <span class="number">3000</span> <span class="keyword">AS</span> salary</span><br><span class="line"><span class="keyword">UNION</span> <span class="keyword">ALL</span> </span><br><span class="line"><span class="keyword">SELECT</span> <span class="string">&#x27;1月&#x27;</span> <span class="keyword">AS</span> `<span class="keyword">month</span>`, <span class="number">4000</span> <span class="keyword">AS</span> salary</span><br><span class="line">) t <span class="keyword">WINDOW</span> w1 <span class="keyword">AS</span> (), w2 <span class="keyword">AS</span> (<span class="keyword">PARTITION</span> <span class="keyword">BY</span> `<span class="keyword">month</span>`), w3 <span class="keyword">AS</span> ( <span class="keyword">ORDER</span> <span class="keyword">BY</span> salary), w4 <span class="keyword">AS</span> (<span class="keyword">PARTITION</span> <span class="keyword">BY</span> `<span class="keyword">month</span>` <span class="keyword">ORDER</span> <span class="keyword">BY</span> salary)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>ROW_NUMBER、RANK、DENSE_RANK 排序区别</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> salary,</span><br><span class="line">	<span class="built_in">ROW_NUMBER</span>() <span class="keyword">OVER</span>(<span class="keyword">ORDER</span> <span class="keyword">BY</span> salary) <span class="keyword">AS</span> `rown_umber`,</span><br><span class="line">	<span class="built_in">RANK</span>() <span class="keyword">OVER</span>(<span class="keyword">ORDER</span> <span class="keyword">BY</span> salary ) <span class="keyword">AS</span> `rank`,</span><br><span class="line">	<span class="built_in">DENSE_RANK</span>() <span class="keyword">OVER</span>(<span class="keyword">ORDER</span> <span class="keyword">BY</span> salary) <span class="keyword">AS</span> `dense_rank` </span><br><span class="line"><span class="keyword">FROM</span> (</span><br><span class="line"><span class="keyword">SELECT</span> <span class="number">1000</span> <span class="keyword">AS</span> salary </span><br><span class="line"><span class="keyword">UNION</span> <span class="keyword">ALL</span></span><br><span class="line"><span class="keyword">SELECT</span> <span class="number">1000</span> <span class="keyword">AS</span> salary </span><br><span class="line"><span class="keyword">UNION</span> <span class="keyword">ALL</span></span><br><span class="line"><span class="keyword">SELECT</span> <span class="number">2000</span> <span class="keyword">AS</span> salary</span><br><span class="line"><span class="keyword">UNION</span> <span class="keyword">ALL</span></span><br><span class="line"><span class="keyword">SELECT</span> <span class="number">3000</span> <span class="keyword">AS</span> salary</span><br><span class="line"><span class="keyword">UNION</span> <span class="keyword">ALL</span> </span><br><span class="line"><span class="keyword">SELECT</span> <span class="number">3000</span> <span class="keyword">AS</span> salary</span><br><span class="line"><span class="keyword">UNION</span> <span class="keyword">ALL</span> </span><br><span class="line"><span class="keyword">SELECT</span> <span class="number">4000</span> <span class="keyword">AS</span> salary</span><br><span class="line">) t</span><br></pre></td></tr></table></figure>
+<p>结果显示如下</p>
+<table>
+<thead>
+<tr>
+<th align="right">salary</th>
+<th align="right">rown_umber</th>
+<th align="right">rank</th>
+<th align="right">dense_rank</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="right">1000</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">1</td>
+</tr>
+<tr>
+<td align="right">1000</td>
+<td align="right">2</td>
+<td align="right">1</td>
+<td align="right">1</td>
+</tr>
+<tr>
+<td align="right">2000</td>
+<td align="right">3</td>
+<td align="right">3</td>
+<td align="right">2</td>
+</tr>
+<tr>
+<td align="right">3000</td>
+<td align="right">4</td>
+<td align="right">4</td>
+<td align="right">3</td>
+</tr>
+<tr>
+<td align="right">3000</td>
+<td align="right">5</td>
+<td align="right">4</td>
+<td align="right">3</td>
+</tr>
+<tr>
+<td align="right">4000</td>
+<td align="right">6</td>
+<td align="right">6</td>
+<td align="right">4</td>
+</tr>
+</tbody></table>
+</li>
+<li><p>range 子分区窗口使用说明</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* 注意 range 是 parition by 分区下的子分区，如果没有 paritiion by 则默认是所有记录下的子分析，</span></span><br><span class="line"><span class="comment">使用 expr following 必须要 order by 时间或者数字类型的字段 */</span></span><br><span class="line"><span class="keyword">SELECT</span> </span><br><span class="line">   `name`,`<span class="keyword">month</span>`, `salary`,</span><br><span class="line">   <span class="comment">/*  在 month 分区下，计算子分区为(当前行month值 &lt;= month &lt;= 当前行month值 + 1)内的行 */</span></span><br><span class="line">   <span class="built_in">SUM</span>(salary) <span class="keyword">OVER</span>(<span class="keyword">PARTITION</span> <span class="keyword">BY</span> <span class="keyword">month</span> <span class="keyword">ORDER</span> <span class="keyword">BY</span> <span class="keyword">month</span> <span class="keyword">RANGE</span> <span class="keyword">BETWEEN</span> <span class="keyword">CURRENT</span> <span class="type">ROW</span> <span class="keyword">AND</span> <span class="number">1</span> FOLLOWING) orderMonth,</span><br><span class="line">   <span class="comment">/*  在 month 分区下，计算子分区(当前行salary的值 &lt;= salary &lt;= 当前行salary值+100  )内的行 */</span></span><br><span class="line">   <span class="built_in">SUM</span>(salary) <span class="keyword">OVER</span>(<span class="keyword">PARTITION</span> <span class="keyword">BY</span> <span class="keyword">month</span> <span class="keyword">ORDER</span> <span class="keyword">BY</span> salary <span class="keyword">RANGE</span> <span class="keyword">BETWEEN</span> <span class="keyword">CURRENT</span> <span class="type">ROW</span> <span class="keyword">AND</span> <span class="number">100</span> FOLLOWING) orderSalary,</span><br><span class="line">   <span class="comment">/*  没有 parition by 则表示，在所有记录的分区下，计算子分区(当前行month值 &lt;= month &lt;= 当前行month值 + 1)内的行 */</span></span><br><span class="line">	<span class="built_in">SUM</span>(salary) <span class="keyword">OVER</span>(<span class="keyword">ORDER</span> <span class="keyword">BY</span> <span class="keyword">month</span> <span class="keyword">RANGE</span> <span class="keyword">BETWEEN</span> <span class="keyword">CURRENT</span> <span class="type">ROW</span> <span class="keyword">AND</span> <span class="number">1</span> FOLLOWING)</span><br><span class="line"><span class="keyword">FROM</span> (</span><br><span class="line"><span class="keyword">SELECT</span> <span class="string">&#x27;李思&#x27;</span> <span class="keyword">AS</span> `name`, <span class="number">300</span> <span class="keyword">AS</span> salary, <span class="number">1</span> <span class="keyword">AS</span> `<span class="keyword">month</span>`</span><br><span class="line"><span class="keyword">UNION</span> <span class="keyword">ALL</span> </span><br><span class="line"><span class="keyword">SELECT</span> <span class="string">&#x27;张三&#x27;</span> <span class="keyword">AS</span> `name`, <span class="number">300</span> <span class="keyword">AS</span> salary, <span class="number">1</span> <span class="keyword">AS</span> `<span class="keyword">month</span>`</span><br><span class="line"><span class="keyword">UNION</span> <span class="keyword">ALL</span></span><br><span class="line"><span class="keyword">SELECT</span> <span class="string">&#x27;李思&#x27;</span> <span class="keyword">AS</span> `name`, <span class="number">300</span> <span class="keyword">AS</span> salary, <span class="number">2</span> <span class="keyword">AS</span> `<span class="keyword">month</span>`</span><br><span class="line"><span class="keyword">UNION</span> <span class="keyword">ALL</span> </span><br><span class="line"><span class="keyword">SELECT</span> <span class="string">&#x27;张三&#x27;</span> <span class="keyword">AS</span> `name`, <span class="number">350</span> <span class="keyword">AS</span> salary, <span class="number">2</span> <span class="keyword">AS</span> `<span class="keyword">month</span>`</span><br><span class="line"><span class="keyword">UNION</span> <span class="keyword">ALL</span> </span><br><span class="line"><span class="keyword">SELECT</span> <span class="string">&#x27;小鱼&#x27;</span> <span class="keyword">AS</span> `name`, <span class="number">300</span> <span class="keyword">AS</span> salary, <span class="number">1</span> <span class="keyword">AS</span> `<span class="keyword">month</span>`</span><br><span class="line"><span class="keyword">UNION</span> <span class="keyword">ALL</span> </span><br><span class="line"><span class="keyword">SELECT</span> <span class="string">&#x27;小鱼&#x27;</span> <span class="keyword">AS</span> `name`, <span class="number">400</span> <span class="keyword">AS</span> salary, <span class="number">2</span> <span class="keyword">AS</span> `<span class="keyword">month</span>`</span><br><span class="line"><span class="keyword">UNION</span> <span class="keyword">ALL</span></span><br><span class="line"><span class="keyword">SELECT</span> <span class="string">&#x27;小明&#x27;</span> <span class="keyword">AS</span> `name`, <span class="number">300</span> <span class="keyword">AS</span> salary, <span class="number">1</span> <span class="keyword">AS</span> `<span class="keyword">month</span>`</span><br><span class="line"><span class="keyword">UNION</span> <span class="keyword">ALL</span> </span><br><span class="line"><span class="keyword">SELECT</span> <span class="string">&#x27;小明&#x27;</span> <span class="keyword">AS</span> `name`, <span class="number">450</span> <span class="keyword">AS</span> salary, <span class="number">2</span> <span class="keyword">AS</span> `<span class="keyword">month</span>`</span><br><span class="line">) t</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>rows 子分区窗口使用说明</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> </span><br><span class="line">   `<span class="keyword">month</span>`, `salary`,</span><br><span class="line">   <span class="built_in">ROW_NUMBER</span>() <span class="keyword">OVER</span>(),</span><br><span class="line">   <span class="built_in">SUM</span>(salary) <span class="keyword">OVER</span>(<span class="keyword">ROWS</span> <span class="keyword">BETWEEN</span> <span class="keyword">CURRENT</span> <span class="type">ROW</span> <span class="keyword">AND</span> <span class="number">1</span> FOLLOWING),</span><br><span class="line">   <span class="comment">/*在 month 分区下，计算的子分区的范围是(当前行的row_number  &lt;= row_number &lt;= 当前行的row_number + 1)之间的行*/</span></span><br><span class="line">   <span class="built_in">SUM</span>(salary) <span class="keyword">OVER</span>(<span class="keyword">PARTITION</span> <span class="keyword">BY</span> `<span class="keyword">month</span>` <span class="keyword">ORDER</span> <span class="keyword">BY</span> `<span class="keyword">month</span>` <span class="keyword">ROWS</span> <span class="keyword">BETWEEN</span> <span class="keyword">CURRENT</span> <span class="type">ROW</span> <span class="keyword">AND</span> <span class="number">1</span> FOLLOWING),</span><br><span class="line">   <span class="built_in">ROW_NUMBER</span>() <span class="keyword">OVER</span>(<span class="keyword">PARTITION</span> <span class="keyword">BY</span> `<span class="keyword">month</span>` <span class="keyword">ORDER</span> <span class="keyword">BY</span> `<span class="keyword">month</span>` )</span><br><span class="line"></span><br><span class="line"><span class="keyword">FROM</span> (</span><br><span class="line"><span class="keyword">SELECT</span> <span class="string">&#x27;李思&#x27;</span> <span class="keyword">AS</span> `name`, <span class="number">300</span> <span class="keyword">AS</span> salary, <span class="string">&#x27;1月份&#x27;</span> <span class="keyword">AS</span> `<span class="keyword">month</span>`</span><br><span class="line"><span class="keyword">UNION</span> <span class="keyword">ALL</span> </span><br><span class="line"><span class="keyword">SELECT</span> <span class="string">&#x27;张三&#x27;</span> <span class="keyword">AS</span> `name`, <span class="number">300</span> <span class="keyword">AS</span> salary, <span class="string">&#x27;1月份&#x27;</span> <span class="keyword">AS</span> `<span class="keyword">month</span>`</span><br><span class="line"><span class="keyword">UNION</span> <span class="keyword">ALL</span></span><br><span class="line"><span class="keyword">SELECT</span> <span class="string">&#x27;李思&#x27;</span> <span class="keyword">AS</span> `name`, <span class="number">300</span> <span class="keyword">AS</span> salary, <span class="string">&#x27;2月份&#x27;</span> <span class="keyword">AS</span> `<span class="keyword">month</span>`</span><br><span class="line"><span class="keyword">UNION</span> <span class="keyword">ALL</span> </span><br><span class="line"><span class="keyword">SELECT</span> <span class="string">&#x27;张三&#x27;</span> <span class="keyword">AS</span> `name`, <span class="number">350</span> <span class="keyword">AS</span> salary, <span class="string">&#x27;2月份&#x27;</span> <span class="keyword">AS</span> `<span class="keyword">month</span>`</span><br><span class="line"><span class="keyword">UNION</span> <span class="keyword">ALL</span> </span><br><span class="line"><span class="keyword">SELECT</span> <span class="string">&#x27;小鱼&#x27;</span> <span class="keyword">AS</span> `name`, <span class="number">300</span> <span class="keyword">AS</span> salary, <span class="string">&#x27;1月份&#x27;</span> <span class="keyword">AS</span> `<span class="keyword">month</span>`</span><br><span class="line"><span class="keyword">UNION</span> <span class="keyword">ALL</span> </span><br><span class="line"><span class="keyword">SELECT</span> <span class="string">&#x27;小鱼&#x27;</span> <span class="keyword">AS</span> `name`, <span class="number">400</span> <span class="keyword">AS</span> salary, <span class="string">&#x27;2月份&#x27;</span> <span class="keyword">AS</span> `<span class="keyword">month</span>`</span><br><span class="line"><span class="keyword">UNION</span> <span class="keyword">ALL</span></span><br><span class="line"><span class="keyword">SELECT</span> <span class="string">&#x27;小明&#x27;</span> <span class="keyword">AS</span> `name`, <span class="number">300</span> <span class="keyword">AS</span> salary, <span class="string">&#x27;1月份&#x27;</span> <span class="keyword">AS</span> `<span class="keyword">month</span>`</span><br><span class="line"><span class="keyword">UNION</span> <span class="keyword">ALL</span> </span><br><span class="line"><span class="keyword">SELECT</span> <span class="string">&#x27;小明&#x27;</span> <span class="keyword">AS</span> `name`, <span class="number">450</span> <span class="keyword">AS</span> salary, <span class="string">&#x27;2月份&#x27;</span> <span class="keyword">AS</span> `<span class="keyword">month</span>`</span><br><span class="line">) t</span><br></pre></td></tr></table></figure></li>
+</ol>
+<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><p>1、<a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/8.0/en/window-functions.html">https://dev.mysql.com/doc/refman/8.0/en/window-functions.html</a></p>
+
+            </div>
+        
+        <footer class="article-footer">
+        </footer>
+    </div>
+</article>
+
+
+    
+<nav id="article-nav">
+    
+        <a href="/wiki/MySql/MySql%20%E5%B8%B8%E7%94%A8%E5%87%BD%E6%95%B0/" id="article-nav-newer" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">Newer</strong>
+            <div class="article-nav-title">
+                
+                    MySql 常用函数
+                
+            </div>
+        </a>
+    
+    
+        <a href="/wiki/MySql/Mysql%20%E9%83%A8%E5%88%86%E8%AF%8D%E6%B1%87%E5%90%AB%E4%B9%89/" id="article-nav-older" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">Older</strong>
+            <div class="article-nav-title">Mysql 部分词汇含义</div>
+        </a>
+    
+</nav>
+
+
+
+
+
+    
+    
+
+
+
+</section>
+        </div>
+        <footer id="footer">
+    <div class="outer">
+        <div id="footer-info" class="inner">
+            <br> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>. Theme - <a target="_blank" rel="noopener" href="https://github.com/vianlex/hexo-theme-Wikitten">wikitten</a>
+            
+                <br>
+                <span id="busuanzi_container_site_pv"><i class="fa fa-eye"></i> <span id="busuanzi_value_site_pv"></span></span>
+                &nbsp;|&nbsp;
+                <span id="busuanzi_container_site_pv"><i class="fa fa-user"></i> <span id="busuanzi_value_site_uv"></span></span>
+            
+        </div>
+    </div>
+</footer>
+
+        
+
+    
+        
+<script src="/libs/lightgallery/js/lightgallery.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-thumbnail.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-pager.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-autoplay.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-fullscreen.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-zoom.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-hash.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-share.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-video.min.js"></script>
+
+    
+    
+        
+<script src="/libs/justified-gallery/jquery.justifiedGallery.min.js"></script>
+
+    
+    
+        <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true,
+            TeX: {
+                equationNumbers: {
+                  autoNumber: 'AMS'
+                }
+            }
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script async src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+
+
+
+<!-- Custom Scripts -->
+
+<script src="/js/main.js"></script>
+
+    </div>
+</body>
+</html>

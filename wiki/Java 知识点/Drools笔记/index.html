@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <meta charset="utf-8">
+    
+    <title>Drools 笔记 | Vianlex&#39;s Wiki</title>
+    
+    
+        <meta name="keywords" content="Drools 笔记" />
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <meta name="description" content="一、 Drools 简介Drools 是一款基于 Java 的开源规则引擎，规则引擎的核心思想是是将应用程序中的业务决策（if-else）部分分离出来，以规则脚本的形式存编写在文件中，从而达到业务规则与业务代码解耦。当业务规则的变化不需要修改代码，只需要修改业务规则即可。 二、 Drools 术语说明 Rules：表示用于定义的业务规则或 DMN 决策，所有规则必须包含触发规则的条件和规则执行的动">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Drools 笔记">
+<meta property="og:url" content="http://example.com/wiki/Java%20%E7%9F%A5%E8%AF%86%E7%82%B9/Drools%E7%AC%94%E8%AE%B0/index.html">
+<meta property="og:site_name" content="Vianlex&#39;s Wiki">
+<meta property="og:description" content="一、 Drools 简介Drools 是一款基于 Java 的开源规则引擎，规则引擎的核心思想是是将应用程序中的业务决策（if-else）部分分离出来，以规则脚本的形式存编写在文件中，从而达到业务规则与业务代码解耦。当业务规则的变化不需要修改代码，只需要修改业务规则即可。 二、 Drools 术语说明 Rules：表示用于定义的业务规则或 DMN 决策，所有规则必须包含触发规则的条件和规则执行的动">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/images/kie%E9%A1%B9%E7%9B%AE%E5%AD%90%E6%A8%A1%E5%9D%97%E5%9B%BE.png">
+<meta property="og:image" content="http://example.com/images/KieModule.png">
+<meta property="article:published_time" content="2023-05-31T13:39:26.110Z">
+<meta property="article:modified_time" content="2023-05-31T13:39:26.110Z">
+<meta property="article:author" content="Vianlex">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/images/kie%E9%A1%B9%E7%9B%AE%E5%AD%90%E6%A8%A1%E5%9D%97%E5%9B%BE.png">
+    
+
+    
+
+    
+        <link rel="icon" href="/favicon.ico" />
+    
+
+    
+<link rel="stylesheet" href="/libs/font-awesome/css/font-awesome.min.css">
+
+    
+<link rel="stylesheet" href="/libs/open-sans/styles.css">
+
+    
+<link rel="stylesheet" href="/libs/source-code-pro/styles.css">
+
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    
+<script src="/libs/jquery/2.1.3/jquery.min.js"></script>
+
+    
+<script src="/libs/jquery/plugins/cookie/1.4.1/jquery.cookie.js"></script>
+
+    
+    
+        
+<link rel="stylesheet" href="/libs/lightgallery/css/lightgallery.min.css">
+
+    
+    
+        
+<link rel="stylesheet" href="/libs/justified-gallery/justifiedGallery.min.css">
+
+    
+    
+    
+    
+
+
+    
+        <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    
+<meta name="generator" content="Hexo 6.3.0"><link rel="alternate" href="/atom.xml" title="Vianlex's Wiki" type="application/atom+xml">
+</head>
+
+<body>
+    <div id="container">
+        <header id="header">
+    <div id="header-main" class="header-inner">
+        <div class="outer">
+            <a href="/" id="logo">
+                <i class="logo"></i>
+                <span class="site-title">Vianlex&#39;s Wiki</span>
+            </a>
+            <nav id="main-nav">
+                
+                    <a class="main-nav-link" href="/">首页</a>
+                
+                    <a class="main-nav-link" href="/archives">归档</a>
+                
+                    <a class="main-nav-link" href="/categories">分类</a>
+                
+                    <a class="main-nav-link" href="/tags">标签</a>
+                
+                    <a class="main-nav-link" href="/about">关于</a>
+                
+            </nav>
+            
+            <div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="Search" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="Type something..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: 'Posts',
+            PAGES: 'Pages',
+            CATEGORIES: 'Categories',
+            TAGS: 'Tags',
+            UNTITLED: '(Untitled)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+
+</div>
+        </div>
+    </div>
+    <div id="main-nav-mobile" class="header-sub header-inner">
+        <table class="menu outer">
+            <tr>
+                
+                    <td><a class="main-nav-link" href="/">首页</a></td>
+                
+                    <td><a class="main-nav-link" href="/archives">归档</a></td>
+                
+                    <td><a class="main-nav-link" href="/categories">分类</a></td>
+                
+                    <td><a class="main-nav-link" href="/tags">标签</a></td>
+                
+                    <td><a class="main-nav-link" href="/about">关于</a></td>
+                
+                <td>
+                    
+    <div class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="Search" />
+    </div>
+
+                </td>
+            </tr>
+        </table>
+    </div>
+</header>
+
+        <div class="outer">
+            
+            
+                <aside id="sidebar">
+   
+        
+    <div class="widget-wrap" id='categories'>
+        <h3 class="widget-title">
+            <span>分类目录</span>
+            &nbsp;
+            <a id='allExpand' href="#">
+                <i class="fa fa-angle-double-down fa-2x"></i>
+            </a>
+        </h3>
+        
+        
+        
+         <ul class="unstyled" id="tree" > 
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            Apache POI
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/Apache%20POI/Excel%20%E8%AE%BE%E7%BD%AE%E8%A1%8C%E9%AB%98%E5%92%8C%E6%8D%A2%E8%A1%8C%E9%97%AE%E9%A2%98/">Excel 设置行高和换行问题</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            Docker
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/Docker/Docker%20Swarm%20%E7%AC%94%E8%AE%B0/">Docker Swarm 笔记</a></li>  <li class="file"><a href="/wiki/Docker/Docker%20%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0/">Docker 入门笔记</a></li>  <li class="file"><a href="/wiki/Docker/Docker%20%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/">Docker 常用命令</a></li>  <li class="file"><a href="/wiki/Docker/Docker%20%E6%9D%83%E9%99%90%E9%85%8D%E7%BD%AE/">Docker 权限配置</a></li>  <li class="file"><a href="/wiki/Docker/Dockerfile%20%E4%BD%BF%E7%94%A8%E8%AF%B4%E6%98%8E/">Dockerfile 使用说明</a></li>  <li class="file"><a href="/wiki/Docker/docker%20%E5%AE%89%E8%A3%85%E7%AC%94%E8%AE%B0/">Docker 安装笔记</a></li>  <li class="file"><a href="/wiki/Docker/docker-compose%20%E5%AD%A6%E4%B9%A0%E8%AE%B0%E5%BD%95/">Docker-compose 学习记录</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            Golang
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/Golang/Go%20%E5%9F%BA%E7%A1%80%E8%AF%AD%E6%B3%95/">Go 基础语法</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory open">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder-open"></i>
+                            &nbsp;
+                            Java 知识点
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/Java%20%E7%9F%A5%E8%AF%86%E7%82%B9/Class%E5%AF%B9%E8%B1%A1%E5%92%8CTpye%E5%AF%B9%E8%B1%A1/">Class 对象和 Tpye 对象知识笔记</a></li>  <li class="file"><a href="/wiki/Java%20%E7%9F%A5%E8%AF%86%E7%82%B9/Instrumentation%20%E7%9F%A5%E8%AF%86%E7%AC%94%E8%AE%B0/">Instrumentation 知识笔记</a></li>  <li class="file"><a href="/wiki/Java%20%E7%9F%A5%E8%AF%86%E7%82%B9/Java%20main%20%E5%92%8C%20classpath/">main 方法和 classpath 说明</a></li>  <li class="file"><a href="/wiki/Java%20%E7%9F%A5%E8%AF%86%E7%82%B9/Javassist%20%E7%9F%A5%E8%AF%86%E7%AC%94%E8%AE%B0/">Javassist 知识笔记</a></li>  <li class="file"><a href="/wiki/Java%20%E7%9F%A5%E8%AF%86%E7%82%B9/SecurityManager%20%E7%AC%94%E8%AE%B0/">SecurityManager 笔记</a></li>  <li class="file"><a href="/wiki/Java%20%E7%9F%A5%E8%AF%86%E7%82%B9/byteBuddy%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0/">ByteBuddy 入门笔记</a></li>  <li class="file active"><a href="/wiki/Java%20%E7%9F%A5%E8%AF%86%E7%82%B9/Drools%E7%AC%94%E8%AE%B0/">Drools 笔记</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            Java 设计模式
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/Java%20%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/%E4%BB%A3%E7%90%86%E6%A8%A1%E5%BC%8F/">代理模式</a></li>  <li class="file"><a href="/wiki/Java%20%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/%E5%B7%A5%E5%8E%82%E6%A8%A1%E5%BC%8F/">工厂模式</a></li>  <li class="file"><a href="/wiki/Java%20%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/%E6%A8%A1%E6%9D%BF%E6%A8%A1%E5%BC%8F/">模板模式(模板方法模式)</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            Jemeter
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/Jemeter/Jemeter%20%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0/">Jemeter 入门笔记</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            Kubernetes
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/Kubernetes/kubeadm%20%E5%BF%AB%E9%80%9F%E9%83%A8%E7%BD%B2%20k8s%20%E9%9B%86%E7%BE%A4%E6%B5%8B%E8%AF%95%E7%8E%AF%E5%A2%83/">kubeadm 快速部署 kubernetes 集群测试环境</a></li>  <li class="file"><a href="/wiki/Kubernetes/kubeadm%E5%AE%89%E8%A3%85%20k8s%20%E9%97%AE%E9%A2%98%E8%AE%B0%E5%BD%95/">kubeadm安装 k8s 问题记录</a></li>  <li class="file"><a href="/wiki/Kubernetes/K8s%20%E5%85%A5%E9%97%A8%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">K8s 入门学习笔记</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            Linux
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/Linux/SSH%20%E5%AF%86%E7%A0%81%E7%99%BB%E5%BD%95%E5%92%8C%E5%AF%86%E9%92%A5%E9%85%8D%E7%BD%AE%E8%AF%B4%E6%98%8E/">SSH 密码登录和密钥配置说明</a></li>  <li class="file"><a href="/wiki/Linux/ECS%20%E4%BA%91%E6%9C%8D%E5%8A%A1%E5%99%A8%E6%8C%82%E8%BD%BD%E6%95%B0%E6%8D%AE%E7%9B%98/">ECS 云服务器挂载数据盘</a></li>  <li class="file"><a href="/wiki/Linux/Linux%20%E6%9C%8D%E5%8A%A1%E5%99%A8%E6%8C%82%E8%BD%BD%E7%A1%AC%E7%9B%98/"></a></li>  <li class="file"><a href="/wiki/Linux/SSH%20%E7%AB%AF%E5%8F%A3%E8%BD%AC%E5%8F%91/">SSH 端口转发用法说明</a></li>  <li class="file"><a href="/wiki/Linux/dnf%E8%BD%AF%E4%BB%B6%E5%8C%85%E7%AE%A1%E7%90%86%E5%B7%A5%E5%85%B7/">dnf 软件包管理工具</a></li>  <li class="file"><a href="/wiki/Linux/iptables%20%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">iptables 学习笔记</a></li>  <li class="file"><a href="/wiki/Linux/yum%20%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/">YUM 常用命令</a></li>  <li class="file"><a href="/wiki/Linux/%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4%E8%AE%B0%E5%BD%95/">Linux 常用命令记录</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            Maven
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/Maven/Maven%20%E9%97%AE%E9%A2%98%E8%AE%B0%E5%BD%95/">Maven 问题记录</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            MySql
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/MySql/MySql%20%E5%B8%B8%E7%94%A8%E5%87%BD%E6%95%B0/">MySql 常用函数</a></li>  <li class="file"><a href="/wiki/MySql/MySql%20%E5%BC%80%E7%AA%97%E5%87%BD%E6%95%B0/">MySql 开窗函数</a></li>  <li class="file"><a href="/wiki/MySql/Mysql%20%E9%83%A8%E5%88%86%E8%AF%8D%E6%B1%87%E5%90%AB%E4%B9%89/">Mysql 部分词汇含义</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            Nginx
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/Nginx/Nginx%20%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/">Nginx 常用命令</a></li>  <li class="file"><a href="/wiki/Nginx/Tengine%E5%AE%89%E8%A3%85%E7%AC%94%E8%AE%B0/"></a></li>  <li class="file"><a href="/wiki/Nginx/location%20%E6%8C%87%E4%BB%A4%E7%AC%94%E8%AE%B0/">location 和 rewrite 笔记</a></li>  <li class="file"><a href="/wiki/Nginx/ngx_http_proxy_module%E6%A8%A1%E5%9D%97%E7%AC%94%E8%AE%B0/">ngx_http_proxy_module 模块学习笔记</a></li>  <li class="file"><a href="/wiki/Nginx/ngx_http_rewrite_module%20%E6%A8%A1%E5%9D%97%E7%AC%94%E8%AE%B0/">ngx_http_rewrite_module 模块学习笔记</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            NodeJs
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/NodeJs/Node%20%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE%E8%AE%B0%E5%BD%95/">Node 环境配置说明</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            PowerDesigner
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/PowerDesigner/%E4%BD%BF%E7%94%A8%E9%97%AE%E9%A2%98%E8%AE%B0%E5%BD%95/">使用出现问题记录</a></li>  <li class="file"><a href="/wiki/PowerDesigner/%E9%80%86%E5%90%91%E5%AF%BC%E5%85%A5%E9%97%AE%E9%A2%98%E8%AE%B0%E5%BD%95/">SQL 逆向导入生成 PDM</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            Redis
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/Redis/Redis%20%E7%BC%93%E5%AD%98%E7%A9%BF%E9%80%8F%E3%80%81%E5%87%BB%E7%A9%BF%E3%80%81%E9%9B%AA%E5%B4%A9/">Redis 缓存穿透、缓存击穿、缓存雪崩</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            Shell
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/Shell/Awk%20%20%E5%9F%BA%E7%A1%80%E7%94%A8%E6%B3%95/">Awk 基础用法</a></li>  <li class="file"><a href="/wiki/Shell/Sed%20%E5%9F%BA%E7%A1%80%E7%94%A8%E6%B3%95/">Sed 基础用法</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            SpringBoot
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/SpringBoot/SpringBoot%20%E5%B1%9E%E6%80%A7%E9%85%8D%E7%BD%AE/">SpringBoot 属性配置</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            Xml
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/Xml/Dom4j%20%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0/">Dom4j 入门笔记</a></li>  <li class="file"><a href="/wiki/Xml/XPath%20%E7%AC%94%E8%AE%B0/">XPath 笔记</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            other
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/other/%E8%BD%AF%E4%BB%B6%E5%90%8D%E7%A7%B0%E8%AE%B0%E5%BD%95/">软件名称记录</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            计算机网络
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/%E7%BD%91%E7%BB%9C%E8%AE%BE%E5%A4%87%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0/">网络设备入门笔记</a></li>  </ul> 
+                    </li> 
+                     <li class="file"><a href="/wiki/index/"></a></li>  </ul> 
+    </div>
+    <script>
+        $(document).ready(function() {
+            var iconFolderOpenClass  = 'fa-folder-open';
+            var iconFolderCloseClass = 'fa-folder';
+            var iconAllExpandClass = 'fa-angle-double-down';
+            var iconAllPackClass = 'fa-angle-double-up';
+            // Handle directory-tree expansion:
+            // 左键单独展开目录
+            $(document).on('click', '#categories a[data-role="directory"]', function (event) {
+                event.preventDefault();
+
+                var icon = $(this).children('.fa');
+                var expanded = icon.hasClass(iconFolderOpenClass);
+                var subtree = $(this).siblings('ul');
+                icon.removeClass(iconFolderOpenClass).removeClass(iconFolderCloseClass);
+                if (expanded) {
+                    if (typeof subtree != 'undefined') {
+                        subtree.slideUp({ duration: 100 });
+                    }
+                    icon.addClass(iconFolderCloseClass);
+                } else {
+                    if (typeof subtree != 'undefined') {
+                        subtree.slideDown({ duration: 100 });
+                    }
+                    icon.addClass(iconFolderOpenClass);
+                }
+            });
+            // 右键展开下属所有目录
+            $('#categories a[data-role="directory"]').bind("contextmenu", function(event){
+                event.preventDefault();
+                
+                var icon = $(this).children('.fa');
+                var expanded = icon.hasClass(iconFolderOpenClass);
+                var listNode = $(this).siblings('ul');
+                var subtrees = $.merge(listNode.find('li ul'), listNode);
+                var icons = $.merge(listNode.find('.fa'), icon);
+                icons.removeClass(iconFolderOpenClass).removeClass(iconFolderCloseClass);
+                if(expanded) {
+                    subtrees.slideUp({ duration: 100 });
+                    icons.addClass(iconFolderCloseClass);
+                } else {
+                    subtrees.slideDown({ duration: 100 });
+                    icons.addClass(iconFolderOpenClass);
+                }
+            })
+            // 展开关闭所有目录按钮
+            $(document).on('click', '#allExpand', function (event) {
+                event.preventDefault();
+                
+                var icon = $(this).children('.fa');
+                var expanded = icon.hasClass(iconAllExpandClass);
+                icon.removeClass(iconAllExpandClass).removeClass(iconAllPackClass);
+                if(expanded) {
+                    $('#sidebar .fa.fa-folder').removeClass('fa-folder').addClass('fa-folder-open')
+                    $('#categories li ul').slideDown({ duration: 100 });
+                    icon.addClass(iconAllPackClass);
+                } else {
+                    $('#sidebar .fa.fa-folder-open').removeClass('fa-folder-open').addClass('fa-folder')
+                    $('#categories li ul').slideUp({ duration: 100 });
+                    icon.addClass(iconAllExpandClass);
+                }
+            });  
+        });
+    </script>
+
+    
+    <div id="toTop" class="fa fa-angle-up"></div>
+</aside>
+            
+            <section id="main"><article id="post-Java 知识点/Drools笔记" class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
+                
+                    <div class="article-meta">
+                        
+    <div class="article-category">
+    	<i class="fa fa-folder"></i>
+        <a class="article-category-link" href="/categories/Java-%E7%9F%A5%E8%AF%86%E7%82%B9/">Java 知识点</a>
+    </div>
+
+                        
+                        
+    <div class="article-date">
+        <i class="fa fa-calendar"></i>
+        <a href="/wiki/Java%20%E7%9F%A5%E8%AF%86%E7%82%B9/Drools%E7%AC%94%E8%AE%B0/">
+            <time datetime="2023-05-31T13:39:26.110Z" itemprop="datePublished">2023-05-31</time>
+        </a>
+    </div>
+
+
+                        
+                            <i class="fa fa-bar-chart"></i>
+                            <span id="busuanzi_container_site_pv"><span id="busuanzi_value_page_pv"></span></span>    
+                        
+                        
+                            <div class="article-meta-button">
+                                <a target="_blank" rel="noopener" href='https://github.com/Vianlex/blog/raw/gh-pages/source/_posts/Java 知识点/Drools笔记.md'> Source </a>
+                            </div>
+                            <div class="article-meta-button">
+                                <a target="_blank" rel="noopener" href='https://github.com/Vianlex/blog/edit/gh-pages/source/_posts/Java 知识点/Drools笔记.md'> Edit </a>
+                            </div>
+                            <div class="article-meta-button">
+                                <a target="_blank" rel="noopener" href='https://github.com/Vianlex/blog/commits/gh-pages/source/_posts/Java 知识点/Drools笔记.md'> History </a>
+                            </div>
+                        
+                    </div>
+                
+                
+    
+        <h1 class="article-title" itemprop="name">
+            Drools 笔记
+        </h1>
+    
+
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+        
+            
+        
+        
+            <h2 id="一、-Drools-简介"><a href="#一、-Drools-简介" class="headerlink" title="一、 Drools 简介"></a>一、 Drools 简介</h2><p>Drools 是一款基于 Java 的开源规则引擎，规则引擎的核心思想是是将应用程序中的业务决策（if-else）部分分离出来，以规则脚本的形式存编写在文件中，从而达到业务规则与业务代码解耦。当业务规则的变化不需要修改代码，只需要修改业务规则即可。</p>
+<h2 id="二、-Drools-术语说明"><a href="#二、-Drools-术语说明" class="headerlink" title="二、 Drools 术语说明"></a>二、 Drools 术语说明</h2><ul>
+<li>Rules：表示用于定义的业务规则或 DMN 决策，所有规则必须包含触发规则的条件和规则执行的动作。</li>
+<li>Facts： 事实对象，表示规则引擎中输入或者更改的数据对象，即规则判断条件和执行动作时，要使用的数据对象。</li>
+<li>：Drools 引擎中存储规则的地方。</li>
+<li>Working memory：Drools 引擎中存储 Facts 事实对象的内存。</li>
+<li>Agenda：注册和排序激活规则引擎匹配的规则（如果适用）以准备执行的存放位置。</li>
+</ul>
+<h2 id="三-Kie-简介"><a href="#三-Kie-简介" class="headerlink" title="三 Kie 简介"></a>三 Kie 简介</h2><p>Kie 的全称是 knowledge is everything，即“知识就是一切”的缩写。Kie 是 Jboss 一系列项目的总称，Kie 包含的一系列子项目如下图所示，Drools 只是 Kie 其中的一个子项目而已。<br><img src="/images/kie%E9%A1%B9%E7%9B%AE%E5%AD%90%E6%A8%A1%E5%9D%97%E5%9B%BE.png" alt="kie项目子模块图"></p>
+<h2 id="四、Kie-APi-介绍"><a href="#四、Kie-APi-介绍" class="headerlink" title="四、Kie APi 介绍"></a>四、Kie APi 介绍</h2><h3 id="4-1-KieModule"><a href="#4-1-KieModule" class="headerlink" title="4.1 KieModule"></a>4.1 KieModule</h3><p>KieModule 是 Drools 规则引擎中的一个概念，KieMolde 在宏观上指的是一个标准的 Drools Java Maven 工程，包含 Facts 事实类、规则文件、流程定义、kmodule.xml 文件等其他规则引擎资源，其中 kmodule.xml 文件是必需的，并且目录固定为 <code>resource/META-INF/kmodule.xml</code>， 如下图所示：<br><img src="/images/KieModule.png" alt="KieModule"></p>
+<p>同时 KieModule 也是 Drools 规则引擎中非常重要的一个接口，它定义了访问 KieModule 工程的方法，包括获取 KieBase、KieSession 和其他资源等。通过 KieModule 接口，可以方便地管理和使用 KieModule 工程下的资源，提高规则引擎的可维护性和可扩展性。KieModule接口提供了以下功能：</p>
+<ul>
+<li>获取 KieBase：KieBase 是 Drools 规则引擎的核心组件之一，它表示规则的集合。KieModule 接口定义了一个 getKieBase() 方法，可以用来获取 KieBase 对象。通过 KieBase，可以加载和执行 KieModule 中定义的所有规则。</li>
+<li>获取 KieSession：KieSession 是 Drools 规则引擎中用于执行规则的主要组件之一。KieModule 接口定义了一个getKieSession() 方法，可以用来获取 KieSession 对象。通过 KieSession，可以加载和执行 KieModule 中定义的所有规则。</li>
+<li>获取其他资源：KieModule 可能包含其他类型的资源文件，如图像、文本文件和属性文件。KieModule 接口定义了一系列方法，可以用来获取这些资源文件。这些资源文件可以被用来支持规则的执行或提供其他功能。</li>
+<li>版本控制：KieModule 接口支持版本控制机制，可以通过接口的方法获取 KieModule 的版本信息。这个版本信息可以用来检测 KieModule 是否有新版本，并且可以用来更新已经存在的 KieModule。</li>
+</ul>
+<h3 id="4-2-kieBase"><a href="#4-2-kieBase" class="headerlink" title="4.2 kieBase"></a>4.2 kieBase</h3><p>KieBase 是规则引擎的知识库，它包含了规则、流程、函数等各种知识元素，并提供了一种高效的方式来执行规则。每个 KieBase 都与一个或多个 KieSession 相关联，其中包括 stateful 和 stateless KieSession。KieBase 还可以从多种来源创建，例如从规则文件、数据库或Java类中加载规则。</p>
+<h3 id="4-3-KieContainer"><a href="#4-3-KieContainer" class="headerlink" title="4.3 KieContainer"></a>4.3 KieContainer</h3><p>KieContainer 是Drools 中的一个高级组件，它提供了一个应用程序的部署单元。KieContainer 包含一个或多个 KieModule，每个 KieModule 包含一个或多个 KieBase。KieContainer 的主要作用是管理应用程序中的规则库，包括从外部资源（如文件、数据库等）加载规则，并提供一种简单的方式来访问这些规则库。<br>KieContainer 还提供了一些有用的方法，例如从 KieBase 创建 KieSession，从外部资源（如文件、数据库等）加载规则库，以及获取 KieBase 的详细信息。</p>
+<h3 id="4-4-KieService"><a href="#4-4-KieService" class="headerlink" title="4.4 KieService"></a>4.4 KieService</h3><p>KieService 接口提供了很多方法，可以通过这些方法访问 Kie 操作和管理的 Drools 资源的接口对象。比如说可以获取 KieContainer，然后利用 KieContainer 来访问 KBase 和 KSession 等信息；可以获取 KieRepository 对象，利用 KieRepository 来管理 KieModule 等。</p>
+<h3 id="4-5-KieSession"><a href="#4-5-KieSession" class="headerlink" title="4.5 KieSession"></a>4.5 KieSession</h3><p>KieSession 表示的是规则引擎的会话，用于执行规则，和插入事实（insert）、更新事实（update）、删除事实（delete）等，还提供了一些高级特性，如全局变量、动态规则修改、事实监听等，可以增强规则引擎的功能和灵活性。KieSession 的创建是比较消耗资源的操作，因此一般情况下应该尽可能重复利用同一个 KieSession，而不是频繁地创建和销毁。</p>
+<p>KieSession 分为有状态和无状态两种模式，它们两种的区别如下：</p>
+<ul>
+<li><p>有状态模式：在有状态模式下，KieSession 会维护一个工作内存（working memory），并根据规则对工作内存中的事实进行推理、更新和删除，并且每次插入、更新、删除事实后，KieSession 都会重新匹配和执行规则，有状态模式的 Session 需要直到显式地销毁，销毁调用方法 <code>kSession.dispose()</code>。</p>
+</li>
+<li><p>无状态模式：KieSession 会在执行完规则后立即销毁 Session，故每次调用 KieSession 时，它都是一个新的实例，每次调用KieSession时，需要将所有需要的事实重新插入到KieSession中。因此，无状态模式适用于单独的、短暂的推理和查询，长时间持续的会话需要用有状态的 Session，否则会会影响性能。</p>
+</li>
+</ul>
+<p>需要注意的是，在无状态模式下，每次都需要重新加载规则，因为无状态模式执行规则后会立即消耗。而有状态模式则只需要加载一次规则，之后在会话期间都可以使用。</p>
+<h2 id="五、KieModule-xml-配置说明"><a href="#五、KieModule-xml-配置说明" class="headerlink" title="五、KieModule.xml 配置说明"></a>五、KieModule.xml 配置说明</h2><h3 id="5-1-KieBase-标签属性说明"><a href="#5-1-KieBase-标签属性说明" class="headerlink" title="5.1 KieBase 标签属性说明"></a>5.1 KieBase 标签属性说明</h3><table>
+<thead>
+<tr>
+<th align="left">属性名</th>
+<th align="left">默认值</th>
+<th align="left">合法的值</th>
+<th align="left">描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">name</td>
+<td align="left">none</td>
+<td align="left">any</td>
+<td align="left">KieBase 的名称，必须指定一个名称。</td>
+</tr>
+<tr>
+<td align="left">includes</td>
+<td align="left">none</td>
+<td align="left">逗号分隔的 KieBase 名称列表</td>
+<td align="left">表示引入其他的 KieBase</td>
+</tr>
+<tr>
+<td align="left">packages</td>
+<td align="left">all</td>
+<td align="left">逗号分隔的字符串列表</td>
+<td align="left">定义 KieBases 规则资源的路径，默认情况下将包含 resources 目录下面（子目录）的所有规则文件。也可以指定具体目录下面的规则文件，通过逗号可以包含多个目录下的文件。</td>
+</tr>
+<tr>
+<td align="left">default</td>
+<td align="left">false</td>
+<td align="left">true, false</td>
+<td align="left">表示当前 KieBase 是不是默认的，如果是默认的话，则在 Java 中不需要显示的根据名字指定使用哪个 KieBases</td>
+</tr>
+<tr>
+<td align="left">equalsBehavior</td>
+<td align="left">identity</td>
+<td align="left">identity,equality</td>
+<td align="left">设置为identity 时，每次 insert 事实<code>FactHandle faceHandle = kieSession.insert(事实) </code> 都会返回一个新的 FactHandle，如果使用 equality 则会判断是否已经存在相同的事实对象，如果已经存在则返回已经存在的 FactHandle。</td>
+</tr>
+<tr>
+<td align="left">eventProcessingMode</td>
+<td align="left">cloud</td>
+<td align="left">cloud, stream</td>
+<td align="left">当以云模式编译时，KieBase将事件视为正常事实，而在流模式下允许对其进行时间推理。</td>
+</tr>
+<tr>
+<td align="left">declarativeAgenda</td>
+<td align="left">disabled</td>
+<td align="left">disabled,enabled</td>
+<td align="left">该属性是一个高级功能开关，打开后规则将可以控制一些规则的执行与否。</td>
+</tr>
+</tbody></table>
+<h3 id="5-2-KieSession-标签属性说明"><a href="#5-2-KieSession-标签属性说明" class="headerlink" title="5.2 KieSession 标签属性说明"></a>5.2 KieSession 标签属性说明</h3><table>
+<thead>
+<tr>
+<th align="left">属性名</th>
+<th align="left">默认值</th>
+<th align="left">合法的值</th>
+<th align="left">描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">name</td>
+<td align="left">none</td>
+<td align="left">any</td>
+<td align="left">设置 KieSession 的名称，该值必须唯一，且必须设置。</td>
+</tr>
+<tr>
+<td align="left">type</td>
+<td align="left">stateful</td>
+<td align="left">stateful, stateless</td>
+<td align="left">定义 session 的工作状态模式</td>
+</tr>
+<tr>
+<td align="left">default</td>
+<td align="left">false</td>
+<td align="left">true, false</td>
+<td align="left">定义该 session 是否是默认的，非默认的，需要在 Java 代码中根据名称指定才行，注意是每个工作状态模式的 session 都可以定义一个默认值</td>
+</tr>
+<tr>
+<td align="left">clockType</td>
+<td align="left">realtime</td>
+<td align="left">realtime,pseudo</td>
+<td align="left">定义时钟类型，用在事件处理上面，在复合事件处理上会用到，其中realtime表示用的是系统时钟，而pseudo则是用在单元测试时模拟用的。</td>
+</tr>
+<tr>
+<td align="left">beliefSystem</td>
+<td align="left">simple</td>
+<td align="left">simple,defeasible, jtms</td>
+<td align="left">定义KieSession使用的 belief System的类型。</td>
+</tr>
+</tbody></table>
+<h2 id="六、Drools-入门例子"><a href="#六、Drools-入门例子" class="headerlink" title="六、Drools 入门例子"></a>六、Drools 入门例子</h2><h3 id="6-1-导入-Maven-依赖"><a href="#6-1-导入-Maven-依赖" class="headerlink" title="6.1 导入 Maven 依赖"></a>6.1 导入 Maven 依赖</h3><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependencies</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.kie<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>kie-api<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">version</span>&gt;</span>7.73.0.Final<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.kie<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>kie-internal<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">version</span>&gt;</span>7.73.0.Final<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.drools<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>drools-core<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">version</span>&gt;</span>7.73.0.Final<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.drools<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>drools-templates<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">version</span>&gt;</span>7.73.0.Final<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.drools<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>drools-decisiontables<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">version</span>&gt;</span>7.73.0.Final<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!-- https://mvnrepository.com/artifact/org.drools/drools-core-dynamic --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.drools<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>drools-core-dynamic<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">version</span>&gt;</span>7.73.0.Final<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.drools<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>drools-compiler<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">version</span>&gt;</span>7.73.0.Final<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.slf4j<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>slf4j-nop<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">version</span>&gt;</span>1.7.2<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"></span><br><span class="line">                <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>junit<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>junit<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">version</span>&gt;</span>4.13.2<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="comment">&lt;!--            &lt;scope&gt;test&lt;/scope&gt;--&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;/<span class="name">dependencies</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="6-2-Drools-API-开发步骤"><a href="#6-2-Drools-API-开发步骤" class="headerlink" title="6.2 Drools API 开发步骤"></a>6.2 Drools API 开发步骤</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">@startuml</span><br><span class="line">:获取 kieServices ;</span><br><span class="line">:获取 KieContainer;</span><br><span class="line">note right: KieContainer 是线程安全的</span><br><span class="line">:获取 KieSession;</span><br><span class="line">note right: KieContainer.newStatelessKieSession() 和 KieContainer.newKieSession() 方法是线程不安全的。</span><br><span class="line">:Insert Facts;</span><br><span class="line">:触发规则 FireRules;</span><br><span class="line">:关闭 KieSession;</span><br><span class="line">@enduml</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h3 id="6-3-创建事实类"><a href="#6-3-创建事实类" class="headerlink" title="6.3 创建事实类"></a>6.3 创建事实类</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">User</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> String username;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> String age;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> String mobile;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> String <span class="title function_">getUsername</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> username;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">setUsername</span><span class="params">(String username)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.username = username;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> String <span class="title function_">getAge</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> age;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">setAge</span><span class="params">(String age)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.age = age;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> String <span class="title function_">getMobile</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> mobile;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">setMobile</span><span class="params">(String mobile)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.mobile = mobile;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h3 id="6-4-编写规则文件"><a href="#6-4-编写规则文件" class="headerlink" title="6.4 编写规则文件"></a>6.4 编写规则文件</h3><p>Drools 规则引擎默认递归查找当前 Maven 工程 resource 目录和 Jar 中 resource 目录的所有规则文件，加载到 Production Memory（规则库）中，Drools 是以逻辑 package 去组织规则的，跟规则文件名和存放路径无关，故可以任意命名。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 定义规则的包名，逻辑上的包名，与规则路径无关联，包名是规则的命名空间，不同规则的文件可以使用相同的包，但是在同一个包即命名空间下，rule 的名称不能相同的</span></span><br><span class="line"><span class="keyword">package</span> com.github.drools.rules</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> com.github.drools.model.User</span><br><span class="line"></span><br><span class="line">rule <span class="string">&quot;rule1&quot;</span></span><br><span class="line">    no-loop <span class="literal">true</span></span><br><span class="line">when</span><br><span class="line">    <span class="comment">// 匹配工作内存中的 username 等于 admin 的 User 事实对象，只要存在一个就返回 true，比匹配到的时候对象赋值给 u1</span></span><br><span class="line">    u1: User(username==<span class="string">&quot;admin&quot;</span>)</span><br><span class="line">then</span><br><span class="line">    <span class="comment">// 但 when 条件为真时，执行 then 语句</span></span><br><span class="line">    System.out.println(<span class="string">&quot;execute rule1, I am &quot;</span> + u1.getUsername());</span><br><span class="line">end</span><br><span class="line"></span><br><span class="line">rule <span class="string">&quot;rule2&quot;</span></span><br><span class="line">when</span><br><span class="line">    u2: User(username==<span class="string">&quot;dev&quot;</span>)</span><br><span class="line">then</span><br><span class="line">    System.out.println(<span class="string">&quot;execute rule2，I am &quot;</span> + u2.getUsername());</span><br><span class="line">end</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h3 id="6-5-编写-kiemodule-xml-文件"><a href="#6-5-编写-kiemodule-xml-文件" class="headerlink" title="6.5 编写 kiemodule.xml 文件"></a>6.5 编写 kiemodule.xml 文件</h3><p>在 Maven 工程中创建文件 <code>resource/META-INF/kiemodule.xml</code> </p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version=<span class="string">&quot;1.0&quot;</span> encoding=<span class="string">&quot;UTF-8&quot;</span>?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">kmodule</span></span></span><br><span class="line"><span class="tag">        <span class="attr">xmlns</span>=<span class="string">&quot;http://www.drools.org/xsd/kmodule&quot;</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">&lt;!-- 指定规则的逻辑包，会将不同规则文件但包相同的规则都整合加到 kbase 中 --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">kbase</span> <span class="attr">packages</span>=<span class="string">&quot;com.github.drools&quot;</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!-- 指定能操作和执行该逻辑包规则的 Session --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">ksession</span> <span class="attr">default</span>=<span class="string">&quot;true&quot;</span> <span class="attr">name</span>=<span class="string">&quot;session01&quot;</span> <span class="attr">type</span>=<span class="string">&quot;stateful&quot;</span>/&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">kbase</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">kbase</span> <span class="attr">packages</span>=<span class="string">&quot;com.github.drools&quot;</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">ksession</span>  <span class="attr">name</span>=<span class="string">&quot;session02&quot;</span> <span class="attr">type</span>=<span class="string">&quot;stateless&quot;</span>/&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">kbase</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;/<span class="name">kmodule</span>&gt;</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h3 id="6-6-规则测试代码"><a href="#6-6-规则测试代码" class="headerlink" title="6.6 规则测试代码"></a>6.6 规则测试代码</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">import</span> com.github.drools.model.User;</span><br><span class="line"><span class="keyword">import</span> org.junit.Test;</span><br><span class="line"><span class="keyword">import</span> org.kie.api.KieServices;</span><br><span class="line"><span class="keyword">import</span> org.kie.api.runtime.KieContainer;</span><br><span class="line"><span class="keyword">import</span> org.kie.api.runtime.KieSession;</span><br><span class="line"><span class="keyword">import</span> org.kie.api.runtime.StatelessKieSession;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">DroolsTest</span> &#123;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">testStateless</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="type">KieServices</span> <span class="variable">kieServices</span> <span class="operator">=</span> KieServices.Factory.get();</span><br><span class="line">        <span class="type">KieContainer</span> <span class="variable">kieClasspathContainer</span> <span class="operator">=</span> kieServices.getKieClasspathContainer();</span><br><span class="line">        <span class="comment">// 获取默认有状态的 Session</span></span><br><span class="line">        <span class="type">KieSession</span> <span class="variable">session1</span> <span class="operator">=</span> kieClasspathContainer.newKieSession();</span><br><span class="line">        <span class="type">User</span> <span class="variable">adminUser</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">User</span>();</span><br><span class="line">        adminUser.setUsername(<span class="string">&quot;admin&quot;</span>);</span><br><span class="line">        <span class="comment">// 插入事实对象，存在规则引擎的工作内存中</span></span><br><span class="line">        session1.insert(adminUser);</span><br><span class="line">        <span class="comment">// 每一次 insert 都会重新从头开始匹配规则包中的所有规则，如果 insert 的是相同的 Fact 事实对象，则不会。</span></span><br><span class="line">        <span class="type">User</span> <span class="variable">devUser</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">User</span>();</span><br><span class="line">        devUser.setUsername(<span class="string">&quot;admin&quot;</span>);</span><br><span class="line">        session1.insert(devUser);</span><br><span class="line">        <span class="comment">// 执行规则</span></span><br><span class="line">        session1.fireAllRules();</span><br><span class="line">        <span class="comment">// 有状态session 需要手动销毁</span></span><br><span class="line">        session1.dispose();</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 获取默认的无状态 Session</span></span><br><span class="line">        <span class="type">StatelessKieSession</span> <span class="variable">session2</span> <span class="operator">=</span> kieClasspathContainer.newStatelessKieSession();</span><br><span class="line">        <span class="comment">/*</span></span><br><span class="line"><span class="comment">         * 无状态 session，不会维护工作内存，每次执行规则时，</span></span><br><span class="line"><span class="comment">         * 都需要将所有需要的事实重新插入到 KieSession 中，且插入和执行规则的方法跟有状态的不相同</span></span><br><span class="line"><span class="comment">         */</span></span><br><span class="line">        user.setUsername(<span class="string">&quot;dev&quot;</span>);</span><br><span class="line">        session2.execute(user);</span><br><span class="line"></span><br><span class="line">        user.setUsername(<span class="string">&quot;admin&quot;</span>);</span><br><span class="line">        session2.execute(user);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h2 id="七、语法格式规则"><a href="#七、语法格式规则" class="headerlink" title="七、语法格式规则"></a>七、语法格式规则</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//定义规则包，注意只是逻辑上的包，实际上并不要求规则文件存放路径跟包路径一样，在不同的规则文件中包是可以相同的，包是规则的命名空间，在同一个包即一个命名空间下 rule 的名字不能重复</span></span><br><span class="line"><span class="keyword">package</span> com.rule</span><br><span class="line"></span><br><span class="line"><span class="comment">// 导入需要引用的 Java Class </span></span><br><span class="line"><span class="keyword">import</span>   <span class="comment">// Optional</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 函数定义，可以在 then 中执行</span></span><br><span class="line">function   <span class="comment">// Optional</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 定义一个查询 Fact 过滤条件，然后在Java 程序代码中通过 ksession.getQueryResults(&quot;name&quot;) 获取 Fact 对象，name 就是 query 的名字</span></span><br><span class="line">query   <span class="comment">// Optional</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 在规则中定义对象类型，即 Class、枚举类等，一般不常用，基本的 Fact 都是在程序代码中定义的</span></span><br><span class="line">declare   <span class="comment">// Optional</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 定义规则的全局变量，该规则文件下的所有 rule 中都可以引用</span></span><br><span class="line">global    <span class="comment">// Optional</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 定义规则的名字，在包下必须唯一</span></span><br><span class="line">rule <span class="string">&quot;rule name&quot;</span></span><br><span class="line">    <span class="comment">// Attributes，定义规则的属性</span></span><br><span class="line">    when</span><br><span class="line">        <span class="comment">// Conditions  定义规则执行的条件</span></span><br><span class="line">    then</span><br><span class="line">        <span class="comment">// Actions   定义规则要执行的动作</span></span><br><span class="line">end</span><br><span class="line"></span><br><span class="line">rule <span class="string">&quot;rule2 name&quot;</span></span><br><span class="line">  when</span><br><span class="line">   </span><br><span class="line">  then</span><br><span class="line">   </span><br><span class="line">end</span><br></pre></td></tr></table></figure>
+<h3 id="7-1-function-语法"><a href="#7-1-function-语法" class="headerlink" title="7.1 function 语法"></a>7.1 function 语法</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">function String <span class="title function_">hello</span><span class="params">(String applicantName)</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="string">&quot;Hello &quot;</span> + applicantName + <span class="string">&quot;!&quot;</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">rule <span class="string">&quot;Using a function&quot;</span></span><br><span class="line">  when</span><br><span class="line">    <span class="comment">// Empty</span></span><br><span class="line">  then</span><br><span class="line">    System.out.println( hello( <span class="string">&quot;James&quot;</span> ) );</span><br><span class="line">end</span><br></pre></td></tr></table></figure>
+
+<h2 id="7-2-query-语法"><a href="#7-2-query-语法" class="headerlink" title="7.2 query 语法"></a>7.2 query 语法</h2><p>query 用于在规则中定义 Fact 查询过滤语句，然后在 Java 代码中通过<code>ksession.getQueryResults(&quot;name&quot;)</code> 方式引用。</p>
+<ol>
+<li>规则查询语句定义如下：<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.rules</span><br><span class="line"></span><br><span class="line">query <span class="string">&quot;people under the age of 21&quot;</span></span><br><span class="line">    $person : Person( age &lt; <span class="number">21</span> )</span><br><span class="line">end</span><br><span class="line"></span><br><span class="line">rule <span class="string">&quot;rule name1&quot;</span></span><br><span class="line">    when</span><br><span class="line"></span><br><span class="line">    then </span><br><span class="line">end </span><br></pre></td></tr></table></figure></li>
+<li>Java 代码中引用方式如下：<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">QueryResults</span> <span class="variable">results</span> <span class="operator">=</span> ksession.getQueryResults( <span class="string">&quot;people under the age of 21&quot;</span> );</span><br><span class="line">System.out.println( <span class="string">&quot;we have &quot;</span> + results.size() + <span class="string">&quot; people under the age of 21&quot;</span> );</span><br><span class="line"></span><br><span class="line">System.out.println( <span class="string">&quot;These people are under the age of 21:&quot;</span> );</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> ( QueryResultsRow row : results ) &#123;</span><br><span class="line">    <span class="type">Person</span> <span class="variable">person</span> <span class="operator">=</span> ( Person ) row.get( <span class="string">&quot;person&quot;</span> );</span><br><span class="line">    System.out.println( person.getName() + <span class="string">&quot;\n&quot;</span> );</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ol>
+<h2 id="7-3-declare-语句"><a href="#7-3-declare-语句" class="headerlink" title="7.3 declare 语句"></a>7.3 declare 语句</h2><p>declare 语句用于在规则文件中定义类型，如下定义一个 Person 类对象：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.rules</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.util.Date;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 定义一个 Person 对象</span></span><br><span class="line">declare Person</span><br><span class="line">  name : String</span><br><span class="line">  dateOfBirth : Date</span><br><span class="line">  address : Address</span><br><span class="line">end</span><br><span class="line"></span><br><span class="line">rule <span class="string">&quot;Using a declared type&quot;</span></span><br><span class="line">  when</span><br><span class="line">    <span class="comment">// 判断规则引擎工作内存中，是否有 name == &quot;James&quot; 的 Person 对象，并将该对象，赋值给 $p</span></span><br><span class="line">    $p : Person( name == <span class="string">&quot;James&quot;</span> )</span><br><span class="line">  then   </span><br><span class="line">    <span class="type">Person</span> <span class="variable">mark</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Person</span>();</span><br><span class="line">    mark.setName( <span class="string">&quot;Mark&quot;</span> );</span><br><span class="line">    insert( mark );</span><br><span class="line">end</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h2 id="7-4-Global-语句"><a href="#7-4-Global-语句" class="headerlink" title="7.4 Global 语句"></a>7.4 Global 语句</h2><p>Global 用于定义规则文件中的全局变量，在同一个规则文件中，所有的 rule 中都能引用到，使用列子如下：</p>
+<p>先在 Java 代码中定义规则的全局变量</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">List&lt;String&gt; list = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;();</span><br><span class="line"><span class="type">KieSession</span> <span class="variable">kieSession</span> <span class="operator">=</span> kiebase.newKieSession();</span><br><span class="line">kieSession.setGlobal( <span class="string">&quot;myGlobalList&quot;</span>, list );</span><br></pre></td></tr></table></figure>
+
+<p>然后在规则文件中定义全局变量</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">global java.util.List myGlobalList;</span><br><span class="line"></span><br><span class="line">rule <span class="string">&quot;Using a global&quot;</span></span><br><span class="line">  when</span><br><span class="line">    <span class="comment">// Empty</span></span><br><span class="line">  then</span><br><span class="line">    myGlobalList.add( <span class="string">&quot;My global list&quot;</span> );</span><br><span class="line">end</span><br></pre></td></tr></table></figure>
+
+<h2 id="7-5-Rule-attributes-语句"><a href="#7-5-Rule-attributes-语句" class="headerlink" title="7.5  Rule attributes 语句"></a>7.5  Rule attributes 语句</h2><p>规则属性，可以限制和修改规则的行为属性，具体可以查看官网 <a target="_blank" rel="noopener" href="https://docs.drools.org/7.73.0.Final/drools-docs/html_single/index.html#rules-attributes-ref_drl-rules">Rule attributes</a> 介绍，Drools 支持的规则属性如下：</p>
+<table>
+<thead>
+<tr>
+<th>Attribute</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>salience</td>
+<td>值为整数，用于定义规则的优先级，值的越大优先级越高</td>
+</tr>
+<tr>
+<td>enabled</td>
+<td>值为布尔类型 true 或者 false, 表示是否启用规则</td>
+</tr>
+<tr>
+<td>date-effective</td>
+<td>值为日期，用于指定规则生效时间，表示当前日期大于设置的日期后，规则才生效 <br> 例子：date-effective “4-Sep-2018”</td>
+</tr>
+<tr>
+<td>date-expires</td>
+<td>值为日期，用于指定规则失效时间 <br> 例子：date-expires  “4-Oct-2018”</td>
+</tr>
+<tr>
+<td>no-loop</td>
+<td>值为布尔类型，防止规则重复执行，特定的环境下规则会重复执行，如在 then 中使用 insert、update 语句时，所有的规则都是会重复执行 <br>例子：no-loop true</td>
+</tr>
+<tr>
+<td>activation-group</td>
+<td>值为字符串，指定规则的激活分组名，同一个分组的规则只能执行一个，默认按顺序执行第一个，可以通过 salience 设置最高优先级的执行 <br> activation-group “group name01”</td>
+</tr>
+<tr>
+<td>agenda-group</td>
+<td>值为字符串，指定规则的议程分组名称，跟 activation-group 的区别时是，需要获取焦点后才能执行，可以执行多个，需要在 Java 代码中设置焦点或者使用 auto-focus 属性设置焦点 <br>例子：agenda-group “GroupName”</td>
+</tr>
+<tr>
+<td>auto-focus</td>
+<td>值为布尔类型，自动为 agenda-group 设置焦点 <br>例子：auto-focus true</td>
+</tr>
+<tr>
+<td>timer</td>
+<td>值为间隔的整形时间或者 corn 表达式，通过定时器指定规则的执行时间<br>例子1：timer(10s 2s) 表示10秒后触发，然后每隔2s重新触发<br>例子2： timer (cron:* 0&#x2F;15 * * * ? ) 表示每15分钟执行一次</td>
+</tr>
+<tr>
+<td>calendar</td>
+<td>通过日历来定时执行规则，可以排除节假日<br>例子：calendars “* * 0-7,18-23 ? * *”</td>
+</tr>
+<tr>
+<td>ruleflow-group</td>
+<td>值为字符串，用于标识规则为流程组。在规则流组中，规则只有在该组被相关的规则流激活时才能启动<br>例子：ruleflow-group “GroupName”</td>
+</tr>
+<tr>
+<td>dialect</td>
+<td>值为 JAVA or MVEL，用于指定当前规则使用的语言类型，默认是 JAVA<br>例子：dialect “JAVA”</td>
+</tr>
+</tbody></table>
+<p>规则属性的用法如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.rules</span><br><span class="line"></span><br><span class="line">rule <span class="string">&quot;rule_name&quot;</span></span><br><span class="line">    <span class="comment">// Attribute</span></span><br><span class="line">    salience <span class="number">10</span> <span class="comment">// 设置规则的优先级</span></span><br><span class="line">    enabled <span class="literal">true</span> <span class="comment">// 表示是否启用规则</span></span><br><span class="line"></span><br><span class="line">    when</span><br><span class="line">        <span class="comment">// Conditions</span></span><br><span class="line">    then</span><br><span class="line">        <span class="comment">// Actions</span></span><br><span class="line">end</span><br></pre></td></tr></table></figure>
+
+<h2 id="7-6-when-语句"><a href="#7-6-when-语句" class="headerlink" title="7.6 when 语句"></a>7.6 when 语句</h2><p>when 语句用于判断条件是否满足，条件满足时，就会执行 then 动作语句，注意当 when 语句的条件为空时，等于同于 eval(true) 表示条件为真，会执行 then 动作语句。<a target="_blank" rel="noopener" href="https://docs.drools.org/7.73.0.Final/drools-docs/html_single/index.html#drl-rules-WHEN-con_drl-rules">when 语句官网参考</a></p>
+<p>3.6.1 条件为空的规则</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">rule <span class="string">&quot;Always insert applicant&quot;</span></span><br><span class="line">  when</span><br><span class="line">    <span class="comment">// Empty ，空条件时，规则引擎会默认添加 eval(true), 所以空条件，默认为真</span></span><br><span class="line">  then   </span><br><span class="line">    <span class="title function_">insert</span><span class="params">( new Applicant()</span> );</span><br><span class="line">end</span><br><span class="line"></span><br><span class="line"><span class="comment">// 空条件的规则，规则引擎会在内部默认将其改写如下:</span></span><br><span class="line"></span><br><span class="line">rule <span class="string">&quot;Always insert applicant&quot;</span></span><br><span class="line">  when</span><br><span class="line">    <span class="title function_">eval</span><span class="params">( <span class="literal">true</span> )</span></span><br><span class="line">  then</span><br><span class="line">    <span class="title function_">insert</span><span class="params">( new Applicant()</span> );</span><br><span class="line">end</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>3.6.2 事实对象模式约束</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">rule <span class="string">&quot;rule1&quot;</span></span><br><span class="line">when </span><br><span class="line">    <span class="comment">// 表示匹配到任意一个事实对象，就返回真</span></span><br><span class="line">     Object() </span><br><span class="line">then </span><br><span class="line">end </span><br><span class="line"></span><br><span class="line">when </span><br><span class="line">    <span class="comment">// 匹配到任意一个 Person 事实对象，就返回真</span></span><br><span class="line">    Person() </span><br><span class="line">then </span><br><span class="line">end </span><br><span class="line"></span><br><span class="line">when </span><br><span class="line">    <span class="comment">// 匹配任意一个 username = &quot;admin&quot; 的 Person 事实对象，就返回真</span></span><br><span class="line">    Person(username=<span class="string">&quot;admin&quot;</span>)</span><br><span class="line">then </span><br><span class="line">end </span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h3 id="7-7-Drools-内置方法"><a href="#7-7-Drools-内置方法" class="headerlink" title="7.7 Drools 内置方法"></a>7.7 Drools 内置方法</h3><p>Drools 规则语法中也提供了插入、删除、更新工作内存 Fact 事实数据的内置方法，来方便在规则中控制规则引擎的执行。通过内置方法操作 Fact 事实数据后，规则引擎会把同一个包下的相关规则重新匹配执行。</p>
+<h3 id="update-方法"><a href="#update-方法" class="headerlink" title="update 方法"></a>update 方法</h3><p>update 内置方法的作用是更新工作内存中的 Fact 事实对象，并让规则引擎重新匹配同一个包下的其他相关规则。如下例子，第一个文件的规则触发后，使用 update 内置方法后，会连锁把第二个文件的所以也触发了。</p>
+<ol>
+<li><p>规则文件 user1.drl</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">package</span> com.github.drools.rules</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> com.github.drools.model.User</span><br><span class="line"></span><br><span class="line">rule <span class="string">&quot;username eq admin&quot;</span></span><br><span class="line">    when </span><br><span class="line">        u1: User(username==<span class="string">&quot;admin&quot;</span>)</span><br><span class="line">    then </span><br><span class="line">        System.out.println(<span class="string">&quot;用户名为 admin 触发了规则&quot;</span>);</span><br><span class="line">        u1.setAge(<span class="number">19</span>);</span><br><span class="line">        <span class="comment">//update 方法更新 Fact 事实对象后，把同一个包下的除本条规则外的所有规则重新匹配执行一次。</span></span><br><span class="line">        update(u1);</span><br><span class="line">end</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>规则文件 user2.drl</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.github.drools.rules</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> com.github.drools.model.User</span><br><span class="line"></span><br><span class="line">rule <span class="string">&quot;age lt 20 rule&quot;</span></span><br><span class="line">    when</span><br><span class="line">        u1: User(age &lt; <span class="number">20</span>)</span><br><span class="line">    then</span><br><span class="line">        System.out.println( u1.getUsername()+<span class="string">&quot;用户的年龄大于20岁，触发规则&quot;</span>);</span><br><span class="line">        u1.setAge(<span class="number">25</span>);</span><br><span class="line">        update(u1);</span><br><span class="line">end</span><br><span class="line"></span><br><span class="line">rule <span class="string">&quot;age ge 20 rule&quot;</span></span><br><span class="line">    when</span><br><span class="line">        u1: User(age &gt;= <span class="number">20</span>)</span><br><span class="line">    then</span><br><span class="line">        System.out.println( u1.getUsername()+<span class="string">&quot;用户的年龄大于20岁，触发规则&quot;</span>);</span><br><span class="line">end</span><br><span class="line"></span><br></pre></td></tr></table></figure></li>
+</ol>
+<h4 id="insert-方法"><a href="#insert-方法" class="headerlink" title="insert 方法"></a>insert 方法</h4><p>insert 内置方法的作用是在工作内存中插入 Fact 事实对象，并让规则引擎重新匹配执行包下所有规则， 如以下列子，在第一个规则触发后，在 insert 新的事实对象后，重新匹配规则，则第二个规则就会执行。注意要插入的是新的 Fact 事实对象实例，如果是工作内存中已存在的事实对象重复插入，不会重新匹配执行规则。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.github.drools.rules</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> com.github.drools.model.User</span><br><span class="line"></span><br><span class="line">rule <span class="string">&quot;rule1&quot;</span></span><br><span class="line">    <span class="comment">// 限制本条规则，只能匹配一次，不管是在 Java 中还是在规则文件只要调用  insert 事实对象，都是从头开始执行所有规则，当多次 insert 不同的事实实例对象时，如果 when 条件都满足会重复执行，故而需要该属性来限制只能执行一次。</span></span><br><span class="line">    no-loop <span class="literal">true</span> </span><br><span class="line">    when </span><br><span class="line">        u1: User(username==<span class="string">&quot;admin&quot;</span>)</span><br><span class="line">    then </span><br><span class="line">        System.out.println(<span class="string">&quot;用户名为 admin 触发了规则&quot;</span>);</span><br><span class="line">        <span class="type">User</span> <span class="variable">user</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">User</span>();</span><br><span class="line">        <span class="comment">// 如果将用名字设置为 admin 的话，该 rule1 规则会死循环执行，当出现这种情况时，需要通过规则属性 no-loop 限制规则不能重复执行。</span></span><br><span class="line">        user.setUsername(<span class="string">&quot;dev&quot;</span>);</span><br><span class="line">        <span class="comment">// insert 事实对象后，会重新匹配执行包的所有规则（包含本条规则在内）</span></span><br><span class="line">        insert(user);</span><br><span class="line">end</span><br><span class="line"></span><br><span class="line">rule <span class="string">&quot;rule2&quot;</span></span><br><span class="line">    when </span><br><span class="line">        u2: User(username==<span class="string">&quot;dev&quot;</span>)</span><br><span class="line">    then</span><br><span class="line">        System.out.println(<span class="string">&quot;用户名为 dev 触发了规则&quot;</span>);   </span><br><span class="line">end </span><br></pre></td></tr></table></figure>
+
+<h4 id="retract-方法"><a href="#retract-方法" class="headerlink" title="retract 方法"></a>retract 方法</h4><p>retract 内置方法的作用是删除工作内存中的 Fact 事实对象，并让规则引擎重新匹配执行规则。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.github.drools.rules</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> com.github.drools.model.User</span><br><span class="line"></span><br><span class="line">rule <span class="string">&quot;rule1&quot;</span></span><br><span class="line">    <span class="comment">// 设置规则优先级，值越大优先级越高</span></span><br><span class="line">    salience <span class="number">10</span></span><br><span class="line">    when </span><br><span class="line">        u1:User(age == <span class="number">20</span>)</span><br><span class="line">    then </span><br><span class="line">        System.out.println( u1.getUsername()+<span class="string">&quot;用户的年龄等于20岁，触发规则&quot;</span>);</span><br><span class="line">        <span class="comment">// 删除 u1 事实对象，规则引擎会重新匹配规则，则 rule2 规则将不会执行。</span></span><br><span class="line">        retract(u2);</span><br><span class="line">end </span><br><span class="line"></span><br><span class="line">rule <span class="string">&quot;rule2&quot;</span></span><br><span class="line">    salience <span class="number">9</span></span><br><span class="line">    when </span><br><span class="line">        u1:User(age &gt;= <span class="number">20</span>)</span><br><span class="line">    then </span><br><span class="line">        System.out.println( u1.getUsername()+<span class="string">&quot;用户的年龄大于等于20岁，触发规则&quot;</span>);</span><br><span class="line">end </span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+<h2 id="参考连接"><a href="#参考连接" class="headerlink" title="参考连接"></a>参考连接</h2><ol>
+<li><a target="_blank" rel="noopener" href="https://docs.drools.org/7.73.0.Final/drools-docs/html_single/index.html#_droolslanguagereferencechapter">https://docs.drools.org/7.73.0.Final/drools-docs/html_single/index.html#_droolslanguagereferencechapter</a></li>
+</ol>
+
+            </div>
+        
+        <footer class="article-footer">
+        </footer>
+    </div>
+</article>
+
+
+    
+<nav id="article-nav">
+    
+        <a href="/wiki/Nginx/ngx_http_rewrite_module%20%E6%A8%A1%E5%9D%97%E7%AC%94%E8%AE%B0/" id="article-nav-newer" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">Newer</strong>
+            <div class="article-nav-title">
+                
+                    ngx_http_rewrite_module 模块学习笔记
+                
+            </div>
+        </a>
+    
+    
+        <a href="/wiki/Kubernetes/K8s%20%E5%85%A5%E9%97%A8%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" id="article-nav-older" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">Older</strong>
+            <div class="article-nav-title">K8s 入门学习笔记</div>
+        </a>
+    
+</nav>
+
+
+
+
+
+    
+    
+
+
+
+</section>
+        </div>
+        <footer id="footer">
+    <div class="outer">
+        <div id="footer-info" class="inner">
+            <br> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>. Theme - <a target="_blank" rel="noopener" href="https://github.com/vianlex/hexo-theme-Wikitten">wikitten</a>
+            
+                <br>
+                <span id="busuanzi_container_site_pv"><i class="fa fa-eye"></i> <span id="busuanzi_value_site_pv"></span></span>
+                &nbsp;|&nbsp;
+                <span id="busuanzi_container_site_pv"><i class="fa fa-user"></i> <span id="busuanzi_value_site_uv"></span></span>
+            
+        </div>
+    </div>
+</footer>
+
+        
+
+    
+        
+<script src="/libs/lightgallery/js/lightgallery.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-thumbnail.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-pager.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-autoplay.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-fullscreen.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-zoom.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-hash.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-share.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-video.min.js"></script>
+
+    
+    
+        
+<script src="/libs/justified-gallery/jquery.justifiedGallery.min.js"></script>
+
+    
+    
+        <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true,
+            TeX: {
+                equationNumbers: {
+                  autoNumber: 'AMS'
+                }
+            }
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script async src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+
+
+
+<!-- Custom Scripts -->
+
+<script src="/js/main.js"></script>
+
+    </div>
+</body>
+</html>

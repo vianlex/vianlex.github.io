@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <meta charset="utf-8">
+    
+    <title>ngx_http_proxy_module 模块学习笔记 | Vianlex&#39;s Wiki</title>
+    
+    
+        <meta name="keywords" content="ngx_http_proxy_module 模块学习笔记" />
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <meta name="description" content="介绍The ngx_http_proxy_module module allows passing requests to another server. ngx_http_proxy_module 模块允许转发请求到其他的服务器，即我们平时所说的反向代理。 proxy_pass 指令官网语法说明 123Syntax:	proxy_pass URL;Default: —Context: locat">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ngx_http_proxy_module 模块学习笔记">
+<meta property="og:url" content="http://example.com/wiki/Nginx/ngx_http_proxy_module%E6%A8%A1%E5%9D%97%E7%AC%94%E8%AE%B0/index.html">
+<meta property="og:site_name" content="Vianlex&#39;s Wiki">
+<meta property="og:description" content="介绍The ngx_http_proxy_module module allows passing requests to another server. ngx_http_proxy_module 模块允许转发请求到其他的服务器，即我们平时所说的反向代理。 proxy_pass 指令官网语法说明 123Syntax:	proxy_pass URL;Default: —Context: locat">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-05-31T13:39:26.110Z">
+<meta property="article:modified_time" content="2023-05-31T13:39:26.110Z">
+<meta property="article:author" content="Vianlex">
+<meta name="twitter:card" content="summary">
+    
+
+    
+
+    
+        <link rel="icon" href="/favicon.ico" />
+    
+
+    
+<link rel="stylesheet" href="/libs/font-awesome/css/font-awesome.min.css">
+
+    
+<link rel="stylesheet" href="/libs/open-sans/styles.css">
+
+    
+<link rel="stylesheet" href="/libs/source-code-pro/styles.css">
+
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    
+<script src="/libs/jquery/2.1.3/jquery.min.js"></script>
+
+    
+<script src="/libs/jquery/plugins/cookie/1.4.1/jquery.cookie.js"></script>
+
+    
+    
+        
+<link rel="stylesheet" href="/libs/lightgallery/css/lightgallery.min.css">
+
+    
+    
+        
+<link rel="stylesheet" href="/libs/justified-gallery/justifiedGallery.min.css">
+
+    
+    
+    
+    
+
+
+    
+        <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    
+<meta name="generator" content="Hexo 6.3.0"><link rel="alternate" href="/atom.xml" title="Vianlex's Wiki" type="application/atom+xml">
+</head>
+
+<body>
+    <div id="container">
+        <header id="header">
+    <div id="header-main" class="header-inner">
+        <div class="outer">
+            <a href="/" id="logo">
+                <i class="logo"></i>
+                <span class="site-title">Vianlex&#39;s Wiki</span>
+            </a>
+            <nav id="main-nav">
+                
+                    <a class="main-nav-link" href="/">首页</a>
+                
+                    <a class="main-nav-link" href="/archives">归档</a>
+                
+                    <a class="main-nav-link" href="/categories">分类</a>
+                
+                    <a class="main-nav-link" href="/tags">标签</a>
+                
+                    <a class="main-nav-link" href="/about">关于</a>
+                
+            </nav>
+            
+            <div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="Search" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="Type something..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: 'Posts',
+            PAGES: 'Pages',
+            CATEGORIES: 'Categories',
+            TAGS: 'Tags',
+            UNTITLED: '(Untitled)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+
+</div>
+        </div>
+    </div>
+    <div id="main-nav-mobile" class="header-sub header-inner">
+        <table class="menu outer">
+            <tr>
+                
+                    <td><a class="main-nav-link" href="/">首页</a></td>
+                
+                    <td><a class="main-nav-link" href="/archives">归档</a></td>
+                
+                    <td><a class="main-nav-link" href="/categories">分类</a></td>
+                
+                    <td><a class="main-nav-link" href="/tags">标签</a></td>
+                
+                    <td><a class="main-nav-link" href="/about">关于</a></td>
+                
+                <td>
+                    
+    <div class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="Search" />
+    </div>
+
+                </td>
+            </tr>
+        </table>
+    </div>
+</header>
+
+        <div class="outer">
+            
+            
+                <aside id="sidebar">
+   
+        
+    <div class="widget-wrap" id='categories'>
+        <h3 class="widget-title">
+            <span>分类目录</span>
+            &nbsp;
+            <a id='allExpand' href="#">
+                <i class="fa fa-angle-double-down fa-2x"></i>
+            </a>
+        </h3>
+        
+        
+        
+         <ul class="unstyled" id="tree" > 
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            Apache POI
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/Apache%20POI/Excel%20%E8%AE%BE%E7%BD%AE%E8%A1%8C%E9%AB%98%E5%92%8C%E6%8D%A2%E8%A1%8C%E9%97%AE%E9%A2%98/">Excel 设置行高和换行问题</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            Docker
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/Docker/Docker%20Swarm%20%E7%AC%94%E8%AE%B0/">Docker Swarm 笔记</a></li>  <li class="file"><a href="/wiki/Docker/Docker%20%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0/">Docker 入门笔记</a></li>  <li class="file"><a href="/wiki/Docker/Docker%20%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/">Docker 常用命令</a></li>  <li class="file"><a href="/wiki/Docker/Docker%20%E6%9D%83%E9%99%90%E9%85%8D%E7%BD%AE/">Docker 权限配置</a></li>  <li class="file"><a href="/wiki/Docker/Dockerfile%20%E4%BD%BF%E7%94%A8%E8%AF%B4%E6%98%8E/">Dockerfile 使用说明</a></li>  <li class="file"><a href="/wiki/Docker/docker%20%E5%AE%89%E8%A3%85%E7%AC%94%E8%AE%B0/">Docker 安装笔记</a></li>  <li class="file"><a href="/wiki/Docker/docker-compose%20%E5%AD%A6%E4%B9%A0%E8%AE%B0%E5%BD%95/">Docker-compose 学习记录</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            Golang
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/Golang/Go%20%E5%9F%BA%E7%A1%80%E8%AF%AD%E6%B3%95/">Go 基础语法</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            Java 知识点
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/Java%20%E7%9F%A5%E8%AF%86%E7%82%B9/Class%E5%AF%B9%E8%B1%A1%E5%92%8CTpye%E5%AF%B9%E8%B1%A1/">Class 对象和 Tpye 对象知识笔记</a></li>  <li class="file"><a href="/wiki/Java%20%E7%9F%A5%E8%AF%86%E7%82%B9/Instrumentation%20%E7%9F%A5%E8%AF%86%E7%AC%94%E8%AE%B0/">Instrumentation 知识笔记</a></li>  <li class="file"><a href="/wiki/Java%20%E7%9F%A5%E8%AF%86%E7%82%B9/Java%20main%20%E5%92%8C%20classpath/">main 方法和 classpath 说明</a></li>  <li class="file"><a href="/wiki/Java%20%E7%9F%A5%E8%AF%86%E7%82%B9/Javassist%20%E7%9F%A5%E8%AF%86%E7%AC%94%E8%AE%B0/">Javassist 知识笔记</a></li>  <li class="file"><a href="/wiki/Java%20%E7%9F%A5%E8%AF%86%E7%82%B9/SecurityManager%20%E7%AC%94%E8%AE%B0/">SecurityManager 笔记</a></li>  <li class="file"><a href="/wiki/Java%20%E7%9F%A5%E8%AF%86%E7%82%B9/byteBuddy%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0/">ByteBuddy 入门笔记</a></li>  <li class="file"><a href="/wiki/Java%20%E7%9F%A5%E8%AF%86%E7%82%B9/Drools%E7%AC%94%E8%AE%B0/">Drools 笔记</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            Java 设计模式
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/Java%20%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/%E4%BB%A3%E7%90%86%E6%A8%A1%E5%BC%8F/">代理模式</a></li>  <li class="file"><a href="/wiki/Java%20%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/%E5%B7%A5%E5%8E%82%E6%A8%A1%E5%BC%8F/">工厂模式</a></li>  <li class="file"><a href="/wiki/Java%20%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/%E6%A8%A1%E6%9D%BF%E6%A8%A1%E5%BC%8F/">模板模式(模板方法模式)</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            Jemeter
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/Jemeter/Jemeter%20%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0/">Jemeter 入门笔记</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            Kubernetes
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/Kubernetes/kubeadm%20%E5%BF%AB%E9%80%9F%E9%83%A8%E7%BD%B2%20k8s%20%E9%9B%86%E7%BE%A4%E6%B5%8B%E8%AF%95%E7%8E%AF%E5%A2%83/">kubeadm 快速部署 kubernetes 集群测试环境</a></li>  <li class="file"><a href="/wiki/Kubernetes/kubeadm%E5%AE%89%E8%A3%85%20k8s%20%E9%97%AE%E9%A2%98%E8%AE%B0%E5%BD%95/">kubeadm安装 k8s 问题记录</a></li>  <li class="file"><a href="/wiki/Kubernetes/K8s%20%E5%85%A5%E9%97%A8%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">K8s 入门学习笔记</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            Linux
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/Linux/SSH%20%E5%AF%86%E7%A0%81%E7%99%BB%E5%BD%95%E5%92%8C%E5%AF%86%E9%92%A5%E9%85%8D%E7%BD%AE%E8%AF%B4%E6%98%8E/">SSH 密码登录和密钥配置说明</a></li>  <li class="file"><a href="/wiki/Linux/ECS%20%E4%BA%91%E6%9C%8D%E5%8A%A1%E5%99%A8%E6%8C%82%E8%BD%BD%E6%95%B0%E6%8D%AE%E7%9B%98/">ECS 云服务器挂载数据盘</a></li>  <li class="file"><a href="/wiki/Linux/Linux%20%E6%9C%8D%E5%8A%A1%E5%99%A8%E6%8C%82%E8%BD%BD%E7%A1%AC%E7%9B%98/"></a></li>  <li class="file"><a href="/wiki/Linux/SSH%20%E7%AB%AF%E5%8F%A3%E8%BD%AC%E5%8F%91/">SSH 端口转发用法说明</a></li>  <li class="file"><a href="/wiki/Linux/dnf%E8%BD%AF%E4%BB%B6%E5%8C%85%E7%AE%A1%E7%90%86%E5%B7%A5%E5%85%B7/">dnf 软件包管理工具</a></li>  <li class="file"><a href="/wiki/Linux/iptables%20%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">iptables 学习笔记</a></li>  <li class="file"><a href="/wiki/Linux/yum%20%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/">YUM 常用命令</a></li>  <li class="file"><a href="/wiki/Linux/%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4%E8%AE%B0%E5%BD%95/">Linux 常用命令记录</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            Maven
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/Maven/Maven%20%E9%97%AE%E9%A2%98%E8%AE%B0%E5%BD%95/">Maven 问题记录</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            MySql
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/MySql/MySql%20%E5%B8%B8%E7%94%A8%E5%87%BD%E6%95%B0/">MySql 常用函数</a></li>  <li class="file"><a href="/wiki/MySql/MySql%20%E5%BC%80%E7%AA%97%E5%87%BD%E6%95%B0/">MySql 开窗函数</a></li>  <li class="file"><a href="/wiki/MySql/Mysql%20%E9%83%A8%E5%88%86%E8%AF%8D%E6%B1%87%E5%90%AB%E4%B9%89/">Mysql 部分词汇含义</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory open">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder-open"></i>
+                            &nbsp;
+                            Nginx
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/Nginx/Nginx%20%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/">Nginx 常用命令</a></li>  <li class="file"><a href="/wiki/Nginx/Tengine%E5%AE%89%E8%A3%85%E7%AC%94%E8%AE%B0/"></a></li>  <li class="file"><a href="/wiki/Nginx/location%20%E6%8C%87%E4%BB%A4%E7%AC%94%E8%AE%B0/">location 和 rewrite 笔记</a></li>  <li class="file active"><a href="/wiki/Nginx/ngx_http_proxy_module%E6%A8%A1%E5%9D%97%E7%AC%94%E8%AE%B0/">ngx_http_proxy_module 模块学习笔记</a></li>  <li class="file"><a href="/wiki/Nginx/ngx_http_rewrite_module%20%E6%A8%A1%E5%9D%97%E7%AC%94%E8%AE%B0/">ngx_http_rewrite_module 模块学习笔记</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            NodeJs
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/NodeJs/Node%20%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE%E8%AE%B0%E5%BD%95/">Node 环境配置说明</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            PowerDesigner
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/PowerDesigner/%E4%BD%BF%E7%94%A8%E9%97%AE%E9%A2%98%E8%AE%B0%E5%BD%95/">使用出现问题记录</a></li>  <li class="file"><a href="/wiki/PowerDesigner/%E9%80%86%E5%90%91%E5%AF%BC%E5%85%A5%E9%97%AE%E9%A2%98%E8%AE%B0%E5%BD%95/">SQL 逆向导入生成 PDM</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            Redis
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/Redis/Redis%20%E7%BC%93%E5%AD%98%E7%A9%BF%E9%80%8F%E3%80%81%E5%87%BB%E7%A9%BF%E3%80%81%E9%9B%AA%E5%B4%A9/">Redis 缓存穿透、缓存击穿、缓存雪崩</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            Shell
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/Shell/Awk%20%20%E5%9F%BA%E7%A1%80%E7%94%A8%E6%B3%95/">Awk 基础用法</a></li>  <li class="file"><a href="/wiki/Shell/Sed%20%E5%9F%BA%E7%A1%80%E7%94%A8%E6%B3%95/">Sed 基础用法</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            SpringBoot
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/SpringBoot/SpringBoot%20%E5%B1%9E%E6%80%A7%E9%85%8D%E7%BD%AE/">SpringBoot 属性配置</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            Xml
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/Xml/Dom4j%20%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0/">Dom4j 入门笔记</a></li>  <li class="file"><a href="/wiki/Xml/XPath%20%E7%AC%94%E8%AE%B0/">XPath 笔记</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            other
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/other/%E8%BD%AF%E4%BB%B6%E5%90%8D%E7%A7%B0%E8%AE%B0%E5%BD%95/">软件名称记录</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            计算机网络
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/%E7%BD%91%E7%BB%9C%E8%AE%BE%E5%A4%87%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0/">网络设备入门笔记</a></li>  </ul> 
+                    </li> 
+                     <li class="file"><a href="/wiki/index/"></a></li>  </ul> 
+    </div>
+    <script>
+        $(document).ready(function() {
+            var iconFolderOpenClass  = 'fa-folder-open';
+            var iconFolderCloseClass = 'fa-folder';
+            var iconAllExpandClass = 'fa-angle-double-down';
+            var iconAllPackClass = 'fa-angle-double-up';
+            // Handle directory-tree expansion:
+            // 左键单独展开目录
+            $(document).on('click', '#categories a[data-role="directory"]', function (event) {
+                event.preventDefault();
+
+                var icon = $(this).children('.fa');
+                var expanded = icon.hasClass(iconFolderOpenClass);
+                var subtree = $(this).siblings('ul');
+                icon.removeClass(iconFolderOpenClass).removeClass(iconFolderCloseClass);
+                if (expanded) {
+                    if (typeof subtree != 'undefined') {
+                        subtree.slideUp({ duration: 100 });
+                    }
+                    icon.addClass(iconFolderCloseClass);
+                } else {
+                    if (typeof subtree != 'undefined') {
+                        subtree.slideDown({ duration: 100 });
+                    }
+                    icon.addClass(iconFolderOpenClass);
+                }
+            });
+            // 右键展开下属所有目录
+            $('#categories a[data-role="directory"]').bind("contextmenu", function(event){
+                event.preventDefault();
+                
+                var icon = $(this).children('.fa');
+                var expanded = icon.hasClass(iconFolderOpenClass);
+                var listNode = $(this).siblings('ul');
+                var subtrees = $.merge(listNode.find('li ul'), listNode);
+                var icons = $.merge(listNode.find('.fa'), icon);
+                icons.removeClass(iconFolderOpenClass).removeClass(iconFolderCloseClass);
+                if(expanded) {
+                    subtrees.slideUp({ duration: 100 });
+                    icons.addClass(iconFolderCloseClass);
+                } else {
+                    subtrees.slideDown({ duration: 100 });
+                    icons.addClass(iconFolderOpenClass);
+                }
+            })
+            // 展开关闭所有目录按钮
+            $(document).on('click', '#allExpand', function (event) {
+                event.preventDefault();
+                
+                var icon = $(this).children('.fa');
+                var expanded = icon.hasClass(iconAllExpandClass);
+                icon.removeClass(iconAllExpandClass).removeClass(iconAllPackClass);
+                if(expanded) {
+                    $('#sidebar .fa.fa-folder').removeClass('fa-folder').addClass('fa-folder-open')
+                    $('#categories li ul').slideDown({ duration: 100 });
+                    icon.addClass(iconAllPackClass);
+                } else {
+                    $('#sidebar .fa.fa-folder-open').removeClass('fa-folder-open').addClass('fa-folder')
+                    $('#categories li ul').slideUp({ duration: 100 });
+                    icon.addClass(iconAllExpandClass);
+                }
+            });  
+        });
+    </script>
+
+    
+    <div id="toTop" class="fa fa-angle-up"></div>
+</aside>
+            
+            <section id="main"><article id="post-Nginx/ngx_http_proxy_module模块笔记" class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
+                
+                    <div class="article-meta">
+                        
+    <div class="article-category">
+    	<i class="fa fa-folder"></i>
+        <a class="article-category-link" href="/categories/Nginx/">Nginx</a>
+    </div>
+
+                        
+                        
+    <div class="article-date">
+        <i class="fa fa-calendar"></i>
+        <a href="/wiki/Nginx/ngx_http_proxy_module%E6%A8%A1%E5%9D%97%E7%AC%94%E8%AE%B0/">
+            <time datetime="2023-05-31T13:39:26.110Z" itemprop="datePublished">2023-05-31</time>
+        </a>
+    </div>
+
+
+                        
+                            <i class="fa fa-bar-chart"></i>
+                            <span id="busuanzi_container_site_pv"><span id="busuanzi_value_page_pv"></span></span>    
+                        
+                        
+                            <div class="article-meta-button">
+                                <a target="_blank" rel="noopener" href='https://github.com/Vianlex/blog/raw/gh-pages/source/_posts/Nginx/ngx_http_proxy_module模块笔记.md'> Source </a>
+                            </div>
+                            <div class="article-meta-button">
+                                <a target="_blank" rel="noopener" href='https://github.com/Vianlex/blog/edit/gh-pages/source/_posts/Nginx/ngx_http_proxy_module模块笔记.md'> Edit </a>
+                            </div>
+                            <div class="article-meta-button">
+                                <a target="_blank" rel="noopener" href='https://github.com/Vianlex/blog/commits/gh-pages/source/_posts/Nginx/ngx_http_proxy_module模块笔记.md'> History </a>
+                            </div>
+                        
+                    </div>
+                
+                
+    
+        <h1 class="article-title" itemprop="name">
+            ngx_http_proxy_module 模块学习笔记
+        </h1>
+    
+
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+        
+            
+        
+        
+            <h2 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h2><p>The ngx_http_proxy_module module allows passing requests to another server.</p>
+<p>ngx_http_proxy_module 模块允许转发请求到其他的服务器，即我们平时所说的反向代理。</p>
+<h2 id="proxy-pass-指令"><a href="#proxy-pass-指令" class="headerlink" title="proxy_pass 指令"></a>proxy_pass 指令</h2><p>官网语法说明</p>
+<figure class="highlight lua"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Syntax:	proxy_pass URL;</span><br><span class="line">Default: —</span><br><span class="line">Context: location, <span class="keyword">if</span> <span class="keyword">in</span> location, limit_except</span><br></pre></td></tr></table></figure>
+<p>该指令用于设置请求匹配 location 后，转发的代理服务器的 protocol 和 address 以及可选 URI。protocol 可以指定使用 http 或者 https，adress 可以指定为域名或者 ip 地址和可选的端口号(没有端口则默认端口80)，使用例子如下：</p>
+<figure class="highlight lua"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"># protocol:address:port</span><br><span class="line">location / &#123;</span><br><span class="line">    proxy_pass http://<span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"># protocol:address:port/uri</span><br><span class="line">location / &#123;</span><br><span class="line">    proxy_pass http://<span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span>:<span class="number">90</span>/test;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">#  UNIX-domain socket </span><br><span class="line">location / &#123;</span><br><span class="line">    proxy_pass http://unix:/tmp/backend.socket:/uri/;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>请求的转发规则如下：</p>
+<ul>
+<li>如果 proxy_pass 指令带有 URI，那么当请求需要转发到服务器时，请求 URI 与 location 匹配的前缀部分字符串，将会被替换成 proxy_pass 指令中指定的 URI。<br>故请求的最终转发地址等于：<code>proxy_pass-host + request-uri.replace前缀(location-prefix-uri, proxy_pass-uri)</code></li>
+</ul>
+<figure class="highlight lua"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"># 转发的替换公式：http://<span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span>:<span class="number">8080</span> + request-uri.replace前缀(location-prefix-uri, proxy_pass-uri)，注意 request-uri 是包含请求参数的。</span><br><span class="line"># 访问 http://<span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span>/name/ 时，nginx 会将请求 URI = /name/ 与 location 前缀匹配字符串 /name/ 匹配的替换成 proxy_pass 的 URI = /remote/ 则转发后的地址为 http://<span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span>:<span class="number">8080</span>/remote/</span><br><span class="line"># 访问 http://<span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span>/name/user?name=<span class="number">90</span> 时，nginx 会将请求 URI 与 location 匹配的 /name/ 部分替换成 /remote/，则转发后的地址为 http://<span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span>:<span class="number">8080</span>/remote/user?name=<span class="number">90</span></span><br><span class="line">location /name/ &#123;</span><br><span class="line">    proxy_pass http://<span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span>:<span class="number">8080</span>/remote/;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"># 访问 http://<span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span>/test 时，nginx 会将请求 URI 与 location 匹配的 /test 部分替换成 proxy_pass 的 URI(/remote), 则替换后的转发 URI = /remote</span><br><span class="line"># 访问 http://<span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span>/test/hello 时，nginx 会将请求 URI 与 location 匹配的 /test 部分替换成 proxy_pass 的 URI(/remote)，则替换后的转发 URI = /remote/hello</span><br><span class="line">location /test &#123;</span><br><span class="line">    proxy_pass http://<span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span>:<span class="number">8080</span>/remote;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"># 访问 http://<span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span>/hello 时，前缀不匹配该 location</span><br><span class="line"># 访问 http://<span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span>/hello/ 时，nginx 会将请求 URI(/hello/) 与 location 匹配的 /hello/ 部分替换成 proxy_pass 的 URI(/remote), 则替换后的转发 URI = /remote</span><br><span class="line"># 访问 http://<span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span>/hello/world 时，nginx 会将请求 URI(/hello/) 与 location 匹配的 /hello/ 部分替换成 proxy_pass 的 URI(/remote)，则替换后的转发 URI = /remotehello</span><br><span class="line">location /hello/ &#123;</span><br><span class="line">    proxy_pass http://<span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span>:<span class="number">8080</span>/remote;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"># 以下，是另一种表达方式</span><br><span class="line"></span><br><span class="line"># 访问 http://<span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span>/test/adc?param=xxx , location 匹配到请求的 URI = /test/adc 后，nginx 会将请求 URI 中与 location 匹配的前缀字符 / 去掉，变成 test/adc 后，</span><br><span class="line"># 再匹配拼接到 proxy_pass 的 URI 中，则转发后的地址是 http://<span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span>/pathtest/adc?param=xxx</span><br><span class="line">location / &#123;</span><br><span class="line">    proxy_pass http://<span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span>/<span class="built_in">path</span>;    </span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"># 访问 http://<span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span>/get/test 时，location 匹配到请求的 URI = /get/test 后，会将请求 URI 中与 location 匹配的 /get 前缀字符串去掉，然后将剩余部分 /test，再拼接到 proxy_pass URI 中，则最终的转发地址为 http://<span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span>/get/<span class="built_in">path</span>/test</span><br><span class="line">location /get &#123;</span><br><span class="line">  proxy_pass http://<span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span>/get/<span class="built_in">path</span>;   </span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>如果 proxy_pass 指令没有带有 URI，那么当请求转发到服务器时，转发后的 URI，就是请求匹配 location 的 URI。<figure class="highlight lua"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">location /some/<span class="built_in">path</span>/ &#123;</span><br><span class="line">    proxy_pass http://<span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"># 等价于</span><br><span class="line"></span><br><span class="line">location /some/<span class="built_in">path</span>/ &#123;</span><br><span class="line">    proxy_pass http://<span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span>:<span class="number">8080</span>$request_uri;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+访问 <a target="_blank" rel="noopener" href="http://127.0.0.1/some/path">http://127.0.0.1/some/path</a> 则转发后的地址为 <a target="_blank" rel="noopener" href="http://127.0.0.1:8080/some/path">http://127.0.0.1:8080/some/path</a><br>访问 <a target="_blank" rel="noopener" href="http://127.0.0.1/some/path/test">http://127.0.0.1/some/path/test</a> 则转发后的地址为 <a target="_blank" rel="noopener" href="http://127.0.0.1:8080/some/path/test">http://127.0.0.1:8080/some/path/test</a><br>访问 <a target="_blank" rel="noopener" href="http://127.0.0.1/some/path?param=xxx">http://127.0.0.1/some/path?param=xxx</a> 则转发后的地址为 <a target="_blank" rel="noopener" href="http://127.0.0.1:8080/some/path?param=xxx">http://127.0.0.1:8080/some/path?param=xxx</a></li>
+</ul>
+<p>注意以下几种情况是 proxy_pass 指令不能携带 URI 的</p>
+<ul>
+<li><p>如果 location 的匹配规则使用的是正则表达，proxy_pass 不能携带 URI</p>
+<figure class="highlight lua"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"># 区分大小写正则表达式匹配 URI</span><br><span class="line">location ~ /<span class="built_in">path</span> &#123;</span><br><span class="line">    # 不能携带 URI，否则会报错</span><br><span class="line">    proxy_pass http://<span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"># 不区分大小写正则表达式匹配 URI</span><br><span class="line">location ~* /case-insensitive /<span class="built_in">path</span>/ &#123;</span><br><span class="line">   # 不能携带 URI，否则会报错</span><br><span class="line">   proxy_pass http://<span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><p>当在 location 中使用 rewrite 指令时，proxy_pass 指令不能携带 URI</p>
+<figure class="highlight lua"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">location /name/ &#123;</span><br><span class="line">    rewrite    /name/([^/]+) /users?name=$<span class="number">1</span> <span class="keyword">break</span>;</span><br><span class="line">    # rewrite 匹配不成功时，执行 proxy_pass</span><br><span class="line">    proxy_pass http://<span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>在具名的 location 中 proxy_pass 指令不能携带 URI</p>
+<figure class="highlight lua"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">location @testname &#123;</span><br><span class="line">    # 注意不能指定 URI</span><br><span class="line">    proxy_pass http://<span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>在 if 条件中 proxy_pass 指令不能携带 URI</p>
+<figure class="highlight lua"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">location /test &#123;</span><br><span class="line">    <span class="keyword">if</span> ($host = <span class="string">&quot;test.adb.com&quot;</span> )&#123;</span><br><span class="line">        # 不能携带 URI</span><br><span class="line">        proxy_pass http://<span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> ($host = <span class="string">&quot;view.adb.com&quot;</span> ) &#123;</span><br><span class="line">        # 不能携带 URI</span><br><span class="line">        proxy_pass http://<span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    # 这里可以</span><br><span class="line">    proxy_pass http://<span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span>/user;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><ol>
+<li><a target="_blank" rel="noopener" href="https://nginx-playground.wizardzines.com/">在线测试 nginx 链接</a></li>
+</ol>
+
+            </div>
+        
+        <footer class="article-footer">
+        </footer>
+    </div>
+</article>
+
+
+    
+<nav id="article-nav">
+    
+        <a href="/wiki/Nginx/location%20%E6%8C%87%E4%BB%A4%E7%AC%94%E8%AE%B0/" id="article-nav-newer" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">Newer</strong>
+            <div class="article-nav-title">
+                
+                    location 和 rewrite 笔记
+                
+            </div>
+        </a>
+    
+    
+        <a href="/wiki/Nginx/ngx_http_rewrite_module%20%E6%A8%A1%E5%9D%97%E7%AC%94%E8%AE%B0/" id="article-nav-older" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">Older</strong>
+            <div class="article-nav-title">ngx_http_rewrite_module 模块学习笔记</div>
+        </a>
+    
+</nav>
+
+
+
+
+
+    
+    
+
+
+
+</section>
+        </div>
+        <footer id="footer">
+    <div class="outer">
+        <div id="footer-info" class="inner">
+            <br> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>. Theme - <a target="_blank" rel="noopener" href="https://github.com/vianlex/hexo-theme-Wikitten">wikitten</a>
+            
+                <br>
+                <span id="busuanzi_container_site_pv"><i class="fa fa-eye"></i> <span id="busuanzi_value_site_pv"></span></span>
+                &nbsp;|&nbsp;
+                <span id="busuanzi_container_site_pv"><i class="fa fa-user"></i> <span id="busuanzi_value_site_uv"></span></span>
+            
+        </div>
+    </div>
+</footer>
+
+        
+
+    
+        
+<script src="/libs/lightgallery/js/lightgallery.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-thumbnail.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-pager.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-autoplay.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-fullscreen.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-zoom.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-hash.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-share.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-video.min.js"></script>
+
+    
+    
+        
+<script src="/libs/justified-gallery/jquery.justifiedGallery.min.js"></script>
+
+    
+    
+        <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true,
+            TeX: {
+                equationNumbers: {
+                  autoNumber: 'AMS'
+                }
+            }
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script async src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+
+
+
+<!-- Custom Scripts -->
+
+<script src="/js/main.js"></script>
+
+    </div>
+</body>
+</html>

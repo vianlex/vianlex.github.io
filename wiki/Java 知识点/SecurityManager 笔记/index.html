@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <meta charset="utf-8">
+    
+    <title>SecurityManager 笔记 | Vianlex&#39;s Wiki</title>
+    
+    
+        <meta name="keywords" content="SecurityManager 笔记" />
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <meta name="description" content="简介Java SecurityManager 安全管理器，配合安全策略文件使用，能够控制代码对敏感或关键资源的访问，例如文件系统，网络服务，系统属性访问等，加强代码的安全性。注意读取程序类路径中的文件是不需要进行显式授权，默认已有读取执行删除的权限。 简单使用例子： 12345678910111213141516171819202122232425262728293031323334353637i">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SecurityManager 笔记">
+<meta property="og:url" content="http://example.com/wiki/Java%20%E7%9F%A5%E8%AF%86%E7%82%B9/SecurityManager%20%E7%AC%94%E8%AE%B0/index.html">
+<meta property="og:site_name" content="Vianlex&#39;s Wiki">
+<meta property="og:description" content="简介Java SecurityManager 安全管理器，配合安全策略文件使用，能够控制代码对敏感或关键资源的访问，例如文件系统，网络服务，系统属性访问等，加强代码的安全性。注意读取程序类路径中的文件是不需要进行显式授权，默认已有读取执行删除的权限。 简单使用例子： 12345678910111213141516171819202122232425262728293031323334353637i">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-05-31T13:39:26.110Z">
+<meta property="article:modified_time" content="2023-05-31T13:39:26.110Z">
+<meta property="article:author" content="Vianlex">
+<meta name="twitter:card" content="summary">
+    
+
+    
+
+    
+        <link rel="icon" href="/favicon.ico" />
+    
+
+    
+<link rel="stylesheet" href="/libs/font-awesome/css/font-awesome.min.css">
+
+    
+<link rel="stylesheet" href="/libs/open-sans/styles.css">
+
+    
+<link rel="stylesheet" href="/libs/source-code-pro/styles.css">
+
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    
+<script src="/libs/jquery/2.1.3/jquery.min.js"></script>
+
+    
+<script src="/libs/jquery/plugins/cookie/1.4.1/jquery.cookie.js"></script>
+
+    
+    
+        
+<link rel="stylesheet" href="/libs/lightgallery/css/lightgallery.min.css">
+
+    
+    
+        
+<link rel="stylesheet" href="/libs/justified-gallery/justifiedGallery.min.css">
+
+    
+    
+    
+    
+
+
+    
+        <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    
+<meta name="generator" content="Hexo 6.3.0"><link rel="alternate" href="/atom.xml" title="Vianlex's Wiki" type="application/atom+xml">
+</head>
+
+<body>
+    <div id="container">
+        <header id="header">
+    <div id="header-main" class="header-inner">
+        <div class="outer">
+            <a href="/" id="logo">
+                <i class="logo"></i>
+                <span class="site-title">Vianlex&#39;s Wiki</span>
+            </a>
+            <nav id="main-nav">
+                
+                    <a class="main-nav-link" href="/">首页</a>
+                
+                    <a class="main-nav-link" href="/archives">归档</a>
+                
+                    <a class="main-nav-link" href="/categories">分类</a>
+                
+                    <a class="main-nav-link" href="/tags">标签</a>
+                
+                    <a class="main-nav-link" href="/about">关于</a>
+                
+            </nav>
+            
+            <div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="Search" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="Type something..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: 'Posts',
+            PAGES: 'Pages',
+            CATEGORIES: 'Categories',
+            TAGS: 'Tags',
+            UNTITLED: '(Untitled)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+
+</div>
+        </div>
+    </div>
+    <div id="main-nav-mobile" class="header-sub header-inner">
+        <table class="menu outer">
+            <tr>
+                
+                    <td><a class="main-nav-link" href="/">首页</a></td>
+                
+                    <td><a class="main-nav-link" href="/archives">归档</a></td>
+                
+                    <td><a class="main-nav-link" href="/categories">分类</a></td>
+                
+                    <td><a class="main-nav-link" href="/tags">标签</a></td>
+                
+                    <td><a class="main-nav-link" href="/about">关于</a></td>
+                
+                <td>
+                    
+    <div class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="Search" />
+    </div>
+
+                </td>
+            </tr>
+        </table>
+    </div>
+</header>
+
+        <div class="outer">
+            
+            
+                <aside id="sidebar">
+   
+        
+    <div class="widget-wrap" id='categories'>
+        <h3 class="widget-title">
+            <span>分类目录</span>
+            &nbsp;
+            <a id='allExpand' href="#">
+                <i class="fa fa-angle-double-down fa-2x"></i>
+            </a>
+        </h3>
+        
+        
+        
+         <ul class="unstyled" id="tree" > 
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            Apache POI
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/Apache%20POI/Excel%20%E8%AE%BE%E7%BD%AE%E8%A1%8C%E9%AB%98%E5%92%8C%E6%8D%A2%E8%A1%8C%E9%97%AE%E9%A2%98/">Excel 设置行高和换行问题</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            Docker
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/Docker/Docker%20Swarm%20%E7%AC%94%E8%AE%B0/">Docker Swarm 笔记</a></li>  <li class="file"><a href="/wiki/Docker/Docker%20%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0/">Docker 入门笔记</a></li>  <li class="file"><a href="/wiki/Docker/Docker%20%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/">Docker 常用命令</a></li>  <li class="file"><a href="/wiki/Docker/Docker%20%E6%9D%83%E9%99%90%E9%85%8D%E7%BD%AE/">Docker 权限配置</a></li>  <li class="file"><a href="/wiki/Docker/Dockerfile%20%E4%BD%BF%E7%94%A8%E8%AF%B4%E6%98%8E/">Dockerfile 使用说明</a></li>  <li class="file"><a href="/wiki/Docker/docker%20%E5%AE%89%E8%A3%85%E7%AC%94%E8%AE%B0/">Docker 安装笔记</a></li>  <li class="file"><a href="/wiki/Docker/docker-compose%20%E5%AD%A6%E4%B9%A0%E8%AE%B0%E5%BD%95/">Docker-compose 学习记录</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            Golang
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/Golang/Go%20%E5%9F%BA%E7%A1%80%E8%AF%AD%E6%B3%95/">Go 基础语法</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory open">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder-open"></i>
+                            &nbsp;
+                            Java 知识点
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/Java%20%E7%9F%A5%E8%AF%86%E7%82%B9/Class%E5%AF%B9%E8%B1%A1%E5%92%8CTpye%E5%AF%B9%E8%B1%A1/">Class 对象和 Tpye 对象知识笔记</a></li>  <li class="file"><a href="/wiki/Java%20%E7%9F%A5%E8%AF%86%E7%82%B9/Instrumentation%20%E7%9F%A5%E8%AF%86%E7%AC%94%E8%AE%B0/">Instrumentation 知识笔记</a></li>  <li class="file"><a href="/wiki/Java%20%E7%9F%A5%E8%AF%86%E7%82%B9/Java%20main%20%E5%92%8C%20classpath/">main 方法和 classpath 说明</a></li>  <li class="file"><a href="/wiki/Java%20%E7%9F%A5%E8%AF%86%E7%82%B9/Javassist%20%E7%9F%A5%E8%AF%86%E7%AC%94%E8%AE%B0/">Javassist 知识笔记</a></li>  <li class="file active"><a href="/wiki/Java%20%E7%9F%A5%E8%AF%86%E7%82%B9/SecurityManager%20%E7%AC%94%E8%AE%B0/">SecurityManager 笔记</a></li>  <li class="file"><a href="/wiki/Java%20%E7%9F%A5%E8%AF%86%E7%82%B9/byteBuddy%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0/">ByteBuddy 入门笔记</a></li>  <li class="file"><a href="/wiki/Java%20%E7%9F%A5%E8%AF%86%E7%82%B9/Drools%E7%AC%94%E8%AE%B0/">Drools 笔记</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            Java 设计模式
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/Java%20%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/%E4%BB%A3%E7%90%86%E6%A8%A1%E5%BC%8F/">代理模式</a></li>  <li class="file"><a href="/wiki/Java%20%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/%E5%B7%A5%E5%8E%82%E6%A8%A1%E5%BC%8F/">工厂模式</a></li>  <li class="file"><a href="/wiki/Java%20%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/%E6%A8%A1%E6%9D%BF%E6%A8%A1%E5%BC%8F/">模板模式(模板方法模式)</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            Jemeter
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/Jemeter/Jemeter%20%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0/">Jemeter 入门笔记</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            Kubernetes
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/Kubernetes/kubeadm%20%E5%BF%AB%E9%80%9F%E9%83%A8%E7%BD%B2%20k8s%20%E9%9B%86%E7%BE%A4%E6%B5%8B%E8%AF%95%E7%8E%AF%E5%A2%83/">kubeadm 快速部署 kubernetes 集群测试环境</a></li>  <li class="file"><a href="/wiki/Kubernetes/kubeadm%E5%AE%89%E8%A3%85%20k8s%20%E9%97%AE%E9%A2%98%E8%AE%B0%E5%BD%95/">kubeadm安装 k8s 问题记录</a></li>  <li class="file"><a href="/wiki/Kubernetes/K8s%20%E5%85%A5%E9%97%A8%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">K8s 入门学习笔记</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            Linux
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/Linux/SSH%20%E5%AF%86%E7%A0%81%E7%99%BB%E5%BD%95%E5%92%8C%E5%AF%86%E9%92%A5%E9%85%8D%E7%BD%AE%E8%AF%B4%E6%98%8E/">SSH 密码登录和密钥配置说明</a></li>  <li class="file"><a href="/wiki/Linux/ECS%20%E4%BA%91%E6%9C%8D%E5%8A%A1%E5%99%A8%E6%8C%82%E8%BD%BD%E6%95%B0%E6%8D%AE%E7%9B%98/">ECS 云服务器挂载数据盘</a></li>  <li class="file"><a href="/wiki/Linux/Linux%20%E6%9C%8D%E5%8A%A1%E5%99%A8%E6%8C%82%E8%BD%BD%E7%A1%AC%E7%9B%98/"></a></li>  <li class="file"><a href="/wiki/Linux/SSH%20%E7%AB%AF%E5%8F%A3%E8%BD%AC%E5%8F%91/">SSH 端口转发用法说明</a></li>  <li class="file"><a href="/wiki/Linux/dnf%E8%BD%AF%E4%BB%B6%E5%8C%85%E7%AE%A1%E7%90%86%E5%B7%A5%E5%85%B7/">dnf 软件包管理工具</a></li>  <li class="file"><a href="/wiki/Linux/iptables%20%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">iptables 学习笔记</a></li>  <li class="file"><a href="/wiki/Linux/yum%20%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/">YUM 常用命令</a></li>  <li class="file"><a href="/wiki/Linux/%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4%E8%AE%B0%E5%BD%95/">Linux 常用命令记录</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            Maven
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/Maven/Maven%20%E9%97%AE%E9%A2%98%E8%AE%B0%E5%BD%95/">Maven 问题记录</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            MySql
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/MySql/MySql%20%E5%B8%B8%E7%94%A8%E5%87%BD%E6%95%B0/">MySql 常用函数</a></li>  <li class="file"><a href="/wiki/MySql/MySql%20%E5%BC%80%E7%AA%97%E5%87%BD%E6%95%B0/">MySql 开窗函数</a></li>  <li class="file"><a href="/wiki/MySql/Mysql%20%E9%83%A8%E5%88%86%E8%AF%8D%E6%B1%87%E5%90%AB%E4%B9%89/">Mysql 部分词汇含义</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            Nginx
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/Nginx/Nginx%20%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/">Nginx 常用命令</a></li>  <li class="file"><a href="/wiki/Nginx/Tengine%E5%AE%89%E8%A3%85%E7%AC%94%E8%AE%B0/"></a></li>  <li class="file"><a href="/wiki/Nginx/location%20%E6%8C%87%E4%BB%A4%E7%AC%94%E8%AE%B0/">location 和 rewrite 笔记</a></li>  <li class="file"><a href="/wiki/Nginx/ngx_http_proxy_module%E6%A8%A1%E5%9D%97%E7%AC%94%E8%AE%B0/">ngx_http_proxy_module 模块学习笔记</a></li>  <li class="file"><a href="/wiki/Nginx/ngx_http_rewrite_module%20%E6%A8%A1%E5%9D%97%E7%AC%94%E8%AE%B0/">ngx_http_rewrite_module 模块学习笔记</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            NodeJs
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/NodeJs/Node%20%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE%E8%AE%B0%E5%BD%95/">Node 环境配置说明</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            PowerDesigner
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/PowerDesigner/%E4%BD%BF%E7%94%A8%E9%97%AE%E9%A2%98%E8%AE%B0%E5%BD%95/">使用出现问题记录</a></li>  <li class="file"><a href="/wiki/PowerDesigner/%E9%80%86%E5%90%91%E5%AF%BC%E5%85%A5%E9%97%AE%E9%A2%98%E8%AE%B0%E5%BD%95/">SQL 逆向导入生成 PDM</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            Redis
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/Redis/Redis%20%E7%BC%93%E5%AD%98%E7%A9%BF%E9%80%8F%E3%80%81%E5%87%BB%E7%A9%BF%E3%80%81%E9%9B%AA%E5%B4%A9/">Redis 缓存穿透、缓存击穿、缓存雪崩</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            Shell
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/Shell/Awk%20%20%E5%9F%BA%E7%A1%80%E7%94%A8%E6%B3%95/">Awk 基础用法</a></li>  <li class="file"><a href="/wiki/Shell/Sed%20%E5%9F%BA%E7%A1%80%E7%94%A8%E6%B3%95/">Sed 基础用法</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            SpringBoot
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/SpringBoot/SpringBoot%20%E5%B1%9E%E6%80%A7%E9%85%8D%E7%BD%AE/">SpringBoot 属性配置</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            Xml
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/Xml/Dom4j%20%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0/">Dom4j 入门笔记</a></li>  <li class="file"><a href="/wiki/Xml/XPath%20%E7%AC%94%E8%AE%B0/">XPath 笔记</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            other
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/other/%E8%BD%AF%E4%BB%B6%E5%90%8D%E7%A7%B0%E8%AE%B0%E5%BD%95/">软件名称记录</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            计算机网络
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/%E7%BD%91%E7%BB%9C%E8%AE%BE%E5%A4%87%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0/">网络设备入门笔记</a></li>  </ul> 
+                    </li> 
+                     <li class="file"><a href="/wiki/index/"></a></li>  </ul> 
+    </div>
+    <script>
+        $(document).ready(function() {
+            var iconFolderOpenClass  = 'fa-folder-open';
+            var iconFolderCloseClass = 'fa-folder';
+            var iconAllExpandClass = 'fa-angle-double-down';
+            var iconAllPackClass = 'fa-angle-double-up';
+            // Handle directory-tree expansion:
+            // 左键单独展开目录
+            $(document).on('click', '#categories a[data-role="directory"]', function (event) {
+                event.preventDefault();
+
+                var icon = $(this).children('.fa');
+                var expanded = icon.hasClass(iconFolderOpenClass);
+                var subtree = $(this).siblings('ul');
+                icon.removeClass(iconFolderOpenClass).removeClass(iconFolderCloseClass);
+                if (expanded) {
+                    if (typeof subtree != 'undefined') {
+                        subtree.slideUp({ duration: 100 });
+                    }
+                    icon.addClass(iconFolderCloseClass);
+                } else {
+                    if (typeof subtree != 'undefined') {
+                        subtree.slideDown({ duration: 100 });
+                    }
+                    icon.addClass(iconFolderOpenClass);
+                }
+            });
+            // 右键展开下属所有目录
+            $('#categories a[data-role="directory"]').bind("contextmenu", function(event){
+                event.preventDefault();
+                
+                var icon = $(this).children('.fa');
+                var expanded = icon.hasClass(iconFolderOpenClass);
+                var listNode = $(this).siblings('ul');
+                var subtrees = $.merge(listNode.find('li ul'), listNode);
+                var icons = $.merge(listNode.find('.fa'), icon);
+                icons.removeClass(iconFolderOpenClass).removeClass(iconFolderCloseClass);
+                if(expanded) {
+                    subtrees.slideUp({ duration: 100 });
+                    icons.addClass(iconFolderCloseClass);
+                } else {
+                    subtrees.slideDown({ duration: 100 });
+                    icons.addClass(iconFolderOpenClass);
+                }
+            })
+            // 展开关闭所有目录按钮
+            $(document).on('click', '#allExpand', function (event) {
+                event.preventDefault();
+                
+                var icon = $(this).children('.fa');
+                var expanded = icon.hasClass(iconAllExpandClass);
+                icon.removeClass(iconAllExpandClass).removeClass(iconAllPackClass);
+                if(expanded) {
+                    $('#sidebar .fa.fa-folder').removeClass('fa-folder').addClass('fa-folder-open')
+                    $('#categories li ul').slideDown({ duration: 100 });
+                    icon.addClass(iconAllPackClass);
+                } else {
+                    $('#sidebar .fa.fa-folder-open').removeClass('fa-folder-open').addClass('fa-folder')
+                    $('#categories li ul').slideUp({ duration: 100 });
+                    icon.addClass(iconAllExpandClass);
+                }
+            });  
+        });
+    </script>
+
+    
+    <div id="toTop" class="fa fa-angle-up"></div>
+</aside>
+            
+            <section id="main"><article id="post-Java 知识点/SecurityManager 笔记" class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
+                
+                    <div class="article-meta">
+                        
+    <div class="article-category">
+    	<i class="fa fa-folder"></i>
+        <a class="article-category-link" href="/categories/Java-%E7%9F%A5%E8%AF%86%E7%82%B9/">Java 知识点</a>
+    </div>
+
+                        
+                        
+    <div class="article-date">
+        <i class="fa fa-calendar"></i>
+        <a href="/wiki/Java%20%E7%9F%A5%E8%AF%86%E7%82%B9/SecurityManager%20%E7%AC%94%E8%AE%B0/">
+            <time datetime="2023-05-31T13:39:26.110Z" itemprop="datePublished">2023-05-31</time>
+        </a>
+    </div>
+
+
+                        
+                            <i class="fa fa-bar-chart"></i>
+                            <span id="busuanzi_container_site_pv"><span id="busuanzi_value_page_pv"></span></span>    
+                        
+                        
+                            <div class="article-meta-button">
+                                <a target="_blank" rel="noopener" href='https://github.com/Vianlex/blog/raw/gh-pages/source/_posts/Java 知识点/SecurityManager 笔记.md'> Source </a>
+                            </div>
+                            <div class="article-meta-button">
+                                <a target="_blank" rel="noopener" href='https://github.com/Vianlex/blog/edit/gh-pages/source/_posts/Java 知识点/SecurityManager 笔记.md'> Edit </a>
+                            </div>
+                            <div class="article-meta-button">
+                                <a target="_blank" rel="noopener" href='https://github.com/Vianlex/blog/commits/gh-pages/source/_posts/Java 知识点/SecurityManager 笔记.md'> History </a>
+                            </div>
+                        
+                    </div>
+                
+                
+    
+        <h1 class="article-title" itemprop="name">
+            SecurityManager 笔记
+        </h1>
+    
+
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+        
+            
+        
+        
+            <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>Java SecurityManager 安全管理器，配合安全策略文件使用，能够控制代码对敏感或关键资源的访问，例如文件系统，网络服务，系统属性访问等，加强代码的安全性。注意读取程序类路径中的文件是不需要进行显式授权，默认已有读取执行删除的权限。</p>
+<p>简单使用例子：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> java.io.BufferedReader;</span><br><span class="line"><span class="keyword">import</span> java.io.File;</span><br><span class="line"><span class="keyword">import</span> java.io.FileReader;</span><br><span class="line"><span class="keyword">import</span> java.util.Objects;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">SecurityManagerTest</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 代码中启动安全管理器，或者通过指定参数启动安全管理  java -Djava.security.manager xxx.jar</span></span><br><span class="line">	    <span class="type">SecurityManager</span> <span class="variable">manager</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">SecurityManager</span>();</span><br><span class="line">	    <span class="keyword">if</span>(Objects.isNull(System.getSecurityManager())) &#123;</span><br><span class="line">            <span class="comment">// 开启安全管理器，安全管理器默认的安全策略配置文件是 JAVA_HOME/jre/lib/security/java.policy</span></span><br><span class="line">	    	System.setSecurityManager(manager);</span><br><span class="line">	    &#125;</span><br><span class="line">	    </span><br><span class="line">	    <span class="keyword">try</span> &#123;</span><br><span class="line">	    	<span class="comment">// 检查是否有访问属性权限，没有的话，抛出异常</span></span><br><span class="line">	    	manager.checkPropertyAccess(<span class="string">&quot;java.home&quot;</span>);</span><br><span class="line">	    	System.out.println(System.getProperty(<span class="string">&quot;java.home&quot;</span>));</span><br><span class="line">	    &#125;<span class="keyword">catch</span> (SecurityException e) &#123;</span><br><span class="line">	    	System.out.println(<span class="string">&quot;没有读取 java.home 属性的权限&quot;</span>);</span><br><span class="line">		&#125;</span><br><span class="line">	    	</span><br><span class="line">		<span class="keyword">try</span> (<span class="type">FileReader</span> <span class="variable">fileReader</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">FileReader</span>(<span class="keyword">new</span> <span class="title class_">File</span>(<span class="string">&quot;D:\\test-security.txt&quot;</span>));</span><br><span class="line">				<span class="type">BufferedReader</span> <span class="variable">reader</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">BufferedReader</span>(fileReader)) &#123;</span><br><span class="line"></span><br><span class="line">			<span class="keyword">for</span> (<span class="type">String</span> <span class="variable">text</span> <span class="operator">=</span> reader.readLine(); Objects.nonNull(text); text = reader.readLine()) &#123;</span><br><span class="line">				System.out.println(text);</span><br><span class="line">			&#125;</span><br><span class="line">		&#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">			e.printStackTrace();</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>上述代码设置安全管理，因为默认的 java.policy 安全策略文件未配置读取该文件的权限，则会报如下错误：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">java.security.AccessControlException: access <span class="title function_">denied</span> <span class="params">(<span class="string">&quot;java.io.FilePermission&quot;</span> <span class="string">&quot;D:\test-security.txt&quot;</span> <span class="string">&quot;read&quot;</span>)</span></span><br><span class="line">	at java.security.AccessControlContext.checkPermission(AccessControlContext.java:<span class="number">457</span>)</span><br><span class="line">	at java.security.AccessController.checkPermission(AccessController.java:<span class="number">884</span>)</span><br><span class="line">	at java.lang.SecurityManager.checkPermission(SecurityManager.java:<span class="number">549</span>)</span><br><span class="line">	at java.lang.SecurityManager.checkRead(SecurityManager.java:<span class="number">888</span>)</span><br><span class="line">	at java.io.FileInputStream.&lt;init&gt;(FileInputStream.java:<span class="number">127</span>)</span><br><span class="line">	at java.io.FileReader.&lt;init&gt;(FileReader.java:<span class="number">72</span>)</span><br><span class="line">	at com.ils.securityManager.SecurityManagerTest.main(SecurityManagerTest.java:<span class="number">16</span>)</span><br></pre></td></tr></table></figure>
+
+<p>开启安全管理方式如下：</p>
+<ol>
+<li>通过编码方式<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">System.setSecurityManager(<span class="keyword">new</span> <span class="title class_">SecurityManager</span>());</span><br></pre></td></tr></table></figure></li>
+<li>通过设置 Java 程序启动参数方式<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">java -Djava.security.manager xxx.jar</span><br></pre></td></tr></table></figure></li>
+</ol>
+<p>安全策略文件默认使用的是 JAVA_HOME&#x2F;jre&#x2F;lib&#x2F;security&#x2F;java.policy 和哟用户目录下的 .jara.policy 文件，当然可以另外指定，支持以下两种方式指定：</p>
+<ol>
+<li>通过编码方式<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 指定类路径下的文件</span></span><br><span class="line">System.setProperty(<span class="string">&quot;java.security.policy&quot;</span>, SecurityManagerTest.class.getResource(<span class="string">&quot;/&quot;</span>)+<span class="string">&quot;testFile.policy&quot;</span>);</span><br><span class="line"><span class="comment">// 指定全路径</span></span><br><span class="line">System.setProperty(<span class="string">&quot;java.security.policy&quot;</span>,<span class="string">&quot;D:/testFile.policy&quot;</span>);</span><br></pre></td></tr></table></figure></li>
+<li>通过 Java 程序启动参数方式<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 表示优先查找当前策略文件权限，如果查找不到，则去查找默认的 JAVA_HOME/jre/lib/security/java.policy 安全策略文件</span></span><br><span class="line">-Djava.security.policy=D:/testFile.policy</span><br><span class="line"><span class="comment"># == 符号表示查找权限只查找当前指定策略文件</span></span><br><span class="line">-Djava.security.policy==D:/testFile.policy</span><br></pre></td></tr></table></figure></li>
+</ol>
+<p>上述例子，配置安全策略权限有两种如下：</p>
+<ol>
+<li>在默认的安全策略文件中添加<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">grant &#123; </span><br><span class="line">    // 在 grant 语句处添加如下权限，表示所有资源的可以访问，一般不建议这么做</span><br><span class="line">    permission java.security.AllPermission;</span><br><span class="line">    // 或者添加单独的文件访问权限</span><br><span class="line">    permission java.io.FilePermission &quot;D:\\test-security.txt&quot;, read;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li>在项目的资源根路径下下新建一个安全策略配置文件，文件名 testFile.policy，内容如下：<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">grant &#123; </span><br><span class="line">    permission java.io.FilePermission &quot;D:\\test-security.txt&quot;, &quot;read&quot;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+然后将代码修改如下：<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">SecurityManagerTest</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 代码中启动安全管理器，或者通过指定参数启动安全管理  java -Djava.security.manager -Djava.security.policy=xxx/xx/my.policy   xxx.jar</span></span><br><span class="line">        System.setProperty(<span class="string">&quot;java.security.policy&quot;</span>, SecurityManagerTest.class.getResource(<span class="string">&quot;/&quot;</span>)+<span class="string">&quot;testFile.policy&quot;</span>);</span><br><span class="line">        <span class="comment">// 注意安全管理器会优先使用命令行或者 system.setPropety 设置的 policy 文件，如果权限不匹配在去查找默认的策略文件</span></span><br><span class="line">	    <span class="type">SecurityManager</span> <span class="variable">manager</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">SecurityManager</span>();</span><br><span class="line">	    <span class="keyword">if</span>(Objects.isNull(System.getSecurityManager())) &#123;</span><br><span class="line">            <span class="comment">// 开启安全管理器，安全管理器默认的安全策略配置文件是 JAVA_HOME/jre/lib/security/java.policy</span></span><br><span class="line">	    	System.setSecurityManager(manager);</span><br><span class="line">	    &#125;</span><br><span class="line">	    <span class="keyword">try</span> &#123;</span><br><span class="line">	    	<span class="comment">// 检查是否有访问属性权限，没有的话，抛出异常</span></span><br><span class="line">	    	manager.checkPropertyAccess(<span class="string">&quot;java.home&quot;</span>);</span><br><span class="line">	    	System.out.println(System.getProperty(<span class="string">&quot;java.home&quot;</span>));</span><br><span class="line">	    &#125;<span class="keyword">catch</span> (SecurityException e) &#123;</span><br><span class="line">	    	System.out.println(<span class="string">&quot;没有读取 java.home 属性的权限&quot;</span>);</span><br><span class="line">		&#125;</span><br><span class="line">	    	</span><br><span class="line">		<span class="keyword">try</span> (<span class="type">FileReader</span> <span class="variable">fileReader</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">FileReader</span>(<span class="keyword">new</span> <span class="title class_">File</span>(<span class="string">&quot;D:\\test-security.txt&quot;</span>));</span><br><span class="line">				<span class="type">BufferedReader</span> <span class="variable">reader</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">BufferedReader</span>(fileReader)) &#123;</span><br><span class="line"></span><br><span class="line">			<span class="keyword">for</span> (<span class="type">String</span> <span class="variable">text</span> <span class="operator">=</span> reader.readLine(); Objects.nonNull(text); text = reader.readLine()) &#123;</span><br><span class="line">				System.out.println(text);</span><br><span class="line">			&#125;</span><br><span class="line">		&#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">			e.printStackTrace();</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ol>
+<h2 id="安全管理策略文件"><a href="#安全管理策略文件" class="headerlink" title="安全管理策略文件"></a>安全管理策略文件</h2><p>以下是安全策略文件的简单语法说明，具体详细说明可以查看<a target="_blank" rel="noopener" href="https://docs.oracle.com/javase/8/docs/technotes/guides/security/PolicyFiles.html">官方文档</a></p>
+<ol>
+<li>语法格式说明<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 表示签名秘钥文件路径</span></span><br><span class="line">keystore <span class="string">&quot;http://foo.example.com/blah/.keystore&quot;</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 授权条目，其中 signedBy、principal、codeBase 语句都是可选的，它们是与的关系。</span></span><br><span class="line">grant signedBy <span class="string">&quot;signer_names&quot;</span>, codeBase <span class="string">&quot;URL&quot;</span>, principal principal_class_name <span class="string">&quot;principal_name&quot;</span>, </span><br><span class="line">    principal principal_class_name <span class="string">&quot;principal_name&quot;</span> &#123;</span><br><span class="line">    </span><br><span class="line">      <span class="comment">// 通过 signedBy 指定签名人</span></span><br><span class="line">      permission permission_class_name <span class="string">&quot;target_name&quot;</span>, <span class="string">&quot;action&quot;</span>, signedBy <span class="string">&quot;signer_names&quot;</span>;;</span><br><span class="line">      permission permission_class_name <span class="string">&quot;target_name&quot;</span>, <span class="string">&quot;action&quot;</span>;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">grant codeBase <span class="string">&quot;URL&quot;</span> &#123;</span><br><span class="line">      permission permission_class_name <span class="string">&quot;target_name&quot;</span>, <span class="string">&quot;action&quot;</span>;</span><br><span class="line">      permission permission_class_name <span class="string">&quot;target_name&quot;</span>, <span class="string">&quot;action&quot;</span>;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">grant &#123;</span><br><span class="line">      permission permission_class_name <span class="string">&quot;target_name&quot;</span>, <span class="string">&quot;action&quot;</span>;</span><br><span class="line">      permission permission_class_name <span class="string">&quot;target_name&quot;</span>, <span class="string">&quot;action&quot;</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 表示允许任何以 X500Principal，&quot;cn=Alice &quot; 的身份执行的代码，有权限读写 &quot;/home/Alice&quot; 资源</span></span><br><span class="line">grant principal javax.security.auth.x500.X500Principal <span class="string">&quot;cn=Alice&quot;</span> &#123;</span><br><span class="line">      permission java.io.FilePermission <span class="string">&quot;/home/Alice&quot;</span>, <span class="string">&quot;read, write&quot;</span>;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 表示允许任何以 X500Principal 的任何身份执行的代码，都有权限读写 &quot;/home/Alice&quot; 资源</span></span><br><span class="line">grant principal javax.security.auth.x500.X500Principal * &#123;</span><br><span class="line">      permission java.io.FilePermission <span class="string">&quot;/home/Alice&quot;</span>, <span class="string">&quot;read, write&quot;</span>;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+每一个 policy 文件可以包含多个 grant 授权条目，其中 signedBy、principal、codeBase 语句都是可选的。</li>
+</ol>
+<p>signedBy 表示针对某个签名者赋予权限，签名例子如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">jarsigner -verbose -keystore [私钥存放路径] -signedjar [签名后文件存放路径] [未签名的文件路径] [证书别名]</span><br><span class="line"></span><br><span class="line">jarsigner -verbose -keystore /xx/path/keystore -signedjar ./signed-xxx.jar ./xxx.jar signer_names</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>codeBase 用于指定运行 URL 目录下的代码，才能赋予配置的 permission 权限。注意如果 URL 以 &#x2F; 结尾的匹配指定目录下的所有类文件（ 非 JAR 文件 ），以  &#x2F;*  结尾的匹配该目录下的所有文件（类文件和 JAR 文件），以 &#x2F;- 结尾的匹配该目录下的所有文件（类文件和 JAR 文件）及该目录下子目录中的所有文件，直接以目录名结尾的等同于 &#x2F; 结尾的。 </p>
+<p>principal 表示针对证书或者主体认证的 class_name&#x2F;principal_name 对，授予资源的读取权限。</p>
+<ol start="2">
+<li>例子说明<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">// 表示扩展包目录的下的代码，使用资源时，授予所有资源权限</span><br><span class="line">grant codeBase &quot;file:$&#123;&#123;java.ext.dirs&#125;&#125;/*&quot; &#123;</span><br><span class="line">        // 开放所以权限</span><br><span class="line">        permission java.security.AllPermission;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">// 表示该 URL 目录中的代码执行时，能获取所有资源的权限</span><br><span class="line">grant codeBase &quot;file:C:/Users/xxpath/learn-test/target/classes&quot; &#123; </span><br><span class="line">    permission java.security.AllPermission;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">grant &#123;</span><br><span class="line">   </span><br><span class="line">    // java.security.AllPermission  所有权限的集合</span><br><span class="line">    permission java.security.AllPermission;  // 表示开发所有权限</span><br><span class="line"></span><br><span class="line">    // java.util.PropertyPermission 系统/环境属性权限 </span><br><span class="line">    permission java.util.PropertyPermission &quot;java.home&quot;, &quot;read&quot;;</span><br><span class="line">    permission java.util.PropertyPermission &quot;java.version&quot;, &quot;read&quot;;</span><br><span class="line">    permission java.util.PropertyPermission &quot;java.vendor&quot;, &quot;read&quot;;</span><br><span class="line">    permission java.util.PropertyPermission &quot;java.vendor.url&quot;, &quot;read&quot;;</span><br><span class="line"></span><br><span class="line">    // ... 等等其他权限</span><br><span class="line"></span><br><span class="line">&#125;;</span><br><span class="line"></span><br></pre></td></tr></table></figure></li>
+</ol>
+<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><ol>
+<li><a target="_blank" rel="noopener" href="https://docs.oracle.com/javase/8/docs/technotes/guides/security/permissions.html">https://docs.oracle.com/javase/8/docs/technotes/guides/security/permissions.html</a></li>
+<li><a target="_blank" rel="noopener" href="https://docs.oracle.com/javase/8/docs/technotes/guides/security/PolicyFiles.html">https://docs.oracle.com/javase/8/docs/technotes/guides/security/PolicyFiles.html</a></li>
+</ol>
+
+            </div>
+        
+        <footer class="article-footer">
+        </footer>
+    </div>
+</article>
+
+
+    
+<nav id="article-nav">
+    
+        <a href="/wiki/Java%20%E7%9F%A5%E8%AF%86%E7%82%B9/Javassist%20%E7%9F%A5%E8%AF%86%E7%AC%94%E8%AE%B0/" id="article-nav-newer" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">Newer</strong>
+            <div class="article-nav-title">
+                
+                    Javassist 知识笔记
+                
+            </div>
+        </a>
+    
+    
+        <a href="/wiki/Java%20%E7%9F%A5%E8%AF%86%E7%82%B9/byteBuddy%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0/" id="article-nav-older" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">Older</strong>
+            <div class="article-nav-title">ByteBuddy 入门笔记</div>
+        </a>
+    
+</nav>
+
+
+
+
+
+    
+    
+
+
+
+</section>
+        </div>
+        <footer id="footer">
+    <div class="outer">
+        <div id="footer-info" class="inner">
+            <br> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>. Theme - <a target="_blank" rel="noopener" href="https://github.com/vianlex/hexo-theme-Wikitten">wikitten</a>
+            
+                <br>
+                <span id="busuanzi_container_site_pv"><i class="fa fa-eye"></i> <span id="busuanzi_value_site_pv"></span></span>
+                &nbsp;|&nbsp;
+                <span id="busuanzi_container_site_pv"><i class="fa fa-user"></i> <span id="busuanzi_value_site_uv"></span></span>
+            
+        </div>
+    </div>
+</footer>
+
+        
+
+    
+        
+<script src="/libs/lightgallery/js/lightgallery.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-thumbnail.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-pager.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-autoplay.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-fullscreen.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-zoom.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-hash.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-share.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-video.min.js"></script>
+
+    
+    
+        
+<script src="/libs/justified-gallery/jquery.justifiedGallery.min.js"></script>
+
+    
+    
+        <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true,
+            TeX: {
+                equationNumbers: {
+                  autoNumber: 'AMS'
+                }
+            }
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script async src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+
+
+
+<!-- Custom Scripts -->
+
+<script src="/js/main.js"></script>
+
+    </div>
+</body>
+</html>

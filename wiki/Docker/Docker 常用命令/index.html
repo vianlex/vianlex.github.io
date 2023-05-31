@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <meta charset="utf-8">
+    
+    <title>Docker 常用命令 | Vianlex&#39;s Wiki</title>
+    
+    
+        <meta name="keywords" content="Docker 常用命令" />
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <meta name="description" content="docker 镜像查看、删除等相关命令1. docker images 命令查看本地镜像仓库中的镜像docker images 语法格式 docker images [OPTIONS] [REPOSITORY[:TAG]]，可选参数如下：  docker images -a	列出本地所有的镜像 docker images -f 过滤查询镜像 docker images -q	列出显示镜像 ID12">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Docker 常用命令">
+<meta property="og:url" content="http://example.com/wiki/Docker/Docker%20%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/index.html">
+<meta property="og:site_name" content="Vianlex&#39;s Wiki">
+<meta property="og:description" content="docker 镜像查看、删除等相关命令1. docker images 命令查看本地镜像仓库中的镜像docker images 语法格式 docker images [OPTIONS] [REPOSITORY[:TAG]]，可选参数如下：  docker images -a	列出本地所有的镜像 docker images -f 过滤查询镜像 docker images -q	列出显示镜像 ID12">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-05-31T13:39:26.110Z">
+<meta property="article:modified_time" content="2023-05-31T13:39:26.110Z">
+<meta property="article:author" content="Vianlex">
+<meta name="twitter:card" content="summary">
+    
+
+    
+
+    
+        <link rel="icon" href="/favicon.ico" />
+    
+
+    
+<link rel="stylesheet" href="/libs/font-awesome/css/font-awesome.min.css">
+
+    
+<link rel="stylesheet" href="/libs/open-sans/styles.css">
+
+    
+<link rel="stylesheet" href="/libs/source-code-pro/styles.css">
+
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    
+<script src="/libs/jquery/2.1.3/jquery.min.js"></script>
+
+    
+<script src="/libs/jquery/plugins/cookie/1.4.1/jquery.cookie.js"></script>
+
+    
+    
+        
+<link rel="stylesheet" href="/libs/lightgallery/css/lightgallery.min.css">
+
+    
+    
+        
+<link rel="stylesheet" href="/libs/justified-gallery/justifiedGallery.min.css">
+
+    
+    
+    
+    
+
+
+    
+        <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    
+<meta name="generator" content="Hexo 6.3.0"><link rel="alternate" href="/atom.xml" title="Vianlex's Wiki" type="application/atom+xml">
+</head>
+
+<body>
+    <div id="container">
+        <header id="header">
+    <div id="header-main" class="header-inner">
+        <div class="outer">
+            <a href="/" id="logo">
+                <i class="logo"></i>
+                <span class="site-title">Vianlex&#39;s Wiki</span>
+            </a>
+            <nav id="main-nav">
+                
+                    <a class="main-nav-link" href="/">首页</a>
+                
+                    <a class="main-nav-link" href="/archives">归档</a>
+                
+                    <a class="main-nav-link" href="/categories">分类</a>
+                
+                    <a class="main-nav-link" href="/tags">标签</a>
+                
+                    <a class="main-nav-link" href="/about">关于</a>
+                
+            </nav>
+            
+            <div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="Search" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="Type something..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: 'Posts',
+            PAGES: 'Pages',
+            CATEGORIES: 'Categories',
+            TAGS: 'Tags',
+            UNTITLED: '(Untitled)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+
+</div>
+        </div>
+    </div>
+    <div id="main-nav-mobile" class="header-sub header-inner">
+        <table class="menu outer">
+            <tr>
+                
+                    <td><a class="main-nav-link" href="/">首页</a></td>
+                
+                    <td><a class="main-nav-link" href="/archives">归档</a></td>
+                
+                    <td><a class="main-nav-link" href="/categories">分类</a></td>
+                
+                    <td><a class="main-nav-link" href="/tags">标签</a></td>
+                
+                    <td><a class="main-nav-link" href="/about">关于</a></td>
+                
+                <td>
+                    
+    <div class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="Search" />
+    </div>
+
+                </td>
+            </tr>
+        </table>
+    </div>
+</header>
+
+        <div class="outer">
+            
+            
+                <aside id="sidebar">
+   
+        
+    <div class="widget-wrap" id='categories'>
+        <h3 class="widget-title">
+            <span>分类目录</span>
+            &nbsp;
+            <a id='allExpand' href="#">
+                <i class="fa fa-angle-double-down fa-2x"></i>
+            </a>
+        </h3>
+        
+        
+        
+         <ul class="unstyled" id="tree" > 
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            Apache POI
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/Apache%20POI/Excel%20%E8%AE%BE%E7%BD%AE%E8%A1%8C%E9%AB%98%E5%92%8C%E6%8D%A2%E8%A1%8C%E9%97%AE%E9%A2%98/">Excel 设置行高和换行问题</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory open">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder-open"></i>
+                            &nbsp;
+                            Docker
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/Docker/Docker%20Swarm%20%E7%AC%94%E8%AE%B0/">Docker Swarm 笔记</a></li>  <li class="file"><a href="/wiki/Docker/Docker%20%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0/">Docker 入门笔记</a></li>  <li class="file active"><a href="/wiki/Docker/Docker%20%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/">Docker 常用命令</a></li>  <li class="file"><a href="/wiki/Docker/Docker%20%E6%9D%83%E9%99%90%E9%85%8D%E7%BD%AE/">Docker 权限配置</a></li>  <li class="file"><a href="/wiki/Docker/Dockerfile%20%E4%BD%BF%E7%94%A8%E8%AF%B4%E6%98%8E/">Dockerfile 使用说明</a></li>  <li class="file"><a href="/wiki/Docker/docker%20%E5%AE%89%E8%A3%85%E7%AC%94%E8%AE%B0/">Docker 安装笔记</a></li>  <li class="file"><a href="/wiki/Docker/docker-compose%20%E5%AD%A6%E4%B9%A0%E8%AE%B0%E5%BD%95/">Docker-compose 学习记录</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            Golang
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/Golang/Go%20%E5%9F%BA%E7%A1%80%E8%AF%AD%E6%B3%95/">Go 基础语法</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            Java 知识点
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/Java%20%E7%9F%A5%E8%AF%86%E7%82%B9/Class%E5%AF%B9%E8%B1%A1%E5%92%8CTpye%E5%AF%B9%E8%B1%A1/">Class 对象和 Tpye 对象知识笔记</a></li>  <li class="file"><a href="/wiki/Java%20%E7%9F%A5%E8%AF%86%E7%82%B9/Instrumentation%20%E7%9F%A5%E8%AF%86%E7%AC%94%E8%AE%B0/">Instrumentation 知识笔记</a></li>  <li class="file"><a href="/wiki/Java%20%E7%9F%A5%E8%AF%86%E7%82%B9/Java%20main%20%E5%92%8C%20classpath/">main 方法和 classpath 说明</a></li>  <li class="file"><a href="/wiki/Java%20%E7%9F%A5%E8%AF%86%E7%82%B9/Javassist%20%E7%9F%A5%E8%AF%86%E7%AC%94%E8%AE%B0/">Javassist 知识笔记</a></li>  <li class="file"><a href="/wiki/Java%20%E7%9F%A5%E8%AF%86%E7%82%B9/SecurityManager%20%E7%AC%94%E8%AE%B0/">SecurityManager 笔记</a></li>  <li class="file"><a href="/wiki/Java%20%E7%9F%A5%E8%AF%86%E7%82%B9/byteBuddy%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0/">ByteBuddy 入门笔记</a></li>  <li class="file"><a href="/wiki/Java%20%E7%9F%A5%E8%AF%86%E7%82%B9/Drools%E7%AC%94%E8%AE%B0/">Drools 笔记</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            Java 设计模式
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/Java%20%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/%E4%BB%A3%E7%90%86%E6%A8%A1%E5%BC%8F/">代理模式</a></li>  <li class="file"><a href="/wiki/Java%20%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/%E5%B7%A5%E5%8E%82%E6%A8%A1%E5%BC%8F/">工厂模式</a></li>  <li class="file"><a href="/wiki/Java%20%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/%E6%A8%A1%E6%9D%BF%E6%A8%A1%E5%BC%8F/">模板模式(模板方法模式)</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            Jemeter
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/Jemeter/Jemeter%20%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0/">Jemeter 入门笔记</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            Kubernetes
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/Kubernetes/kubeadm%20%E5%BF%AB%E9%80%9F%E9%83%A8%E7%BD%B2%20k8s%20%E9%9B%86%E7%BE%A4%E6%B5%8B%E8%AF%95%E7%8E%AF%E5%A2%83/">kubeadm 快速部署 kubernetes 集群测试环境</a></li>  <li class="file"><a href="/wiki/Kubernetes/kubeadm%E5%AE%89%E8%A3%85%20k8s%20%E9%97%AE%E9%A2%98%E8%AE%B0%E5%BD%95/">kubeadm安装 k8s 问题记录</a></li>  <li class="file"><a href="/wiki/Kubernetes/K8s%20%E5%85%A5%E9%97%A8%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">K8s 入门学习笔记</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            Linux
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/Linux/SSH%20%E5%AF%86%E7%A0%81%E7%99%BB%E5%BD%95%E5%92%8C%E5%AF%86%E9%92%A5%E9%85%8D%E7%BD%AE%E8%AF%B4%E6%98%8E/">SSH 密码登录和密钥配置说明</a></li>  <li class="file"><a href="/wiki/Linux/ECS%20%E4%BA%91%E6%9C%8D%E5%8A%A1%E5%99%A8%E6%8C%82%E8%BD%BD%E6%95%B0%E6%8D%AE%E7%9B%98/">ECS 云服务器挂载数据盘</a></li>  <li class="file"><a href="/wiki/Linux/Linux%20%E6%9C%8D%E5%8A%A1%E5%99%A8%E6%8C%82%E8%BD%BD%E7%A1%AC%E7%9B%98/"></a></li>  <li class="file"><a href="/wiki/Linux/SSH%20%E7%AB%AF%E5%8F%A3%E8%BD%AC%E5%8F%91/">SSH 端口转发用法说明</a></li>  <li class="file"><a href="/wiki/Linux/dnf%E8%BD%AF%E4%BB%B6%E5%8C%85%E7%AE%A1%E7%90%86%E5%B7%A5%E5%85%B7/">dnf 软件包管理工具</a></li>  <li class="file"><a href="/wiki/Linux/iptables%20%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">iptables 学习笔记</a></li>  <li class="file"><a href="/wiki/Linux/yum%20%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/">YUM 常用命令</a></li>  <li class="file"><a href="/wiki/Linux/%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4%E8%AE%B0%E5%BD%95/">Linux 常用命令记录</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            Maven
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/Maven/Maven%20%E9%97%AE%E9%A2%98%E8%AE%B0%E5%BD%95/">Maven 问题记录</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            MySql
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/MySql/MySql%20%E5%B8%B8%E7%94%A8%E5%87%BD%E6%95%B0/">MySql 常用函数</a></li>  <li class="file"><a href="/wiki/MySql/MySql%20%E5%BC%80%E7%AA%97%E5%87%BD%E6%95%B0/">MySql 开窗函数</a></li>  <li class="file"><a href="/wiki/MySql/Mysql%20%E9%83%A8%E5%88%86%E8%AF%8D%E6%B1%87%E5%90%AB%E4%B9%89/">Mysql 部分词汇含义</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            Nginx
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/Nginx/Nginx%20%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/">Nginx 常用命令</a></li>  <li class="file"><a href="/wiki/Nginx/Tengine%E5%AE%89%E8%A3%85%E7%AC%94%E8%AE%B0/"></a></li>  <li class="file"><a href="/wiki/Nginx/location%20%E6%8C%87%E4%BB%A4%E7%AC%94%E8%AE%B0/">location 和 rewrite 笔记</a></li>  <li class="file"><a href="/wiki/Nginx/ngx_http_proxy_module%E6%A8%A1%E5%9D%97%E7%AC%94%E8%AE%B0/">ngx_http_proxy_module 模块学习笔记</a></li>  <li class="file"><a href="/wiki/Nginx/ngx_http_rewrite_module%20%E6%A8%A1%E5%9D%97%E7%AC%94%E8%AE%B0/">ngx_http_rewrite_module 模块学习笔记</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            NodeJs
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/NodeJs/Node%20%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE%E8%AE%B0%E5%BD%95/">Node 环境配置说明</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            PowerDesigner
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/PowerDesigner/%E4%BD%BF%E7%94%A8%E9%97%AE%E9%A2%98%E8%AE%B0%E5%BD%95/">使用出现问题记录</a></li>  <li class="file"><a href="/wiki/PowerDesigner/%E9%80%86%E5%90%91%E5%AF%BC%E5%85%A5%E9%97%AE%E9%A2%98%E8%AE%B0%E5%BD%95/">SQL 逆向导入生成 PDM</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            Redis
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/Redis/Redis%20%E7%BC%93%E5%AD%98%E7%A9%BF%E9%80%8F%E3%80%81%E5%87%BB%E7%A9%BF%E3%80%81%E9%9B%AA%E5%B4%A9/">Redis 缓存穿透、缓存击穿、缓存雪崩</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            Shell
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/Shell/Awk%20%20%E5%9F%BA%E7%A1%80%E7%94%A8%E6%B3%95/">Awk 基础用法</a></li>  <li class="file"><a href="/wiki/Shell/Sed%20%E5%9F%BA%E7%A1%80%E7%94%A8%E6%B3%95/">Sed 基础用法</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            SpringBoot
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/SpringBoot/SpringBoot%20%E5%B1%9E%E6%80%A7%E9%85%8D%E7%BD%AE/">SpringBoot 属性配置</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            Xml
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/Xml/Dom4j%20%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0/">Dom4j 入门笔记</a></li>  <li class="file"><a href="/wiki/Xml/XPath%20%E7%AC%94%E8%AE%B0/">XPath 笔记</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            other
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/other/%E8%BD%AF%E4%BB%B6%E5%90%8D%E7%A7%B0%E8%AE%B0%E5%BD%95/">软件名称记录</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            计算机网络
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/%E7%BD%91%E7%BB%9C%E8%AE%BE%E5%A4%87%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0/">网络设备入门笔记</a></li>  </ul> 
+                    </li> 
+                     <li class="file"><a href="/wiki/index/"></a></li>  </ul> 
+    </div>
+    <script>
+        $(document).ready(function() {
+            var iconFolderOpenClass  = 'fa-folder-open';
+            var iconFolderCloseClass = 'fa-folder';
+            var iconAllExpandClass = 'fa-angle-double-down';
+            var iconAllPackClass = 'fa-angle-double-up';
+            // Handle directory-tree expansion:
+            // 左键单独展开目录
+            $(document).on('click', '#categories a[data-role="directory"]', function (event) {
+                event.preventDefault();
+
+                var icon = $(this).children('.fa');
+                var expanded = icon.hasClass(iconFolderOpenClass);
+                var subtree = $(this).siblings('ul');
+                icon.removeClass(iconFolderOpenClass).removeClass(iconFolderCloseClass);
+                if (expanded) {
+                    if (typeof subtree != 'undefined') {
+                        subtree.slideUp({ duration: 100 });
+                    }
+                    icon.addClass(iconFolderCloseClass);
+                } else {
+                    if (typeof subtree != 'undefined') {
+                        subtree.slideDown({ duration: 100 });
+                    }
+                    icon.addClass(iconFolderOpenClass);
+                }
+            });
+            // 右键展开下属所有目录
+            $('#categories a[data-role="directory"]').bind("contextmenu", function(event){
+                event.preventDefault();
+                
+                var icon = $(this).children('.fa');
+                var expanded = icon.hasClass(iconFolderOpenClass);
+                var listNode = $(this).siblings('ul');
+                var subtrees = $.merge(listNode.find('li ul'), listNode);
+                var icons = $.merge(listNode.find('.fa'), icon);
+                icons.removeClass(iconFolderOpenClass).removeClass(iconFolderCloseClass);
+                if(expanded) {
+                    subtrees.slideUp({ duration: 100 });
+                    icons.addClass(iconFolderCloseClass);
+                } else {
+                    subtrees.slideDown({ duration: 100 });
+                    icons.addClass(iconFolderOpenClass);
+                }
+            })
+            // 展开关闭所有目录按钮
+            $(document).on('click', '#allExpand', function (event) {
+                event.preventDefault();
+                
+                var icon = $(this).children('.fa');
+                var expanded = icon.hasClass(iconAllExpandClass);
+                icon.removeClass(iconAllExpandClass).removeClass(iconAllPackClass);
+                if(expanded) {
+                    $('#sidebar .fa.fa-folder').removeClass('fa-folder').addClass('fa-folder-open')
+                    $('#categories li ul').slideDown({ duration: 100 });
+                    icon.addClass(iconAllPackClass);
+                } else {
+                    $('#sidebar .fa.fa-folder-open').removeClass('fa-folder-open').addClass('fa-folder')
+                    $('#categories li ul').slideUp({ duration: 100 });
+                    icon.addClass(iconAllExpandClass);
+                }
+            });  
+        });
+    </script>
+
+    
+    <div id="toTop" class="fa fa-angle-up"></div>
+</aside>
+            
+            <section id="main"><article id="post-Docker/Docker 常用命令" class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
+                
+                    <div class="article-meta">
+                        
+    <div class="article-category">
+    	<i class="fa fa-folder"></i>
+        <a class="article-category-link" href="/categories/Docker/">Docker</a>
+    </div>
+
+                        
+                        
+    <div class="article-date">
+        <i class="fa fa-calendar"></i>
+        <a href="/wiki/Docker/Docker%20%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/">
+            <time datetime="2023-05-31T13:39:26.110Z" itemprop="datePublished">2023-05-31</time>
+        </a>
+    </div>
+
+
+                        
+                            <i class="fa fa-bar-chart"></i>
+                            <span id="busuanzi_container_site_pv"><span id="busuanzi_value_page_pv"></span></span>    
+                        
+                        
+                            <div class="article-meta-button">
+                                <a target="_blank" rel="noopener" href='https://github.com/Vianlex/blog/raw/gh-pages/source/_posts/Docker/Docker 常用命令.md'> Source </a>
+                            </div>
+                            <div class="article-meta-button">
+                                <a target="_blank" rel="noopener" href='https://github.com/Vianlex/blog/edit/gh-pages/source/_posts/Docker/Docker 常用命令.md'> Edit </a>
+                            </div>
+                            <div class="article-meta-button">
+                                <a target="_blank" rel="noopener" href='https://github.com/Vianlex/blog/commits/gh-pages/source/_posts/Docker/Docker 常用命令.md'> History </a>
+                            </div>
+                        
+                    </div>
+                
+                
+    
+        <h1 class="article-title" itemprop="name">
+            Docker 常用命令
+        </h1>
+    
+
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+        
+            
+        
+        
+            <h2 id="docker-镜像查看、删除等相关命令"><a href="#docker-镜像查看、删除等相关命令" class="headerlink" title="docker 镜像查看、删除等相关命令"></a>docker 镜像查看、删除等相关命令</h2><h3 id="1-docker-images-命令查看本地镜像仓库中的镜像"><a href="#1-docker-images-命令查看本地镜像仓库中的镜像" class="headerlink" title="1. docker images 命令查看本地镜像仓库中的镜像"></a>1. docker images 命令查看本地镜像仓库中的镜像</h3><p>docker images 语法格式 <code>docker images [OPTIONS] [REPOSITORY[:TAG]]</code>，可选参数如下：</p>
+<ul>
+<li>docker images -a	列出本地所有的镜像</li>
+<li>docker images -f 过滤查询镜像</li>
+<li>docker images -q	列出显示镜像 ID<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 查看所有镜像</span></span><br><span class="line">docker images </span><br><span class="line"></span><br><span class="line"><span class="comment"># 根据 &lt;REPOSITORY&gt;[:TAG] 显式的过滤查看镜像，注意当使用 * 模糊匹配时，无法匹配 / 符号，如匹配 vianlex/nginx:dev-latest 镜像，支持以下方式匹配</span></span><br><span class="line">docker images vianlex/nginx</span><br><span class="line">docker images vianlex/nginx:dev-latest</span><br><span class="line">docker images <span class="string">&quot;*/nginx*&quot;</span></span><br><span class="line">docker images <span class="string">&quot;*/nginx:dev-*&quot;</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># 只是查看镜像的 id</span></span><br><span class="line">docker images -q</span><br><span class="line"></span><br><span class="line"><span class="comment"># 匹配标签(tag)为&lt;none&gt;的镜像</span></span><br><span class="line">docker images -f=<span class="string">&quot;dangling=true&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 根据 reference=&lt;REPOSITORY&gt;[:TAG] 模糊匹配镜像，注意匹配时，reference=&lt;REPOSITORY&gt;[:TAG] 中的 / 符号不能无法使用 * 模糊匹配，如匹配镜像 vianlex/nginx:dev-latest</span></span><br><span class="line">docker images -f=<span class="string">&quot;reference=*/nginx&quot;</span> 或者 docker images -f <span class="string">&quot;reference=*/nginx&quot;</span></span><br><span class="line">docker images -f=reference=<span class="string">&quot;*/nginx&quot;</span> 或者 docker images -f  reference=<span class="string">&quot;*/nginx&quot;</span> </span><br><span class="line"><span class="comment">#或者</span></span><br><span class="line">docker images -f=<span class="string">&quot;reference=*/nginx:dev-*&quot;</span></span><br><span class="line">docker images -f=reference=<span class="string">&quot;*/nginx:dev-*&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 根据 before 或者 since 过滤镜像，格式为 before=&lt;REPOSITORY&gt;[:TAG] 或者 before=image-id</span></span><br><span class="line">docker images -f before=<span class="string">&quot;eb4d124f64cd&quot;</span> <span class="comment"># 根据镜像 ID 查找创建时间大的镜像</span></span><br><span class="line">docker images -f since=<span class="string">&quot;vianlex/nginx:dev-latest&quot;</span> <span class="comment"># 根据镜像名称查找创建时间小的镜像</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 根据 label=&lt;key&gt; 或者 label=&lt;key&gt;=&lt;value&gt; 过滤镜像，label 是在 dockerfile 中定义的，可以使用 docker inpsect 命令可以查看镜像的 labels</span></span><br><span class="line">docker images -f=<span class="string">&quot;label=version&quot;</span></span><br><span class="line"><span class="comment">#或者</span></span><br><span class="line">docker images -f=<span class="string">&quot;label=version=v1&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 格式镜像列表的输出格式</span></span><br><span class="line">docker images --format <span class="string">&quot;&#123;&#123;.Repository&#125;&#125; -- &#123;&#123;.ID&#125;&#125; -- &#123;&#123;.Size&#125;&#125;&quot;</span></span><br><span class="line"><span class="comment"># 或者</span></span><br><span class="line">docker images --format <span class="string">&quot;&#123;&#123;.Repository&#125;&#125; &#123;&#123;.ID&#125;&#125; &#123;&#123;.Size&#125;&#125; &#123;&#123;.di&#125;&#125;&quot;</span></span><br><span class="line"><span class="comment"># 或者 </span></span><br><span class="line">docker images --fotmat <span class="string">&quot;&#123;&#123;.ID&#125;&#125;&quot;</span></span><br></pre></td></tr></table></figure></li>
+</ul>
+<h3 id="2-docker-rmi-命令删除-docker-镜像"><a href="#2-docker-rmi-命令删除-docker-镜像" class="headerlink" title="2. docker rmi 命令删除 docker 镜像"></a>2. docker rmi 命令删除 docker 镜像</h3><p>docker rmi 命令语法格式：<code>docker rmi [ repository:tag | imageId  ] </code>，可选参数 -f 指定强制删除</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 根据镜像仓库加标签删除 </span></span><br><span class="line">docker rmi nginx:latest</span><br><span class="line"></span><br><span class="line"><span class="comment"># 根据镜像 ID 删除</span></span><br><span class="line">docker rmi 43154ddb57a8</span><br><span class="line"></span><br><span class="line"><span class="comment"># 根据镜像 id 批量删除 </span></span><br><span class="line">docker images -q | xargs docker rmi </span><br><span class="line"><span class="comment"># 或</span></span><br><span class="line">docker rmi $(docker images -q)</span><br><span class="line"><span class="comment"># 删除 tag 是 none 的所有镜像</span></span><br><span class="line">docker rmi $(docker images -f <span class="string">&quot;dangling=true&quot;</span> -q)</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="docker-操作容器的常用命令"><a href="#docker-操作容器的常用命令" class="headerlink" title="docker 操作容器的常用命令"></a>docker 操作容器的常用命令</h2><h3 id="1-docker-run-命令"><a href="#1-docker-run-命令" class="headerlink" title="1. docker run 命令"></a>1. docker run 命令</h3><p>用于创建并启动 Docker 容器，常用参数如下：</p>
+<ul>
+<li>-d, –detach&#x3D;false 指定容器以后台进程的方式运行</li>
+<li>-i, –interactive&#x3D;false 以交互模式运行容器，通常与 -t 同时使用</li>
+<li>-t: 为容器重新分配一个伪输入终端，通常与 -i 同时使用</li>
+<li>–name&#x3D;”myNginx”	指定容器名字，方便管理</li>
+<li>–dns 8.8.8.8 指定容器使用的 DNS 服务器，默认和宿主一致</li>
+<li>–dns-search&#x3D; example.com 指定容器的 dns 搜索域名，会写入到容器的 &#x2F;etc&#x2F;resolv.conf 文件 </li>
+<li>-h “linux-hostname” 指定容器的 hostname</li>
+<li>-w, –workdir&#x3D;”&#x2F;opt” 指定容器的工作目录</li>
+<li>-e username&#x3D;centeos, –env&#x3D;[] 设置容器的环境变量</li>
+<li>–env-file&#x3D;[] 从指定文件读入环境变量</li>
+<li>-v, –volume&#x3D;[]	给容器挂载存储卷，挂载到容器的某个目录。</li>
+<li>–dns&#x3D;[]	指定容器的 dns 服务器。</li>
+<li>-P 随机端口映射，容器内部端口随机映射到主机的端口</li>
+<li>-p 指定端口映射，格式为：主机(宿主)端口:容器端口</li>
+<li>–entrypoint&#x3D;””	覆盖 image 的入口点。</li>
+<li>–env-file&#x3D;[]	指定环境变量文件，文件格式为每行一个环境变量。</li>
+<li>–expose&#x3D;[]	指定容器暴露的端口，即修改镜像的暴露端口。</li>
+<li>–link&#x3D;[]	指定容器间的关联，使用其他容器的 IP、env 等信息。</li>
+<li>-net&#x3D;”bridge”	指定容器网络配置</li>
+<li>–privileged&#x3D;false	指定容器是否为特权容器，特权容器拥有所有的 capabilities。</li>
+<li>–restart&#x3D;”no”	指定容器停止后的重启策略:</li>
+<li>–rm&#x3D;false	指定容器停止后自动删除容器(不支持以 docker run -d 启动的容器)。<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#创建并启动 nginx 容器</span></span><br><span class="line">docker run -p 81:80  -v /data:/usr/share/nginx/html --name mynginx -d nginx:latest</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h3 id="2-docker-ps-查看容器"><a href="#2-docker-ps-查看容器" class="headerlink" title="2. docker ps 查看容器"></a>2. docker ps 查看容器</h3><p>常用的可选参数</p>
+<ul>
+<li>-q, –quiet 只显示容器的 ID</li>
+<li>–format 格式化输出结果</li>
+<li>-f, –filter 过滤显示结果，使用 key&#x3D;value 的方式过滤，如<code>-f name=myNginx</code>，可选的过值对如下：<ul>
+<li>id 根据容器的 id 过滤</li>
+<li>name 根据容器名称过滤</li>
+<li>ancestor 根据镜像信息过滤，如 <code>-f ancestor &lt;image-name&gt;[:&lt;tag&gt;] | &lt;image id&gt;</code></li>
+<li>status 根据状态进行过滤，可选值有 created, restarting, running, removing, paused, exited, or dead</li>
+<li>publish or expose 根据端口过滤，如 <code>-f  publish &lt;port&gt;[/&lt;proto&gt;]</code> 或者 <code>-f  expose &lt;startport-endport&gt;/[&lt;proto&gt;] </code></li>
+<li>before or since  根据创建时间或者容器名的前后过滤</li>
+<li>label 根据标签过滤<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">docker ps --filter <span class="string">&quot;label=color&quot;</span></span><br><span class="line"></span><br><span class="line">docker ps --filter <span class="string">&quot;name=xxxxx&quot;</span></span><br><span class="line"></span><br><span class="line">docker ps --filter status=running</span><br><span class="line"></span><br><span class="line">docker ps --filter ancestor=nginx:latest</span><br><span class="line"></span><br><span class="line"><span class="comment"># 显示创建比容器 9c3527ed70ce 早的所有容器 </span></span><br><span class="line">docker ps -f before=9c3527ed70ce</span><br><span class="line"></span><br></pre></td></tr></table></figure></li>
+</ul>
+</li>
+</ul>
+<h3 id="2-docker-stop-停止正在运行的容易"><a href="#2-docker-stop-停止正在运行的容易" class="headerlink" title="2. docker stop 停止正在运行的容易"></a>2. docker stop 停止正在运行的容易</h3><p>docker stop 语法格式 <code>docker stop [--time , -t] container [container...]</code> 停止一个或者多个正在运行的容器，可选参数 -t 指定运行命令多少秒后停止容器</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 根据容器 id 停止容器</span></span><br><span class="line">docker stop 9c3527ed70ce</span><br><span class="line"></span><br><span class="line"><span class="comment"># 根据条件过滤停止容器</span></span><br><span class="line">docker stop  $(docker ps -q -f name=myNginx)</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-docker-start-启动容器"><a href="#3-docker-start-启动容器" class="headerlink" title="3. docker start 启动容器"></a>3. docker start 启动容器</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 根据容器名称或者id启动容器</span></span><br><span class="line">docker start [container-name|container-id]</span><br></pre></td></tr></table></figure>
+
+<h3 id="4-docker-restart-者重启容器"><a href="#4-docker-restart-者重启容器" class="headerlink" title="4. docker restart 者重启容器"></a>4. docker restart 者重启容器</h3><p>可选参数 <code>--time, -t </code> 指定多少秒后停止并重启容器</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 根据容器 id 重启容器</span></span><br><span class="line">docker restart 9c3527ed70ce</span><br><span class="line">docker restart  $(docker ps -q -f name=myNginx)</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h3 id="5-docker-rm-删除容器"><a href="#5-docker-rm-删除容器" class="headerlink" title="5. docker rm 删除容器"></a>5. docker rm 删除容器</h3><p>可以删除一个或者多个容器，可参数 -f 强制删除</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 删除容器，</span></span><br><span class="line">docker <span class="built_in">rm</span> [container-name|container-id]</span><br></pre></td></tr></table></figure>
+
+<h3 id="6-docker-logs-查看容器运行日志"><a href="#6-docker-logs-查看容器运行日志" class="headerlink" title="6. docker logs 查看容器运行日志"></a>6. docker logs 查看容器运行日志</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#查看实时的日志：</span></span><br><span class="line">sudo docker logs -f --<span class="built_in">tail</span> 100  container_id 或者 container_name</span><br><span class="line"></span><br><span class="line"><span class="comment">#查看指定时间后的日志，只显示最后100行：</span></span><br><span class="line">docker logs -f -t --since=<span class="string">&quot;2018-02-08&quot;</span> --<span class="built_in">tail</span>=100 container_id</span><br><span class="line"></span><br><span class="line"><span class="comment">#查看最近30分钟的日志:</span></span><br><span class="line">docker logs --since 30m container_id</span><br><span class="line"></span><br><span class="line"><span class="comment">#查看某时间段日志：</span></span><br><span class="line">docker logs -t --since=<span class="string">&quot;2018-02-08T13:23:37&quot;</span> --<span class="keyword">until</span> <span class="string">&quot;2018-02-09T12:23:37&quot;</span> container_id</span><br></pre></td></tr></table></figure>
+
+<h3 id="7-docker-exec-命令"><a href="#7-docker-exec-命令" class="headerlink" title="7. docker exec 命令"></a>7. docker exec 命令</h3><p>在宿主机运行容器中的命令，使用例子如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 进入容器的终端命令行</span></span><br><span class="line">docker <span class="built_in">exec</span> -it [container_id | container_name] [/bin/sh | /bin/bash] </span><br><span class="line"></span><br><span class="line"><span class="comment"># 查看容器的文件内容</span></span><br><span class="line">docker <span class="built_in">exec</span> [container_id | container_name]  <span class="built_in">cat</span> /logs/ils.2020-08-19.<span class="built_in">log</span> </span><br><span class="line"></span><br><span class="line"><span class="comment"># 运行容器的命令</span></span><br><span class="line">docker <span class="built_in">exec</span> -it [container_id | container_name] nginx -s reload </span><br></pre></td></tr></table></figure>
+
+<h3 id="8-docker-cp-命令"><a href="#8-docker-cp-命令" class="headerlink" title="8. docker cp 命令"></a>8. docker cp 命令</h3><p>将容器中的文件复制到宿主机中或者将宿主机的文件复制容器中</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 将容器文件复制到宿主机中</span></span><br><span class="line">docker <span class="built_in">cp</span> [container_id | container_name]:/xxx/xxx  /home/xxxxxx</span><br><span class="line"></span><br><span class="line"><span class="comment"># 将宿主机文件复制到容器中</span></span><br><span class="line">docker <span class="built_in">cp</span> /home/xxxxxx  [container_id | container_name]:/xxx/xxx</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="归档镜像导入导出"><a href="#归档镜像导入导出" class="headerlink" title="归档镜像导入导出"></a>归档镜像导入导出</h2><h3 id="1-docker-save-命令将-Docker-镜像保存成-tar-包"><a href="#1-docker-save-命令将-Docker-镜像保存成-tar-包" class="headerlink" title="1. docker save 命令将 Docker 镜像保存成 tar 包"></a>1. docker save 命令将 Docker 镜像保存成 tar 包</h3><p>docker save 命令语法 <code>docker save [ -o | --output | &gt; ]  filename.tar [ reposity:tag | imageId ]</code></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#第一种方式</span></span><br><span class="line">docker save -o flannel.tar rancher/mirrored-flannelcni-flannel:v0.20.0</span><br><span class="line"><span class="comment">#第二种方式</span></span><br><span class="line">docker save -o &gt; flannel-cni-plugin.tar fcecffc7ad4a</span><br></pre></td></tr></table></figure>
+<h3 id="2-docker-load-命令将镜像归档文件导入镜像仓库"><a href="#2-docker-load-命令将镜像归档文件导入镜像仓库" class="headerlink" title="2. docker load 命令将镜像归档文件导入镜像仓库"></a>2. docker load 命令将镜像归档文件导入镜像仓库</h3><p>docker load 命令语法 <code>docker load [ --input | &lt; ] filename.tar</code> </p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 第一种方式</span></span><br><span class="line">docker load --input filename.tar</span><br><span class="line"></span><br><span class="line"><span class="comment"># 第二种方式</span></span><br><span class="line">docker load &lt; filename.tar</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+<h2 id="参考连接"><a href="#参考连接" class="headerlink" title="参考连接"></a>参考连接</h2><ol>
+<li><a target="_blank" rel="noopener" href="https://docs.docker.com/engine/reference/commandline/images/">https://docs.docker.com/engine/reference/commandline/images/</a></li>
+</ol>
+
+            </div>
+        
+        <footer class="article-footer">
+        </footer>
+    </div>
+</article>
+
+
+    
+<nav id="article-nav">
+    
+        <a href="/wiki/Docker/Docker%20%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0/" id="article-nav-newer" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">Newer</strong>
+            <div class="article-nav-title">
+                
+                    Docker 入门笔记
+                
+            </div>
+        </a>
+    
+    
+        <a href="/wiki/Docker/Docker%20%E6%9D%83%E9%99%90%E9%85%8D%E7%BD%AE/" id="article-nav-older" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">Older</strong>
+            <div class="article-nav-title">Docker 权限配置</div>
+        </a>
+    
+</nav>
+
+
+
+
+
+    
+    
+
+
+
+</section>
+        </div>
+        <footer id="footer">
+    <div class="outer">
+        <div id="footer-info" class="inner">
+            <br> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>. Theme - <a target="_blank" rel="noopener" href="https://github.com/vianlex/hexo-theme-Wikitten">wikitten</a>
+            
+                <br>
+                <span id="busuanzi_container_site_pv"><i class="fa fa-eye"></i> <span id="busuanzi_value_site_pv"></span></span>
+                &nbsp;|&nbsp;
+                <span id="busuanzi_container_site_pv"><i class="fa fa-user"></i> <span id="busuanzi_value_site_uv"></span></span>
+            
+        </div>
+    </div>
+</footer>
+
+        
+
+    
+        
+<script src="/libs/lightgallery/js/lightgallery.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-thumbnail.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-pager.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-autoplay.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-fullscreen.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-zoom.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-hash.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-share.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-video.min.js"></script>
+
+    
+    
+        
+<script src="/libs/justified-gallery/jquery.justifiedGallery.min.js"></script>
+
+    
+    
+        <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true,
+            TeX: {
+                equationNumbers: {
+                  autoNumber: 'AMS'
+                }
+            }
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script async src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+
+
+
+<!-- Custom Scripts -->
+
+<script src="/js/main.js"></script>
+
+    </div>
+</body>
+</html>

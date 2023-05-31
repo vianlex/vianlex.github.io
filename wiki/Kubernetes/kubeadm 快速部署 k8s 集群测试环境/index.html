@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <meta charset="utf-8">
+    
+    <title>kubeadm 快速部署 kubernetes 集群测试环境 | Vianlex&#39;s Wiki</title>
+    
+    
+        <meta name="keywords" content="kubeadm 快速部署 kubernetes 集群测试环境" />
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <meta name="description" content="1. 安装要求部署 Kubernetes 集群机器需要满足以下几个条件：  至少2台机器 硬件配置：2GB或更多RAM，2个CPU或更多CPU，硬盘30GB或更多 可以访问外网，需要拉取镜像，如果服务器不能上网，需要提前下载镜像并导入节点 禁止swap分区  2. 硬件环境准备准备至少两台机器，一台 master 节点，两台 node 节点。    序号 机器 IP 操作系统 节点类型    1">
+<meta property="og:type" content="article">
+<meta property="og:title" content="kubeadm 快速部署 kubernetes 集群测试环境">
+<meta property="og:url" content="http://example.com/wiki/Kubernetes/kubeadm%20%E5%BF%AB%E9%80%9F%E9%83%A8%E7%BD%B2%20k8s%20%E9%9B%86%E7%BE%A4%E6%B5%8B%E8%AF%95%E7%8E%AF%E5%A2%83/index.html">
+<meta property="og:site_name" content="Vianlex&#39;s Wiki">
+<meta property="og:description" content="1. 安装要求部署 Kubernetes 集群机器需要满足以下几个条件：  至少2台机器 硬件配置：2GB或更多RAM，2个CPU或更多CPU，硬盘30GB或更多 可以访问外网，需要拉取镜像，如果服务器不能上网，需要提前下载镜像并导入节点 禁止swap分区  2. 硬件环境准备准备至少两台机器，一台 master 节点，两台 node 节点。    序号 机器 IP 操作系统 节点类型    1">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-05-31T13:39:26.110Z">
+<meta property="article:modified_time" content="2023-05-31T13:39:26.110Z">
+<meta property="article:author" content="Vianlex">
+<meta name="twitter:card" content="summary">
+    
+
+    
+
+    
+        <link rel="icon" href="/favicon.ico" />
+    
+
+    
+<link rel="stylesheet" href="/libs/font-awesome/css/font-awesome.min.css">
+
+    
+<link rel="stylesheet" href="/libs/open-sans/styles.css">
+
+    
+<link rel="stylesheet" href="/libs/source-code-pro/styles.css">
+
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    
+<script src="/libs/jquery/2.1.3/jquery.min.js"></script>
+
+    
+<script src="/libs/jquery/plugins/cookie/1.4.1/jquery.cookie.js"></script>
+
+    
+    
+        
+<link rel="stylesheet" href="/libs/lightgallery/css/lightgallery.min.css">
+
+    
+    
+        
+<link rel="stylesheet" href="/libs/justified-gallery/justifiedGallery.min.css">
+
+    
+    
+    
+    
+
+
+    
+        <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    
+<meta name="generator" content="Hexo 6.3.0"><link rel="alternate" href="/atom.xml" title="Vianlex's Wiki" type="application/atom+xml">
+</head>
+
+<body>
+    <div id="container">
+        <header id="header">
+    <div id="header-main" class="header-inner">
+        <div class="outer">
+            <a href="/" id="logo">
+                <i class="logo"></i>
+                <span class="site-title">Vianlex&#39;s Wiki</span>
+            </a>
+            <nav id="main-nav">
+                
+                    <a class="main-nav-link" href="/">首页</a>
+                
+                    <a class="main-nav-link" href="/archives">归档</a>
+                
+                    <a class="main-nav-link" href="/categories">分类</a>
+                
+                    <a class="main-nav-link" href="/tags">标签</a>
+                
+                    <a class="main-nav-link" href="/about">关于</a>
+                
+            </nav>
+            
+            <div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="Search" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="Type something..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: 'Posts',
+            PAGES: 'Pages',
+            CATEGORIES: 'Categories',
+            TAGS: 'Tags',
+            UNTITLED: '(Untitled)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+
+</div>
+        </div>
+    </div>
+    <div id="main-nav-mobile" class="header-sub header-inner">
+        <table class="menu outer">
+            <tr>
+                
+                    <td><a class="main-nav-link" href="/">首页</a></td>
+                
+                    <td><a class="main-nav-link" href="/archives">归档</a></td>
+                
+                    <td><a class="main-nav-link" href="/categories">分类</a></td>
+                
+                    <td><a class="main-nav-link" href="/tags">标签</a></td>
+                
+                    <td><a class="main-nav-link" href="/about">关于</a></td>
+                
+                <td>
+                    
+    <div class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="Search" />
+    </div>
+
+                </td>
+            </tr>
+        </table>
+    </div>
+</header>
+
+        <div class="outer">
+            
+            
+                <aside id="sidebar">
+   
+        
+    <div class="widget-wrap" id='categories'>
+        <h3 class="widget-title">
+            <span>分类目录</span>
+            &nbsp;
+            <a id='allExpand' href="#">
+                <i class="fa fa-angle-double-down fa-2x"></i>
+            </a>
+        </h3>
+        
+        
+        
+         <ul class="unstyled" id="tree" > 
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            Apache POI
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/Apache%20POI/Excel%20%E8%AE%BE%E7%BD%AE%E8%A1%8C%E9%AB%98%E5%92%8C%E6%8D%A2%E8%A1%8C%E9%97%AE%E9%A2%98/">Excel 设置行高和换行问题</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            Docker
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/Docker/Docker%20Swarm%20%E7%AC%94%E8%AE%B0/">Docker Swarm 笔记</a></li>  <li class="file"><a href="/wiki/Docker/Docker%20%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0/">Docker 入门笔记</a></li>  <li class="file"><a href="/wiki/Docker/Docker%20%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/">Docker 常用命令</a></li>  <li class="file"><a href="/wiki/Docker/Docker%20%E6%9D%83%E9%99%90%E9%85%8D%E7%BD%AE/">Docker 权限配置</a></li>  <li class="file"><a href="/wiki/Docker/Dockerfile%20%E4%BD%BF%E7%94%A8%E8%AF%B4%E6%98%8E/">Dockerfile 使用说明</a></li>  <li class="file"><a href="/wiki/Docker/docker%20%E5%AE%89%E8%A3%85%E7%AC%94%E8%AE%B0/">Docker 安装笔记</a></li>  <li class="file"><a href="/wiki/Docker/docker-compose%20%E5%AD%A6%E4%B9%A0%E8%AE%B0%E5%BD%95/">Docker-compose 学习记录</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            Golang
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/Golang/Go%20%E5%9F%BA%E7%A1%80%E8%AF%AD%E6%B3%95/">Go 基础语法</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            Java 知识点
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/Java%20%E7%9F%A5%E8%AF%86%E7%82%B9/Class%E5%AF%B9%E8%B1%A1%E5%92%8CTpye%E5%AF%B9%E8%B1%A1/">Class 对象和 Tpye 对象知识笔记</a></li>  <li class="file"><a href="/wiki/Java%20%E7%9F%A5%E8%AF%86%E7%82%B9/Instrumentation%20%E7%9F%A5%E8%AF%86%E7%AC%94%E8%AE%B0/">Instrumentation 知识笔记</a></li>  <li class="file"><a href="/wiki/Java%20%E7%9F%A5%E8%AF%86%E7%82%B9/Java%20main%20%E5%92%8C%20classpath/">main 方法和 classpath 说明</a></li>  <li class="file"><a href="/wiki/Java%20%E7%9F%A5%E8%AF%86%E7%82%B9/Javassist%20%E7%9F%A5%E8%AF%86%E7%AC%94%E8%AE%B0/">Javassist 知识笔记</a></li>  <li class="file"><a href="/wiki/Java%20%E7%9F%A5%E8%AF%86%E7%82%B9/SecurityManager%20%E7%AC%94%E8%AE%B0/">SecurityManager 笔记</a></li>  <li class="file"><a href="/wiki/Java%20%E7%9F%A5%E8%AF%86%E7%82%B9/byteBuddy%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0/">ByteBuddy 入门笔记</a></li>  <li class="file"><a href="/wiki/Java%20%E7%9F%A5%E8%AF%86%E7%82%B9/Drools%E7%AC%94%E8%AE%B0/">Drools 笔记</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            Java 设计模式
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/Java%20%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/%E4%BB%A3%E7%90%86%E6%A8%A1%E5%BC%8F/">代理模式</a></li>  <li class="file"><a href="/wiki/Java%20%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/%E5%B7%A5%E5%8E%82%E6%A8%A1%E5%BC%8F/">工厂模式</a></li>  <li class="file"><a href="/wiki/Java%20%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/%E6%A8%A1%E6%9D%BF%E6%A8%A1%E5%BC%8F/">模板模式(模板方法模式)</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            Jemeter
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/Jemeter/Jemeter%20%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0/">Jemeter 入门笔记</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory open">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder-open"></i>
+                            &nbsp;
+                            Kubernetes
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file active"><a href="/wiki/Kubernetes/kubeadm%20%E5%BF%AB%E9%80%9F%E9%83%A8%E7%BD%B2%20k8s%20%E9%9B%86%E7%BE%A4%E6%B5%8B%E8%AF%95%E7%8E%AF%E5%A2%83/">kubeadm 快速部署 kubernetes 集群测试环境</a></li>  <li class="file"><a href="/wiki/Kubernetes/kubeadm%E5%AE%89%E8%A3%85%20k8s%20%E9%97%AE%E9%A2%98%E8%AE%B0%E5%BD%95/">kubeadm安装 k8s 问题记录</a></li>  <li class="file"><a href="/wiki/Kubernetes/K8s%20%E5%85%A5%E9%97%A8%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">K8s 入门学习笔记</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            Linux
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/Linux/SSH%20%E5%AF%86%E7%A0%81%E7%99%BB%E5%BD%95%E5%92%8C%E5%AF%86%E9%92%A5%E9%85%8D%E7%BD%AE%E8%AF%B4%E6%98%8E/">SSH 密码登录和密钥配置说明</a></li>  <li class="file"><a href="/wiki/Linux/ECS%20%E4%BA%91%E6%9C%8D%E5%8A%A1%E5%99%A8%E6%8C%82%E8%BD%BD%E6%95%B0%E6%8D%AE%E7%9B%98/">ECS 云服务器挂载数据盘</a></li>  <li class="file"><a href="/wiki/Linux/Linux%20%E6%9C%8D%E5%8A%A1%E5%99%A8%E6%8C%82%E8%BD%BD%E7%A1%AC%E7%9B%98/"></a></li>  <li class="file"><a href="/wiki/Linux/SSH%20%E7%AB%AF%E5%8F%A3%E8%BD%AC%E5%8F%91/">SSH 端口转发用法说明</a></li>  <li class="file"><a href="/wiki/Linux/dnf%E8%BD%AF%E4%BB%B6%E5%8C%85%E7%AE%A1%E7%90%86%E5%B7%A5%E5%85%B7/">dnf 软件包管理工具</a></li>  <li class="file"><a href="/wiki/Linux/iptables%20%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">iptables 学习笔记</a></li>  <li class="file"><a href="/wiki/Linux/yum%20%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/">YUM 常用命令</a></li>  <li class="file"><a href="/wiki/Linux/%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4%E8%AE%B0%E5%BD%95/">Linux 常用命令记录</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            Maven
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/Maven/Maven%20%E9%97%AE%E9%A2%98%E8%AE%B0%E5%BD%95/">Maven 问题记录</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            MySql
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/MySql/MySql%20%E5%B8%B8%E7%94%A8%E5%87%BD%E6%95%B0/">MySql 常用函数</a></li>  <li class="file"><a href="/wiki/MySql/MySql%20%E5%BC%80%E7%AA%97%E5%87%BD%E6%95%B0/">MySql 开窗函数</a></li>  <li class="file"><a href="/wiki/MySql/Mysql%20%E9%83%A8%E5%88%86%E8%AF%8D%E6%B1%87%E5%90%AB%E4%B9%89/">Mysql 部分词汇含义</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            Nginx
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/Nginx/Nginx%20%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/">Nginx 常用命令</a></li>  <li class="file"><a href="/wiki/Nginx/Tengine%E5%AE%89%E8%A3%85%E7%AC%94%E8%AE%B0/"></a></li>  <li class="file"><a href="/wiki/Nginx/location%20%E6%8C%87%E4%BB%A4%E7%AC%94%E8%AE%B0/">location 和 rewrite 笔记</a></li>  <li class="file"><a href="/wiki/Nginx/ngx_http_proxy_module%E6%A8%A1%E5%9D%97%E7%AC%94%E8%AE%B0/">ngx_http_proxy_module 模块学习笔记</a></li>  <li class="file"><a href="/wiki/Nginx/ngx_http_rewrite_module%20%E6%A8%A1%E5%9D%97%E7%AC%94%E8%AE%B0/">ngx_http_rewrite_module 模块学习笔记</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            NodeJs
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/NodeJs/Node%20%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE%E8%AE%B0%E5%BD%95/">Node 环境配置说明</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            PowerDesigner
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/PowerDesigner/%E4%BD%BF%E7%94%A8%E9%97%AE%E9%A2%98%E8%AE%B0%E5%BD%95/">使用出现问题记录</a></li>  <li class="file"><a href="/wiki/PowerDesigner/%E9%80%86%E5%90%91%E5%AF%BC%E5%85%A5%E9%97%AE%E9%A2%98%E8%AE%B0%E5%BD%95/">SQL 逆向导入生成 PDM</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            Redis
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/Redis/Redis%20%E7%BC%93%E5%AD%98%E7%A9%BF%E9%80%8F%E3%80%81%E5%87%BB%E7%A9%BF%E3%80%81%E9%9B%AA%E5%B4%A9/">Redis 缓存穿透、缓存击穿、缓存雪崩</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            Shell
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/Shell/Awk%20%20%E5%9F%BA%E7%A1%80%E7%94%A8%E6%B3%95/">Awk 基础用法</a></li>  <li class="file"><a href="/wiki/Shell/Sed%20%E5%9F%BA%E7%A1%80%E7%94%A8%E6%B3%95/">Sed 基础用法</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            SpringBoot
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/SpringBoot/SpringBoot%20%E5%B1%9E%E6%80%A7%E9%85%8D%E7%BD%AE/">SpringBoot 属性配置</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            Xml
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/Xml/Dom4j%20%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0/">Dom4j 入门笔记</a></li>  <li class="file"><a href="/wiki/Xml/XPath%20%E7%AC%94%E8%AE%B0/">XPath 笔记</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            other
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/other/%E8%BD%AF%E4%BB%B6%E5%90%8D%E7%A7%B0%E8%AE%B0%E5%BD%95/">软件名称记录</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            计算机网络
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/%E7%BD%91%E7%BB%9C%E8%AE%BE%E5%A4%87%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0/">网络设备入门笔记</a></li>  </ul> 
+                    </li> 
+                     <li class="file"><a href="/wiki/index/"></a></li>  </ul> 
+    </div>
+    <script>
+        $(document).ready(function() {
+            var iconFolderOpenClass  = 'fa-folder-open';
+            var iconFolderCloseClass = 'fa-folder';
+            var iconAllExpandClass = 'fa-angle-double-down';
+            var iconAllPackClass = 'fa-angle-double-up';
+            // Handle directory-tree expansion:
+            // 左键单独展开目录
+            $(document).on('click', '#categories a[data-role="directory"]', function (event) {
+                event.preventDefault();
+
+                var icon = $(this).children('.fa');
+                var expanded = icon.hasClass(iconFolderOpenClass);
+                var subtree = $(this).siblings('ul');
+                icon.removeClass(iconFolderOpenClass).removeClass(iconFolderCloseClass);
+                if (expanded) {
+                    if (typeof subtree != 'undefined') {
+                        subtree.slideUp({ duration: 100 });
+                    }
+                    icon.addClass(iconFolderCloseClass);
+                } else {
+                    if (typeof subtree != 'undefined') {
+                        subtree.slideDown({ duration: 100 });
+                    }
+                    icon.addClass(iconFolderOpenClass);
+                }
+            });
+            // 右键展开下属所有目录
+            $('#categories a[data-role="directory"]').bind("contextmenu", function(event){
+                event.preventDefault();
+                
+                var icon = $(this).children('.fa');
+                var expanded = icon.hasClass(iconFolderOpenClass);
+                var listNode = $(this).siblings('ul');
+                var subtrees = $.merge(listNode.find('li ul'), listNode);
+                var icons = $.merge(listNode.find('.fa'), icon);
+                icons.removeClass(iconFolderOpenClass).removeClass(iconFolderCloseClass);
+                if(expanded) {
+                    subtrees.slideUp({ duration: 100 });
+                    icons.addClass(iconFolderCloseClass);
+                } else {
+                    subtrees.slideDown({ duration: 100 });
+                    icons.addClass(iconFolderOpenClass);
+                }
+            })
+            // 展开关闭所有目录按钮
+            $(document).on('click', '#allExpand', function (event) {
+                event.preventDefault();
+                
+                var icon = $(this).children('.fa');
+                var expanded = icon.hasClass(iconAllExpandClass);
+                icon.removeClass(iconAllExpandClass).removeClass(iconAllPackClass);
+                if(expanded) {
+                    $('#sidebar .fa.fa-folder').removeClass('fa-folder').addClass('fa-folder-open')
+                    $('#categories li ul').slideDown({ duration: 100 });
+                    icon.addClass(iconAllPackClass);
+                } else {
+                    $('#sidebar .fa.fa-folder-open').removeClass('fa-folder-open').addClass('fa-folder')
+                    $('#categories li ul').slideUp({ duration: 100 });
+                    icon.addClass(iconAllExpandClass);
+                }
+            });  
+        });
+    </script>
+
+    
+    <div id="toTop" class="fa fa-angle-up"></div>
+</aside>
+            
+            <section id="main"><article id="post-Kubernetes/kubeadm 快速部署 k8s 集群测试环境" class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
+                
+                    <div class="article-meta">
+                        
+    <div class="article-category">
+    	<i class="fa fa-folder"></i>
+        <a class="article-category-link" href="/categories/Kubernetes/">Kubernetes</a>
+    </div>
+
+                        
+                        
+    <div class="article-date">
+        <i class="fa fa-calendar"></i>
+        <a href="/wiki/Kubernetes/kubeadm%20%E5%BF%AB%E9%80%9F%E9%83%A8%E7%BD%B2%20k8s%20%E9%9B%86%E7%BE%A4%E6%B5%8B%E8%AF%95%E7%8E%AF%E5%A2%83/">
+            <time datetime="2023-05-31T13:39:26.110Z" itemprop="datePublished">2023-05-31</time>
+        </a>
+    </div>
+
+
+                        
+                            <i class="fa fa-bar-chart"></i>
+                            <span id="busuanzi_container_site_pv"><span id="busuanzi_value_page_pv"></span></span>    
+                        
+                        
+                            <div class="article-meta-button">
+                                <a target="_blank" rel="noopener" href='https://github.com/Vianlex/blog/raw/gh-pages/source/_posts/Kubernetes/kubeadm 快速部署 k8s 集群测试环境.md'> Source </a>
+                            </div>
+                            <div class="article-meta-button">
+                                <a target="_blank" rel="noopener" href='https://github.com/Vianlex/blog/edit/gh-pages/source/_posts/Kubernetes/kubeadm 快速部署 k8s 集群测试环境.md'> Edit </a>
+                            </div>
+                            <div class="article-meta-button">
+                                <a target="_blank" rel="noopener" href='https://github.com/Vianlex/blog/commits/gh-pages/source/_posts/Kubernetes/kubeadm 快速部署 k8s 集群测试环境.md'> History </a>
+                            </div>
+                        
+                    </div>
+                
+                
+    
+        <h1 class="article-title" itemprop="name">
+            kubeadm 快速部署 kubernetes 集群测试环境
+        </h1>
+    
+
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+        
+            
+        
+        
+            <h2 id="1-安装要求"><a href="#1-安装要求" class="headerlink" title="1. 安装要求"></a>1. 安装要求</h2><p>部署 Kubernetes 集群机器需要满足以下几个条件：</p>
+<ul>
+<li>至少2台机器</li>
+<li>硬件配置：2GB或更多RAM，2个CPU或更多CPU，硬盘30GB或更多</li>
+<li>可以访问外网，需要拉取镜像，如果服务器不能上网，需要提前下载镜像并导入节点</li>
+<li>禁止swap分区</li>
+</ul>
+<h2 id="2-硬件环境准备"><a href="#2-硬件环境准备" class="headerlink" title="2. 硬件环境准备"></a>2. 硬件环境准备</h2><p>准备至少两台机器，一台 master 节点，两台 node 节点。</p>
+<table>
+<thead>
+<tr>
+<th>序号</th>
+<th>机器 IP</th>
+<th>操作系统</th>
+<th>节点类型</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td>192.168.204.3</td>
+<td>CentOS8</td>
+<td>master</td>
+</tr>
+<tr>
+<td>2</td>
+<td>192.168.204.4</td>
+<td>CentOS8</td>
+<td>node</td>
+</tr>
+<tr>
+<td>2</td>
+<td>192.168.204.5</td>
+<td>CentOS8</td>
+<td>node</td>
+</tr>
+</tbody></table>
+<h3 id="2-1-云服务的安全组设置"><a href="#2-1-云服务的安全组设置" class="headerlink" title="2.1 云服务的安全组设置"></a>2.1 云服务的安全组设置</h3><p>如果搭建的集群使用外网，需要在安全组中开放端口</p>
+<table>
+<thead>
+<tr>
+<th>节点</th>
+<th>协议类型</th>
+<th>访问方向</th>
+<th>端口</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Master 服务器</td>
+<td>TCP</td>
+<td>入方向</td>
+<td>6443</td>
+<td>Kubernetes API server	的端口</td>
+</tr>
+<tr>
+<td>Master 服务器</td>
+<td>TCP</td>
+<td>入方向</td>
+<td>2379-2380</td>
+<td>etcd server client API	kube-apiserver, etcd 的端口</td>
+</tr>
+<tr>
+<td>Master 服务器</td>
+<td>TCP</td>
+<td>入方向</td>
+<td>10250</td>
+<td>Kubelet API	的端口</td>
+</tr>
+<tr>
+<td>Master 服务器</td>
+<td>TCP</td>
+<td>入方向</td>
+<td>10259</td>
+<td>kube-scheduler	的端口</td>
+</tr>
+<tr>
+<td>node 服务器</td>
+<td>TCP</td>
+<td>入方向</td>
+<td>10250</td>
+<td>Kubelet API	的端口</td>
+</tr>
+<tr>
+<td>node 服务器</td>
+<td>TCP</td>
+<td>入方向</td>
+<td>30000-32767</td>
+<td>NodePort Services 的端口</td>
+</tr>
+</tbody></table>
+<h2 id="3-CenteOs-系统环境配置（-master-和-node-机器都要改）"><a href="#3-CenteOs-系统环境配置（-master-和-node-机器都要改）" class="headerlink" title="3. CenteOs 系统环境配置（ master 和 node 机器都要改）"></a>3. CenteOs 系统环境配置（ master 和 node 机器都要改）</h2><h3 id="3-1-关闭防火墙-和-SELINUX-类型-Window-UAC"><a href="#3-1-关闭防火墙-和-SELINUX-类型-Window-UAC" class="headerlink" title="3.1 关闭防火墙 和 SELINUX(类型 Window UAC)"></a>3.1 关闭防火墙 和 SELINUX(类型 Window UAC)</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 关闭防火墙, 关闭 firewalld 只使用 iptables 防火墙</span></span><br><span class="line">systemctl stop firewalld &amp;&amp; systemctl <span class="built_in">disable</span> firewalld</span><br><span class="line"></span><br><span class="line"><span class="comment"># 关闭selinux</span></span><br><span class="line">sed -i <span class="string">&#x27;s/enforcing/disabled/&#x27;</span> /etc/selinux/config  <span class="comment"># 永久</span></span><br><span class="line">setenforce 0  <span class="comment"># 临时关闭，机器重启后重新启动</span></span><br></pre></td></tr></table></figure>
+<h3 id="3-2-关闭-Swap"><a href="#3-2-关闭-Swap" class="headerlink" title="3.2 关闭 Swap"></a>3.2 关闭 Swap</h3><p>当系统使用 swap 会降低性能。所以 kubelet 要求禁用 Swap</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 临时关闭</span></span><br><span class="line">swapoff -a</span><br><span class="line"><span class="comment"># 永久关闭，执行了命令， kubeadm init 提示没有的话，重启系统试试 systemctl reboot</span></span><br><span class="line">sed -ri <span class="string">&#x27;s/.*swap.*/#&amp;/&#x27;</span> /etc/fstab</span><br><span class="line"><span class="comment"># 或者</span></span><br><span class="line">vim /etc/fstab 用 <span class="comment"># 注释掉 UUID swap 分区</span></span><br></pre></td></tr></table></figure>
+<h3 id="3-3-修改机器的主机名"><a href="#3-3-修改机器的主机名" class="headerlink" title="3.3 修改机器的主机名"></a>3.3 修改机器的主机名</h3><p>在一个局域网中，每台机器都有一个主机名，用于主机与主机的区分，默认的主机名，不容易记住，需要修改成方便我们识别的</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 运行以下命令将 master 主机名改成 k8s-master</span></span><br><span class="line">hostnamectl set-hostname k8s-master</span><br><span class="line"><span class="comment"># 修改对应 node 节点的主机名</span></span><br><span class="line">hostnamectl set-hostname k8s-node01</span><br><span class="line">hostnamectl set-hostname k8s-node02</span><br><span class="line"></span><br><span class="line"><span class="comment"># 在 hosts 中添加 ip 地址和主机名的映射关系，主机名相当于域名，hosts 是机器的本地 DNS 服务，通过主机访问网络时，会在 hosts 解析到对应的 ip</span></span><br><span class="line"><span class="built_in">cat</span> &gt;&gt; /etc/hosts &lt;&lt; <span class="string">EOF</span></span><br><span class="line"><span class="string">192.168.204.3 k8s-master</span></span><br><span class="line"><span class="string">192.168.204.4 k8s-node01</span></span><br><span class="line"><span class="string">192.168.204.5 k8s-node02</span></span><br><span class="line"><span class="string">EOF</span></span><br></pre></td></tr></table></figure>
+<h3 id="3-4-将桥接的-IPv4-流量传递到-iptables-的链"><a href="#3-4-将桥接的-IPv4-流量传递到-iptables-的链" class="headerlink" title="3.4 将桥接的 IPv4 流量传递到 iptables 的链"></a>3.4 将桥接的 IPv4 流量传递到 iptables 的链</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cat</span> &gt; /etc/sysctl.d/k8s.conf &lt;&lt; <span class="string">EOF</span></span><br><span class="line"><span class="string">net.bridge.bridge-nf-call-ip6tables = 1</span></span><br><span class="line"><span class="string">net.bridge.bridge-nf-call-iptables = 1</span></span><br><span class="line"><span class="string">EOF</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 立即生效</span></span><br><span class="line">sysctl --system </span><br></pre></td></tr></table></figure>
+<h3 id="3-5-时间同步-可以不修改"><a href="#3-5-时间同步-可以不修改" class="headerlink" title="3.5 时间同步(可以不修改)"></a>3.5 时间同步(可以不修改)</h3><p>在集群中，时间是一个很重要的概念，要保证集群机器中的时间一致，不然可能会导致集群出现问题。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"># 安装时间同步软件</span><br><span class="line">yum install ntpdate -y</span><br><span class="line"># 使用阿里云的时间服务器</span><br><span class="line">ntpdate time1.aliyun.com </span><br><span class="line"># 通过定时任务，定时同步时间</span><br><span class="line">*/1 * * * * /usr/sbin/ntpdate time2.aliyun.com &gt; /dev/null 2&gt;&amp;1</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+<h2 id="4-安装-kubeadm、kubelet-和-kubectl"><a href="#4-安装-kubeadm、kubelet-和-kubectl" class="headerlink" title="4 安装 kubeadm、kubelet 和 kubectl"></a>4 安装 kubeadm、kubelet 和 kubectl</h2><p>kubeadm 创建 Kubernetes 集群的最快捷的一种命令行工具，其常用的命令如下：</p>
+<ul>
+<li>kubeadm init 初始化 Kubernetes 主节点</li>
+<li>kubeadm join 用于 node 节点加入到集群中</li>
+<li>kubeadm upgrade 更新 Kubernetes 集群到新版本</li>
+<li>kubeadm token 管理 k8s token 令牌</li>
+<li>kubeadm reset 还原 kubeadm init 或者 kubeadm join 所作的操作</li>
+<li>kubeadm version 打印出 kubeadm 版本<br>kubectl 是操作管理 k8s 集群的命令行工具。<br>kubelet 是容器运行时，k8s 组件 api service 接收到 kubectl 的操作请求，通过控制 kubelet 去创建和管理容器的。</li>
+</ul>
+<h3 id="4-1-添加阿里云源"><a href="#4-1-添加阿里云源" class="headerlink" title="4.1 添加阿里云源"></a>4.1 添加阿里云源</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 添加 k8s 软件源</span></span><br><span class="line"><span class="built_in">cat</span> &gt; /etc/yum.repos.d/kubernetes.repo &lt;&lt; <span class="string">EOF</span></span><br><span class="line"><span class="string">[kubernetes]</span></span><br><span class="line"><span class="string">name=Kubernetes</span></span><br><span class="line"><span class="string">baseurl=https://mirrors.aliyun.com/kubernetes/yum/repos/kubernetes-el7-x86_64</span></span><br><span class="line"><span class="string">enabled=1</span></span><br><span class="line"><span class="string">gpgcheck=0</span></span><br><span class="line"><span class="string">repo_gpgcheck=0</span></span><br><span class="line"><span class="string">gpgkey=https://mirrors.aliyun.com/kubernetes/yum/doc/yum-key.gpg https://mirrors.aliyun.com/kubernetes/yum/doc/rpm-package-key.gpg</span></span><br><span class="line"><span class="string">EOF</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 设置 aliyun 镜像加速库，要重启 docker</span></span><br><span class="line"><span class="built_in">cat</span> &gt; /etc/docker/daemon.json &lt;&lt; <span class="string">EOF</span></span><br><span class="line"><span class="string">&#123;</span></span><br><span class="line"><span class="string">  &quot;registry-mirrors&quot;: [&quot;https://b9pmyelo.mirror.aliyuncs.com&quot;],</span></span><br><span class="line"><span class="string">  &quot;exec-opts&quot;:[&quot;native.cgroupdriver=systemd&quot;]</span></span><br><span class="line"><span class="string">&#125;</span></span><br><span class="line"><span class="string">EOF</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="4-2-master-节点安装-kubeadm、kubelet-和-kubectl"><a href="#4-2-master-节点安装-kubeadm、kubelet-和-kubectl" class="headerlink" title="4.2 master 节点安装 kubeadm、kubelet 和 kubectl"></a>4.2 master 节点安装 kubeadm、kubelet 和 kubectl</h3><p>kubelet 组件用于处理 api-server 发到本节点的任务，管理 Pod 及 Pod 中的容器。每个 kubelet 进程都会在 api-server 上注册本节点自身的信息，定期向 Master 汇报节点资源的使用情况，并通过 cAdvisor 监控 容器和节点资源。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 安装的时候需要指定版本，kubeadm init 初始化节点设置的版本相对应</span></span><br><span class="line">yum install -y  kubeadm-1.20.15 kubectl-1.20.15 kubelet-1.20.15</span><br><span class="line"><span class="comment"># 启动 kubelet 并设置开机启动</span></span><br><span class="line">systemctl start kubelet &amp;&amp; systemctl <span class="built_in">enable</span> kubelet</span><br></pre></td></tr></table></figure>
+
+<h3 id="4-3-初始化-master-节点"><a href="#4-3-初始化-master-节点" class="headerlink" title="4.3 初始化 master 节点"></a>4.3 初始化 master 节点</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">kubeadm init \</span><br><span class="line">  --apiserver-advertise-address=192.168.204.3 \ </span><br><span class="line">  --image-repository registry.aliyuncs.com/google_containers \</span><br><span class="line">  --kubernetes-version v1.20.15 \</span><br><span class="line">  --service-cidr=10.96.0.0/12 \</span><br><span class="line">  --pod-network-cidr=10.244.0.0/16</span><br><span class="line"></span><br><span class="line"><span class="comment"># --apiserver-advertise-address 指定 master 节点的地址，如果是阿里云服务不能指定为外网地址会报 bind: cannot assign requested address 错误</span></span><br><span class="line"><span class="comment"># --kubernetes-version 指定 k8s 的版本，要和 kubectl 的版本相同，使用命令 kubectl --version 可以查看 kubectl 的版本</span></span><br><span class="line"><span class="comment"># --service-cidr 指定 service 资源的网络地址段</span></span><br><span class="line"><span class="comment"># --pod-network-cidr 指定 Pod 内部网络地址段</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h3 id="4-4-k8s-客户端-kubectl-工具配置"><a href="#4-4-k8s-客户端-kubectl-工具配置" class="headerlink" title="4.4 k8s 客户端 kubectl 工具配置"></a>4.4 k8s 客户端 kubectl 工具配置</h3><p>kubectl 是与 kubernetes 集群交互的一个命令行工具, kubectl 通过调用 api server 组件 Rest Api 来交互来操作集群的。Api Server 接口的认证信息和访问地址默认是存放在 &#x2F;etc&#x2F;kubernetes&#x2F;admin.conf 的， kubectl 请求 Api Server 接口获取认证信息和访问地址，默认是从用户目录下的 .kube&#x2F;config 文件读取或者从环境变量 KUBECONFIG 指定的文件中读取，所以要作以下配置：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">mkdir</span> -p <span class="variable">$HOME</span>/.kube</span><br><span class="line">sudo <span class="built_in">cp</span> -i /etc/kubernetes/admin.conf <span class="variable">$HOME</span>/.kube/config</span><br><span class="line">sudo <span class="built_in">chown</span> $(<span class="built_in">id</span> -u):$(<span class="built_in">id</span> -g) <span class="variable">$HOME</span>/.kube/config</span><br><span class="line"><span class="comment"># 或者</span></span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot;export KUBECONFIG=/etc/kubernetes/admin.conf&quot;</span> &gt;&gt; ~/.bash_profile</span><br><span class="line"><span class="built_in">source</span> ~/.bash_profile</span><br></pre></td></tr></table></figure>
+<h3 id="4-5-node-节点安装-kubeadm、kubelet"><a href="#4-5-node-节点安装-kubeadm、kubelet" class="headerlink" title="4.5 node 节点安装 kubeadm、kubelet"></a>4.5 node 节点安装 kubeadm、kubelet</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">yum install -y  kubeadm-1.20.15  kubelet-1.20.15</span><br><span class="line"><span class="comment"># 启动 kubelet 并设置开机启动</span></span><br><span class="line">systemctl start kubelet &amp;&amp; systemctl <span class="built_in">enable</span> kubelet</span><br></pre></td></tr></table></figure>
+<h3 id="4-6-Node-加入-master-所在集群"><a href="#4-6-Node-加入-master-所在集群" class="headerlink" title="4.6 Node 加入 master 所在集群"></a>4.6 Node 加入 master 所在集群</h3><p>需要在 master 节点中先安装网络插件，才能访问到集群</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"># master 节点获取 token, 默认token有效期为24小时 </span><br><span class="line">kubeadm token create --print-join-command</span><br><span class="line"># 在 node 指定 kubeadm join 命令即可加入集群 </span><br><span class="line">kubeadm join 192.168.1.1:6443 --token esce21.q6hetwm8si29qxwn \</span><br><span class="line">    --discovery-token-ca-cert-hash sha256:00603a05805807501d7181c3d60b478788408cfe6cedefedb1f97569708be9c5</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h2 id="5-注意-coredns-组件"><a href="#5-注意-coredns-组件" class="headerlink" title="5. 注意 coredns 组件"></a>5. 注意 coredns 组件</h2><p>如果未安装网络插件的话，coredns 组件的 pod 会一直在 pending 中，直到检测有网络插件完成成功为止。</p>
+<h2 id="6-部署网络插件"><a href="#6-部署网络插件" class="headerlink" title="6. 部署网络插件"></a>6. 部署网络插件</h2><p>kubernetes 需要使用第三方的网络插件来实现 kubernetes 的网络功能，第三方网络插件有多种，常用的有 flanneld、calico 和 cannel（flanneld+calico），不同的网络组件，都提供基本的网络功能，为各个 Node 节点提供 IP 网络等。<br>k8s 的组件可以通过容器化的方式，运行在 k8s 集群中，将 calico 网络插件创建在集群中，操作如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"># 下载网络插件的资源文件，要注意下载的版本是否支持安装的 k8s </span><br><span class="line">wget https://docs.projectcalico.org/v3.20/manifests/calico.yaml</span><br><span class="line"># 部署网络插件</span><br><span class="line">kubectl apply -f calico.yaml</span><br><span class="line"># 查看部署的网络插件，使用如下命令       </span><br><span class="line">kubectl get pods -n kube-system</span><br><span class="line"># 显示的结果如下，说明部署成功</span><br><span class="line">NAME                   READY   STATUS    RESTARTS   AGE</span><br><span class="line">calico-kube-xx-xx-xx   1/1    Running   0          72s</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h2 id="7-测试kubernetes集群"><a href="#7-测试kubernetes集群" class="headerlink" title="7. 测试kubernetes集群"></a>7. 测试kubernetes集群</h2><p>在 Kubernetes 集群中创建一个 pod，验证是否正常运行：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl create deployment nginx --image=nginx</span><br><span class="line">$ kubectl expose deployment nginx --port=80 --type=NodePort</span><br><span class="line">$ kubectl get pod,svc</span><br></pre></td></tr></table></figure>
+
+<p>访问地址：<a href="http://NodeIP:Port">http://NodeIP:Port</a>  </p>
+
+            </div>
+        
+        <footer class="article-footer">
+        </footer>
+    </div>
+</article>
+
+
+    
+<nav id="article-nav">
+    
+        <a href="/wiki/Jemeter/Jemeter%20%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0/" id="article-nav-newer" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">Newer</strong>
+            <div class="article-nav-title">
+                
+                    Jemeter 入门笔记
+                
+            </div>
+        </a>
+    
+    
+        <a href="/wiki/Kubernetes/kubeadm%E5%AE%89%E8%A3%85%20k8s%20%E9%97%AE%E9%A2%98%E8%AE%B0%E5%BD%95/" id="article-nav-older" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">Older</strong>
+            <div class="article-nav-title">kubeadm安装 k8s 问题记录</div>
+        </a>
+    
+</nav>
+
+
+
+
+
+    
+    
+
+
+
+</section>
+        </div>
+        <footer id="footer">
+    <div class="outer">
+        <div id="footer-info" class="inner">
+            <br> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>. Theme - <a target="_blank" rel="noopener" href="https://github.com/vianlex/hexo-theme-Wikitten">wikitten</a>
+            
+                <br>
+                <span id="busuanzi_container_site_pv"><i class="fa fa-eye"></i> <span id="busuanzi_value_site_pv"></span></span>
+                &nbsp;|&nbsp;
+                <span id="busuanzi_container_site_pv"><i class="fa fa-user"></i> <span id="busuanzi_value_site_uv"></span></span>
+            
+        </div>
+    </div>
+</footer>
+
+        
+
+    
+        
+<script src="/libs/lightgallery/js/lightgallery.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-thumbnail.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-pager.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-autoplay.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-fullscreen.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-zoom.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-hash.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-share.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-video.min.js"></script>
+
+    
+    
+        
+<script src="/libs/justified-gallery/jquery.justifiedGallery.min.js"></script>
+
+    
+    
+        <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true,
+            TeX: {
+                equationNumbers: {
+                  autoNumber: 'AMS'
+                }
+            }
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script async src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+
+
+
+<!-- Custom Scripts -->
+
+<script src="/js/main.js"></script>
+
+    </div>
+</body>
+</html>

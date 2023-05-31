@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <meta charset="utf-8">
+    
+    <title>iptables 学习笔记 | Vianlex&#39;s Wiki</title>
+    
+    
+        <meta name="keywords" content="iptables 学习笔记" />
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <meta name="description" content="1. iptables 简介iptables 是 Linux 防火墙软件，虽然已经被 nftables 取代了，但是仍然广泛的运用着。iptables 防火墙的网络地址转换、数据包修改，以及过滤功能，是由 Linux 内核中的 netfilter 模块实现的，iptables 通过命令行去定义服务器流量的进出规则，然后由 netfilter 模块去执行。 2. iptables 过滤和转发数据包的">
+<meta property="og:type" content="article">
+<meta property="og:title" content="iptables 学习笔记">
+<meta property="og:url" content="http://example.com/wiki/Linux/iptables%20%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/index.html">
+<meta property="og:site_name" content="Vianlex&#39;s Wiki">
+<meta property="og:description" content="1. iptables 简介iptables 是 Linux 防火墙软件，虽然已经被 nftables 取代了，但是仍然广泛的运用着。iptables 防火墙的网络地址转换、数据包修改，以及过滤功能，是由 Linux 内核中的 netfilter 模块实现的，iptables 通过命令行去定义服务器流量的进出规则，然后由 netfilter 模块去执行。 2. iptables 过滤和转发数据包的">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/images/iptables-%E8%BF%87%E6%BB%A4%E8%BD%AC%E5%8F%91%E6%B5%81%E7%A8%8B.png">
+<meta property="article:published_time" content="2023-05-31T13:39:26.110Z">
+<meta property="article:modified_time" content="2023-05-31T13:39:26.110Z">
+<meta property="article:author" content="Vianlex">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/images/iptables-%E8%BF%87%E6%BB%A4%E8%BD%AC%E5%8F%91%E6%B5%81%E7%A8%8B.png">
+    
+
+    
+
+    
+        <link rel="icon" href="/favicon.ico" />
+    
+
+    
+<link rel="stylesheet" href="/libs/font-awesome/css/font-awesome.min.css">
+
+    
+<link rel="stylesheet" href="/libs/open-sans/styles.css">
+
+    
+<link rel="stylesheet" href="/libs/source-code-pro/styles.css">
+
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    
+<script src="/libs/jquery/2.1.3/jquery.min.js"></script>
+
+    
+<script src="/libs/jquery/plugins/cookie/1.4.1/jquery.cookie.js"></script>
+
+    
+    
+        
+<link rel="stylesheet" href="/libs/lightgallery/css/lightgallery.min.css">
+
+    
+    
+        
+<link rel="stylesheet" href="/libs/justified-gallery/justifiedGallery.min.css">
+
+    
+    
+    
+    
+
+
+    
+        <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    
+<meta name="generator" content="Hexo 6.3.0"><link rel="alternate" href="/atom.xml" title="Vianlex's Wiki" type="application/atom+xml">
+</head>
+
+<body>
+    <div id="container">
+        <header id="header">
+    <div id="header-main" class="header-inner">
+        <div class="outer">
+            <a href="/" id="logo">
+                <i class="logo"></i>
+                <span class="site-title">Vianlex&#39;s Wiki</span>
+            </a>
+            <nav id="main-nav">
+                
+                    <a class="main-nav-link" href="/">首页</a>
+                
+                    <a class="main-nav-link" href="/archives">归档</a>
+                
+                    <a class="main-nav-link" href="/categories">分类</a>
+                
+                    <a class="main-nav-link" href="/tags">标签</a>
+                
+                    <a class="main-nav-link" href="/about">关于</a>
+                
+            </nav>
+            
+            <div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="Search" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="Type something..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: 'Posts',
+            PAGES: 'Pages',
+            CATEGORIES: 'Categories',
+            TAGS: 'Tags',
+            UNTITLED: '(Untitled)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+
+</div>
+        </div>
+    </div>
+    <div id="main-nav-mobile" class="header-sub header-inner">
+        <table class="menu outer">
+            <tr>
+                
+                    <td><a class="main-nav-link" href="/">首页</a></td>
+                
+                    <td><a class="main-nav-link" href="/archives">归档</a></td>
+                
+                    <td><a class="main-nav-link" href="/categories">分类</a></td>
+                
+                    <td><a class="main-nav-link" href="/tags">标签</a></td>
+                
+                    <td><a class="main-nav-link" href="/about">关于</a></td>
+                
+                <td>
+                    
+    <div class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="Search" />
+    </div>
+
+                </td>
+            </tr>
+        </table>
+    </div>
+</header>
+
+        <div class="outer">
+            
+            
+                <aside id="sidebar">
+   
+        
+    <div class="widget-wrap" id='categories'>
+        <h3 class="widget-title">
+            <span>分类目录</span>
+            &nbsp;
+            <a id='allExpand' href="#">
+                <i class="fa fa-angle-double-down fa-2x"></i>
+            </a>
+        </h3>
+        
+        
+        
+         <ul class="unstyled" id="tree" > 
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            Apache POI
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/Apache%20POI/Excel%20%E8%AE%BE%E7%BD%AE%E8%A1%8C%E9%AB%98%E5%92%8C%E6%8D%A2%E8%A1%8C%E9%97%AE%E9%A2%98/">Excel 设置行高和换行问题</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            Docker
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/Docker/Docker%20Swarm%20%E7%AC%94%E8%AE%B0/">Docker Swarm 笔记</a></li>  <li class="file"><a href="/wiki/Docker/Docker%20%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0/">Docker 入门笔记</a></li>  <li class="file"><a href="/wiki/Docker/Docker%20%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/">Docker 常用命令</a></li>  <li class="file"><a href="/wiki/Docker/Docker%20%E6%9D%83%E9%99%90%E9%85%8D%E7%BD%AE/">Docker 权限配置</a></li>  <li class="file"><a href="/wiki/Docker/Dockerfile%20%E4%BD%BF%E7%94%A8%E8%AF%B4%E6%98%8E/">Dockerfile 使用说明</a></li>  <li class="file"><a href="/wiki/Docker/docker%20%E5%AE%89%E8%A3%85%E7%AC%94%E8%AE%B0/">Docker 安装笔记</a></li>  <li class="file"><a href="/wiki/Docker/docker-compose%20%E5%AD%A6%E4%B9%A0%E8%AE%B0%E5%BD%95/">Docker-compose 学习记录</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            Golang
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/Golang/Go%20%E5%9F%BA%E7%A1%80%E8%AF%AD%E6%B3%95/">Go 基础语法</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            Java 知识点
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/Java%20%E7%9F%A5%E8%AF%86%E7%82%B9/Class%E5%AF%B9%E8%B1%A1%E5%92%8CTpye%E5%AF%B9%E8%B1%A1/">Class 对象和 Tpye 对象知识笔记</a></li>  <li class="file"><a href="/wiki/Java%20%E7%9F%A5%E8%AF%86%E7%82%B9/Instrumentation%20%E7%9F%A5%E8%AF%86%E7%AC%94%E8%AE%B0/">Instrumentation 知识笔记</a></li>  <li class="file"><a href="/wiki/Java%20%E7%9F%A5%E8%AF%86%E7%82%B9/Java%20main%20%E5%92%8C%20classpath/">main 方法和 classpath 说明</a></li>  <li class="file"><a href="/wiki/Java%20%E7%9F%A5%E8%AF%86%E7%82%B9/Javassist%20%E7%9F%A5%E8%AF%86%E7%AC%94%E8%AE%B0/">Javassist 知识笔记</a></li>  <li class="file"><a href="/wiki/Java%20%E7%9F%A5%E8%AF%86%E7%82%B9/SecurityManager%20%E7%AC%94%E8%AE%B0/">SecurityManager 笔记</a></li>  <li class="file"><a href="/wiki/Java%20%E7%9F%A5%E8%AF%86%E7%82%B9/byteBuddy%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0/">ByteBuddy 入门笔记</a></li>  <li class="file"><a href="/wiki/Java%20%E7%9F%A5%E8%AF%86%E7%82%B9/Drools%E7%AC%94%E8%AE%B0/">Drools 笔记</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            Java 设计模式
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/Java%20%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/%E4%BB%A3%E7%90%86%E6%A8%A1%E5%BC%8F/">代理模式</a></li>  <li class="file"><a href="/wiki/Java%20%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/%E5%B7%A5%E5%8E%82%E6%A8%A1%E5%BC%8F/">工厂模式</a></li>  <li class="file"><a href="/wiki/Java%20%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/%E6%A8%A1%E6%9D%BF%E6%A8%A1%E5%BC%8F/">模板模式(模板方法模式)</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            Jemeter
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/Jemeter/Jemeter%20%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0/">Jemeter 入门笔记</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            Kubernetes
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/Kubernetes/kubeadm%20%E5%BF%AB%E9%80%9F%E9%83%A8%E7%BD%B2%20k8s%20%E9%9B%86%E7%BE%A4%E6%B5%8B%E8%AF%95%E7%8E%AF%E5%A2%83/">kubeadm 快速部署 kubernetes 集群测试环境</a></li>  <li class="file"><a href="/wiki/Kubernetes/kubeadm%E5%AE%89%E8%A3%85%20k8s%20%E9%97%AE%E9%A2%98%E8%AE%B0%E5%BD%95/">kubeadm安装 k8s 问题记录</a></li>  <li class="file"><a href="/wiki/Kubernetes/K8s%20%E5%85%A5%E9%97%A8%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">K8s 入门学习笔记</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory open">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder-open"></i>
+                            &nbsp;
+                            Linux
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/Linux/SSH%20%E5%AF%86%E7%A0%81%E7%99%BB%E5%BD%95%E5%92%8C%E5%AF%86%E9%92%A5%E9%85%8D%E7%BD%AE%E8%AF%B4%E6%98%8E/">SSH 密码登录和密钥配置说明</a></li>  <li class="file"><a href="/wiki/Linux/ECS%20%E4%BA%91%E6%9C%8D%E5%8A%A1%E5%99%A8%E6%8C%82%E8%BD%BD%E6%95%B0%E6%8D%AE%E7%9B%98/">ECS 云服务器挂载数据盘</a></li>  <li class="file"><a href="/wiki/Linux/Linux%20%E6%9C%8D%E5%8A%A1%E5%99%A8%E6%8C%82%E8%BD%BD%E7%A1%AC%E7%9B%98/"></a></li>  <li class="file"><a href="/wiki/Linux/SSH%20%E7%AB%AF%E5%8F%A3%E8%BD%AC%E5%8F%91/">SSH 端口转发用法说明</a></li>  <li class="file"><a href="/wiki/Linux/dnf%E8%BD%AF%E4%BB%B6%E5%8C%85%E7%AE%A1%E7%90%86%E5%B7%A5%E5%85%B7/">dnf 软件包管理工具</a></li>  <li class="file active"><a href="/wiki/Linux/iptables%20%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">iptables 学习笔记</a></li>  <li class="file"><a href="/wiki/Linux/yum%20%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/">YUM 常用命令</a></li>  <li class="file"><a href="/wiki/Linux/%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4%E8%AE%B0%E5%BD%95/">Linux 常用命令记录</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            Maven
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/Maven/Maven%20%E9%97%AE%E9%A2%98%E8%AE%B0%E5%BD%95/">Maven 问题记录</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            MySql
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/MySql/MySql%20%E5%B8%B8%E7%94%A8%E5%87%BD%E6%95%B0/">MySql 常用函数</a></li>  <li class="file"><a href="/wiki/MySql/MySql%20%E5%BC%80%E7%AA%97%E5%87%BD%E6%95%B0/">MySql 开窗函数</a></li>  <li class="file"><a href="/wiki/MySql/Mysql%20%E9%83%A8%E5%88%86%E8%AF%8D%E6%B1%87%E5%90%AB%E4%B9%89/">Mysql 部分词汇含义</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            Nginx
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/Nginx/Nginx%20%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/">Nginx 常用命令</a></li>  <li class="file"><a href="/wiki/Nginx/Tengine%E5%AE%89%E8%A3%85%E7%AC%94%E8%AE%B0/"></a></li>  <li class="file"><a href="/wiki/Nginx/location%20%E6%8C%87%E4%BB%A4%E7%AC%94%E8%AE%B0/">location 和 rewrite 笔记</a></li>  <li class="file"><a href="/wiki/Nginx/ngx_http_proxy_module%E6%A8%A1%E5%9D%97%E7%AC%94%E8%AE%B0/">ngx_http_proxy_module 模块学习笔记</a></li>  <li class="file"><a href="/wiki/Nginx/ngx_http_rewrite_module%20%E6%A8%A1%E5%9D%97%E7%AC%94%E8%AE%B0/">ngx_http_rewrite_module 模块学习笔记</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            NodeJs
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/NodeJs/Node%20%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE%E8%AE%B0%E5%BD%95/">Node 环境配置说明</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            PowerDesigner
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/PowerDesigner/%E4%BD%BF%E7%94%A8%E9%97%AE%E9%A2%98%E8%AE%B0%E5%BD%95/">使用出现问题记录</a></li>  <li class="file"><a href="/wiki/PowerDesigner/%E9%80%86%E5%90%91%E5%AF%BC%E5%85%A5%E9%97%AE%E9%A2%98%E8%AE%B0%E5%BD%95/">SQL 逆向导入生成 PDM</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            Redis
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/Redis/Redis%20%E7%BC%93%E5%AD%98%E7%A9%BF%E9%80%8F%E3%80%81%E5%87%BB%E7%A9%BF%E3%80%81%E9%9B%AA%E5%B4%A9/">Redis 缓存穿透、缓存击穿、缓存雪崩</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            Shell
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/Shell/Awk%20%20%E5%9F%BA%E7%A1%80%E7%94%A8%E6%B3%95/">Awk 基础用法</a></li>  <li class="file"><a href="/wiki/Shell/Sed%20%E5%9F%BA%E7%A1%80%E7%94%A8%E6%B3%95/">Sed 基础用法</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            SpringBoot
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/SpringBoot/SpringBoot%20%E5%B1%9E%E6%80%A7%E9%85%8D%E7%BD%AE/">SpringBoot 属性配置</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            Xml
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/Xml/Dom4j%20%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0/">Dom4j 入门笔记</a></li>  <li class="file"><a href="/wiki/Xml/XPath%20%E7%AC%94%E8%AE%B0/">XPath 笔记</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            other
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/other/%E8%BD%AF%E4%BB%B6%E5%90%8D%E7%A7%B0%E8%AE%B0%E5%BD%95/">软件名称记录</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            计算机网络
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/%E7%BD%91%E7%BB%9C%E8%AE%BE%E5%A4%87%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0/">网络设备入门笔记</a></li>  </ul> 
+                    </li> 
+                     <li class="file"><a href="/wiki/index/"></a></li>  </ul> 
+    </div>
+    <script>
+        $(document).ready(function() {
+            var iconFolderOpenClass  = 'fa-folder-open';
+            var iconFolderCloseClass = 'fa-folder';
+            var iconAllExpandClass = 'fa-angle-double-down';
+            var iconAllPackClass = 'fa-angle-double-up';
+            // Handle directory-tree expansion:
+            // 左键单独展开目录
+            $(document).on('click', '#categories a[data-role="directory"]', function (event) {
+                event.preventDefault();
+
+                var icon = $(this).children('.fa');
+                var expanded = icon.hasClass(iconFolderOpenClass);
+                var subtree = $(this).siblings('ul');
+                icon.removeClass(iconFolderOpenClass).removeClass(iconFolderCloseClass);
+                if (expanded) {
+                    if (typeof subtree != 'undefined') {
+                        subtree.slideUp({ duration: 100 });
+                    }
+                    icon.addClass(iconFolderCloseClass);
+                } else {
+                    if (typeof subtree != 'undefined') {
+                        subtree.slideDown({ duration: 100 });
+                    }
+                    icon.addClass(iconFolderOpenClass);
+                }
+            });
+            // 右键展开下属所有目录
+            $('#categories a[data-role="directory"]').bind("contextmenu", function(event){
+                event.preventDefault();
+                
+                var icon = $(this).children('.fa');
+                var expanded = icon.hasClass(iconFolderOpenClass);
+                var listNode = $(this).siblings('ul');
+                var subtrees = $.merge(listNode.find('li ul'), listNode);
+                var icons = $.merge(listNode.find('.fa'), icon);
+                icons.removeClass(iconFolderOpenClass).removeClass(iconFolderCloseClass);
+                if(expanded) {
+                    subtrees.slideUp({ duration: 100 });
+                    icons.addClass(iconFolderCloseClass);
+                } else {
+                    subtrees.slideDown({ duration: 100 });
+                    icons.addClass(iconFolderOpenClass);
+                }
+            })
+            // 展开关闭所有目录按钮
+            $(document).on('click', '#allExpand', function (event) {
+                event.preventDefault();
+                
+                var icon = $(this).children('.fa');
+                var expanded = icon.hasClass(iconAllExpandClass);
+                icon.removeClass(iconAllExpandClass).removeClass(iconAllPackClass);
+                if(expanded) {
+                    $('#sidebar .fa.fa-folder').removeClass('fa-folder').addClass('fa-folder-open')
+                    $('#categories li ul').slideDown({ duration: 100 });
+                    icon.addClass(iconAllPackClass);
+                } else {
+                    $('#sidebar .fa.fa-folder-open').removeClass('fa-folder-open').addClass('fa-folder')
+                    $('#categories li ul').slideUp({ duration: 100 });
+                    icon.addClass(iconAllExpandClass);
+                }
+            });  
+        });
+    </script>
+
+    
+    <div id="toTop" class="fa fa-angle-up"></div>
+</aside>
+            
+            <section id="main"><article id="post-Linux/iptables 学习笔记" class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
+                
+                    <div class="article-meta">
+                        
+    <div class="article-category">
+    	<i class="fa fa-folder"></i>
+        <a class="article-category-link" href="/categories/Linux/">Linux</a>
+    </div>
+
+                        
+                        
+    <div class="article-date">
+        <i class="fa fa-calendar"></i>
+        <a href="/wiki/Linux/iptables%20%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">
+            <time datetime="2023-05-31T13:39:26.110Z" itemprop="datePublished">2023-05-31</time>
+        </a>
+    </div>
+
+
+                        
+                            <i class="fa fa-bar-chart"></i>
+                            <span id="busuanzi_container_site_pv"><span id="busuanzi_value_page_pv"></span></span>    
+                        
+                        
+                            <div class="article-meta-button">
+                                <a target="_blank" rel="noopener" href='https://github.com/Vianlex/blog/raw/gh-pages/source/_posts/Linux/iptables 学习笔记.md'> Source </a>
+                            </div>
+                            <div class="article-meta-button">
+                                <a target="_blank" rel="noopener" href='https://github.com/Vianlex/blog/edit/gh-pages/source/_posts/Linux/iptables 学习笔记.md'> Edit </a>
+                            </div>
+                            <div class="article-meta-button">
+                                <a target="_blank" rel="noopener" href='https://github.com/Vianlex/blog/commits/gh-pages/source/_posts/Linux/iptables 学习笔记.md'> History </a>
+                            </div>
+                        
+                    </div>
+                
+                
+    
+        <h1 class="article-title" itemprop="name">
+            iptables 学习笔记
+        </h1>
+    
+
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+        
+            
+        
+        
+            <h2 id="1-iptables-简介"><a href="#1-iptables-简介" class="headerlink" title="1. iptables 简介"></a>1. iptables 简介</h2><p>iptables 是 Linux 防火墙软件，虽然已经被 nftables 取代了，但是仍然广泛的运用着。iptables 防火墙的网络地址转换、数据包修改，以及过滤功能，是由 Linux 内核中的 netfilter 模块实现的，iptables 通过命令行去定义服务器流量的进出规则，然后由 netfilter 模块去执行。</p>
+<h2 id="2-iptables-过滤和转发数据包的流程"><a href="#2-iptables-过滤和转发数据包的流程" class="headerlink" title="2. iptables 过滤和转发数据包的流程"></a>2. iptables 过滤和转发数据包的流程</h2><p>流量数据流量包经过主机内核时，会经过 PREROUTING、INPUT、OUTPUT、FORWARD 和 POSTROUTING 链路节点，通过 iptable 可以在这些节点上配置过滤、转发规则，每一个节点上可以配置多个规则，多个规则串联起来形成一条链(chain)，在节点中的链规则是从上往下执行的，只要某一条规则匹配成功，就不继续往下匹配，并执行规则中配置的 ACCEPT 或者 DROP 等等动作，链中的规则，按规则作用分组，然后每一个分组可以看作一个表(table)，因此不同作用规则要定义到指定的表中，表的说明如下：</p>
+<ul>
+<li>raw 表：控制 nat 表中连接追踪机制的启用状况，可以控制的链路节点有 PREROUTING、OUTPUT;</li>
+<li>mangle 表：用于修改数据包中的数据，可以控制的链路节点有 PREROUTING、INPUT、OUTPUT、FORWARD 和 POSTROUTING;</li>
+<li>nat 表：用于数据包的转发，可以控制的链路节点有 PREROUTING、INPUT、OUTPUT 和 POSTROUTING;</li>
+<li>filter 表：控制数据包是否允许进出及转发，可以控制的链路有 INPUT、FORWARD 和 OUTPUT。<br> <strong>总上所述，iptable 中常说的4表5链，指的就是 raw、mangle、nat、filter 和 PREROUTING、INPUT、OUTPUT、FORWARD、POSTROUTING。</strong><br><img src="/images/iptables-%E8%BF%87%E6%BB%A4%E8%BD%AC%E5%8F%91%E6%B5%81%E7%A8%8B.png" alt="iptables-过滤转发流程"></li>
+</ul>
+<h3 id="2-1-iptales-规则"><a href="#2-1-iptales-规则" class="headerlink" title="2.1 iptales 规则"></a>2.1 iptales 规则</h3><p>netfilter 是从上到下的一条一条的匹配 iptables 在 raw -&gt; mangle -&gt; nat -&gt; filter 表中定义的规则，只要匹配成功就会执行规则中配置的动作，注意一旦匹配成功就不会继续往下匹配了，如果是定义的规则都不配会执行默认的(policy)策略</p>
+<h3 id="2-2-iptables-规则定义"><a href="#2-2-iptables-规则定义" class="headerlink" title="2.2 iptables 规则定义"></a>2.2 iptables 规则定义</h3><p>iptables 定义规则的语法如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">iptables -t &lt;table&gt; &lt;command&gt; &lt;chain&gt; &lt;match-parameter&gt; -j &lt;target&gt; &lt;target-parameter&gt;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<ul>
+<li>table 指定规则定义在哪个表中，如 raw、mangle、nat、filter 等。</li>
+<li>command 指定规则的添加方式，如 -A 将规则追加到表的末尾，-I 将规则插入到表的指定行中, 行号要在 chain 后面指定，-P 指定链的默认规则。</li>
+<li>chain 指定规则要定义在哪个节点链上</li>
+<li>parameter 指定规则的过滤或者转发的条件参数，条件参数的个数时不限制的，可以同时指定任意多个</li>
+<li>target 指定规则匹配要跳转执行的动作，如 ACCEPT、DROP 等等</li>
+</ul>
+<h3 id="2-3-定义规则-match-parameter-匹配参数-说明"><a href="#2-3-定义规则-match-parameter-匹配参数-说明" class="headerlink" title="2.3 定义规则 match-parameter(匹配参数)说明"></a>2.3 定义规则 match-parameter(匹配参数)说明</h3><p>在规则中的使用参数，就是规则的匹配条件，流量数据包匹配规则中的参数，则说明规则匹配成功，注意大部分参数都是可以使用 ! 符号取反的，定义规则常用的参数如下:</p>
+<ul>
+<li>[!]-p 指定匹配的协议，不指定默认匹配所有跟 -p all 相同，可匹配的协议有 tcp、udp、udplite、icpm、esp、ah、sctp，其中可选 ! 符号表示取反，不匹配某个协议的意思</li>
+<li>[!]-i 指定要匹配某个网卡进来的数据包，如 <code>-i eth1</code>，注意只能用在 PREROUTING 链、INPUT 链、FORWARD 链上</li>
+<li>[!]-o 根据 -i 相反要匹配数据包从哪个网卡出去的</li>
+<li>[!]-s,–source 指定匹配数据包的来源 IP 地址, 指定多个 IP 需要用逗号隔开，或者指定一个网段如 192.10.0.0&#x2F;16</li>
+<li>[!]-d,–destination 与 -s 相反，用于指定匹配数据包访问的目标 IP 地址, 指定多个 IP 需要用逗号隔开，或者指定一个网段如 192.10.0.0&#x2F;16</li>
+<li>[!]–sport 指定匹配数据包的来源端口，如果要指定多个端口，可以使用冒号隔开，如 –sport 22:25, 注意如果 :22 等同于 0:22 , 25: 等同于 25:65535</li>
+<li>[!]–dport 指定匹配数据包访问的目标端口</li>
+<li>-c, –set-counters 用于初始化规则的 PKTS(数据包)和 bytes (字节)计数器，如：<code>-c 0 0</code> 将经过规则的数据包和字节计数器置为0</li>
+<li>–icmp-type 指定 icmp 类型，常用的可选值 8 或 echo-request 表示 ping 请求、0 或 echo-reply 表示 ping 应答</li>
+<li>-j,–jump [target] 跳转到指定的动作或者用户定义链</li>
+<li>-g,–goto [chain] 跳转到指定的链</li>
+</ul>
+<h4 id="2-3-1-扩展的匹配参数模块"><a href="#2-3-1-扩展的匹配参数模块" class="headerlink" title="2.3.1 扩展的匹配参数模块"></a>2.3.1 扩展的匹配参数模块</h4><ol>
+<li>iprange 模块，用于指定连续的 ip 访问, 扩展的参数如下：</li>
+</ol>
+<ul>
+<li>-m 指定要使用的扩展模块</li>
+<li>–src-range 指定源 ip 范围</li>
+<li>–dst-range  指定目的 ip 范围<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">iptables -t filter -A INPUT -m iprange --src-range 192.168.1.1-192.168.2.5 -j DROP</span><br></pre></td></tr></table></figure></li>
+</ul>
+<ol start="2">
+<li>string 模块，用于匹配报文中是否包含对应的字符串，扩展的参数如下：</li>
+</ol>
+<ul>
+<li>–string 指定要匹配的内容</li>
+<li>–algo 可选参数，指定使用什么算法去匹配，如 bm  <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">iptables -t filter -A INPUT -m string --algo bm --string &quot;abcs&quot; -j DROP </span><br></pre></td></tr></table></figure></li>
+</ul>
+<ol start="3">
+<li>time 扩展模块，根据时间段区匹配报文，扩展的参数如下：</li>
+</ol>
+<ul>
+<li>–timestart 指定时间范围的开始时间，注意不可取反</li>
+<li>–timestop 指定时间范围的结束时间，注意不可取反</li>
+<li>–weekdays 指定星期的天数</li>
+<li>–monthdays 用于指定月份的天数</li>
+<li>–datestart 指定日期范围的开始日期，注意不可取反</li>
+<li>–datestop 指定日期范围的结束时间，注意不可取反<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 限制 ssh 只能在以下时间段链接</span></span><br><span class="line">iptables -t filter -I OUTPUT -p tcp --dport 22 -m time --timestart 08:00:00 --timestop 12:00:00 -j REJECT</span><br><span class="line">iptables -t filter -I OUTPUT -p tcp --dport 22  -m time --weekdays 1,2 -j REJECT</span><br><span class="line">iptables -t filter -I OUTPUT -p tcp --dport 22  -m time --monthdays 10,25 -j REJECT</span><br><span class="line">iptables -t filter -I OUTPUT -p tcp --dport 8220  -m time --timestart 08:00:00 --timestop 12:00:00 --weekdays 1,2 -j REJECT</span><br></pre></td></tr></table></figure></li>
+</ul>
+<ol start="4">
+<li>connlimit 扩展模块，用于匹配限制链接数量，扩展的参数如下：</li>
+</ol>
+<ul>
+<li>-connlimit-above 表示限制的链接数量</li>
+<li>-connlimit-mask 用于指定要限制的网段<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">iptables -I INPUT -p tcp --dport 22 -m connlimit --connlimit-above 80 --connlimit-mask 25 -j REJECT</span><br></pre></td></tr></table></figure></li>
+</ul>
+<ol start="5">
+<li>multiport 模块，用于指定多个端口, 扩展的参数如下：</li>
+</ol>
+<ul>
+<li>–sports</li>
+<li>–dports<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ptables -I INPUT -p tcp --dports 22,25,26 -j REJECT</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h3 id="2-4-定义规则的-target-动作-和-target-parameter-动作参数-说明"><a href="#2-4-定义规则的-target-动作-和-target-parameter-动作参数-说明" class="headerlink" title="2.4 定义规则的 target(动作)和 target-parameter(动作参数)说明"></a>2.4 定义规则的 target(动作)和 target-parameter(动作参数)说明</h3><ul>
+<li>ACCEPT：允许数据包通过。</li>
+<li>DROP：直接丢弃数据包，不给任何回应信息，客户端会提示超时。</li>
+<li>REJECT：拒绝数据包通过，会响应一个拒绝的信息，可选参数如下：<ul>
+<li>–reject-with 参数用户设定回复的报文，可选值有 icmp host unreachable(无法访问)、icmp-port-unreachable、icmp-proto-unreachable、icmp-net-prohibited(禁止)、icmp-host-prohibited，如果是 TCP 还可以设置 tcp-reset 要求对方关闭链接</li>
+</ul>
+</li>
+<li>SNAT：源地址转换，解决内网用户用同一个公网地址上网的问题，使用 SNAT 时不需要配置 NDAT，iptables 会自动维护 NAT 表，并将响应报文的目标地址转换回来，可选参数如下：<ul>
+<li>–to-source 用于设置源地址转换后的值</li>
+</ul>
+</li>
+<li>MASQUERADE：是 SNAT 的一种特殊形式，MASQUERADE 会自动将源 ip 动态转换到  -o 指定网卡的ip</li>
+<li>DNAT：目标地址转换，可选的参数如下：<ul>
+<li>–to-destination 用于设置目的地址转换后的值</li>
+</ul>
+</li>
+<li>REDIRECT：在本机做端口映射，可选参数如下：<ul>
+<li>–to-ports 用于设置目标端口转换后的值。使用该参数时，必须指定 -p [tcp|udp|sctp|dccp]</li>
+<li>–random 将目的端口转换成任意端口</li>
+</ul>
+</li>
+<li>LOG：会将访问日志记录到 &#x2F;var&#x2F;log&#x2F;messages 文件中，只是做日记记录，所以会继续往下匹配规则，可选的参数如下：<ul>
+<li>–log-level 设定 iptables 日志的等级，可选值有 debug，info，notice，warning，err，emerg。默认是 info 级别。</li>
+<li>–log-prefix 在日志消息中添加特定的字串前缀</li>
+</ul>
+</li>
+<li>RETURN 如果在自定义链的规则中使用，则跳回默认链，然后往下匹配默认链的规则，如果默认链中使用，则跳转到默认策略。</li>
+</ul>
+<h3 id="2-5-定义规则例子"><a href="#2-5-定义规则例子" class="headerlink" title="2.5 定义规则例子"></a>2.5 定义规则例子</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="comment"># 指定链的默认规则，如果所有规则都不匹配成功，就会执行链默认(policy)</span></span><br><span class="line">$ iptables -P INPUT DROP <span class="comment"># 默认不允许访问</span></span><br><span class="line">$ iptables -P FORWARD DROP <span class="comment"># 默认不允许转发</span></span><br><span class="line">$ iptables -P OUTPUT ACCEPT <span class="comment"># 默认可以出去</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 指定特定的网段才能连接主机的 ssh </span></span><br><span class="line">iptables -A INPUT -s 100.128.0.0/16 -p tcp --dport 22 -j ACCEPT</span><br><span class="line"></span><br><span class="line"><span class="comment"># 拒绝访问 80 端口，并提示无法访问</span></span><br><span class="line">iptables -A INPUT -p tcp --dport 80 -j REJECT --reject-with icmp-host-unreachable</span><br><span class="line"></span><br><span class="line"><span class="comment"># 主机禁止 ping，在 INPUT 和 OUTPUT 链上丢弃包都可以</span></span><br><span class="line">iptables -A INPUT -p icmp --icmp-type echo-request -j REJECT</span><br><span class="line">iptables -A OUTPUT -p icmp --icmp-type echo-request -j DROP</span><br><span class="line"></span><br><span class="line"><span class="comment"># 应用使用内网 ip 去访问主机，利用 iptables 将内网 ip 转成外网的 ip </span></span><br><span class="line">iptables -t nat -A OUTPUT -d 192.168.0.88 -j DNAT --to-destination 116.205.143.251</span><br><span class="line"></span><br><span class="line"><span class="comment"># 内网主机使用一个公网地址上网转发上网</span></span><br><span class="line">iptables -t nat -I POSTROUTING -s 172.16.0.0/16 -j SNAT --to-source  100.120.20.12</span><br><span class="line"></span><br><span class="line"><span class="comment"># 内网主机使用一个公网地址上网转发上网, MASQUERADE 根据 SNAT 的区别是自动将源 ip 转换到 -o 指定网卡的外网ip</span></span><br><span class="line">iptables -t nat -I POSTROUTING -s 172.16.0.0/16 -o eht0 -j MASQUERADE</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h3 id="2-6-定义链的策略"><a href="#2-6-定义链的策略" class="headerlink" title="2.6 定义链的策略"></a>2.6 定义链的策略</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 定义 filter 表 OUTPUT 链的默认策略是允许访问，如果 OUTPUT 所有的规则都不匹配，就会执行默认的策略</span></span><br><span class="line">ipatables -t filter -P OUTPUT ACCPT </span><br></pre></td></tr></table></figure>
+
+
+<h2 id="3-自定义链"><a href="#3-自定义链" class="headerlink" title="3. 自定义链"></a>3. 自定义链</h2><p>自定义链主要为方便管理规则，自定义链是默认链规则的下一级匹配链。</p>
+<h3 id="3-1-创建和使用自定义链"><a href="#3-1-创建和使用自定义链" class="headerlink" title="3.1 创建和使用自定义链"></a>3.1 创建和使用自定义链</h3><ol>
+<li>创建自定义链使用命令  <code>iptables -t [raw|mangle|nat|filter] -N &lt;自定义链名&gt;  </code><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 在 filter 表中创建一条名为 SSH-FIREWALL 的链，</span></span><br><span class="line">iptables -t filter SSH-FIREWALL</span><br></pre></td></tr></table></figure></li>
+<li>自定义链关联系统的默认链，数据包匹配默认链的规则后，跳转到自定义链，并继续匹配自定义链中的规则，自定义链相当于默认链规则的下一级匹配链<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 默认 INPUT 链中的规则匹配时跳转到自定义链 SSH-FIREWALL , 然后匹配 SSH-FIREWALL 链中的规则</span></span><br><span class="line">iptables -t filter INPUT -p tcp -dport 22 -j SSH-FIREWALL </span><br></pre></td></tr></table></figure></li>
+<li>在自定义链 SSH-FIREWALL 中定义规则<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 定义数据包来源地址是 129.12.0.0 网段的，能访问 22 端口</span></span><br><span class="line">iptables -t filter SSH-FIREWALL -s 129.12.0.0/16 -j ACCEPT</span><br><span class="line"><span class="comment"># 定义数据包来源地址是 100.12.0.0 网段的禁止访问 22 端口</span></span><br><span class="line">iptables -t filter SSH-FILEWALL -s 100.12.0.0/16 -j DROP</span><br><span class="line"><span class="comment"># RETURN 动作在自定义链中使用，如果规则匹配，则跳回到默认链，并且往下匹配默认链的规则</span></span><br><span class="line">iptables -t filter SSH-FILEWALL -s 100.12.0.1 -j RETURN</span><br></pre></td></tr></table></figure></li>
+</ol>
+<h3 id="3-2-重新命名自定义链"><a href="#3-2-重新命名自定义链" class="headerlink" title="3.2 重新命名自定义链"></a>3.2 重新命名自定义链</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">iptables -t [raw|mangle|nat|filter] -E &lt;旧的自定义链名&gt; &lt;新的自定义链名&gt;</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-3-删除自定义链"><a href="#3-3-删除自定义链" class="headerlink" title="3.3 删除自定义链"></a>3.3 删除自定义链</h3><p>删除自定链时，必须要先删除自定义链中的规则和删除默认链中关联的自定义链，删除自定义链的命令如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">iptables -t [raw|mangle|nat|filter] -X &lt;自定义链名&gt; </span><br></pre></td></tr></table></figure>
+
+<h2 id="4-查看规则"><a href="#4-查看规则" class="headerlink" title="4. 查看规则"></a>4. 查看规则</h2><p>查看 iptables 表规则时使用如下参数：</p>
+<ul>
+<li>-t 指定要查看的表，不使用 -t 指定表时，默认查看的是 filter 表</li>
+<li>-L 查看指定链的规则，如果 -L 后面不指定链，则默认查看 -t 指定表所有的规则</li>
+<li>-S 查看指定链的规则，与 -L 的区别是 -S 显示的是规则的定义语句，如果 -S 后面不指定链，会默认查看 -t 指定表的所有链，不能和 -n 一起使用</li>
+<li>-n 将 IP 地址和端口号将以数字格式打印，默认显示为主机名、网络名或服务</li>
+<li>-v, –verbose 输出详细信息，列出数据包和字节计数时会在后缀加 K、M 等单位</li>
+<li>–line-number 显示规则的序列号，删除或修改规则时会用到</li>
+<li>-x 显示数据包和字节计数器的展开值，不加单位 K、M 等单位<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"># 查看 filter 表的所有规则</span><br><span class="line">iptables -t filter -nL </span><br><span class="line"></span><br><span class="line"># 查看 nat 表 OUTPUT 链的规则</span><br><span class="line">iptables -t nat -L OUTPUT </span><br><span class="line"></span><br><span class="line"># 查看 nat 表的所有规则，并打印行号</span><br><span class="line">iptables -t nat -nL --line-numbers</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+查询规则显示的结果说明</li>
+</ul>
+<ul>
+<li>pkts 规则匹配到的报文的个数。</li>
+<li>bytes 匹配到的报文包的大小总和。</li>
+<li>target 规则执行的动作。</li>
+<li>prot 表示规则作用的协议。</li>
+<li>opt 表示规则对应的选项。</li>
+<li>in 表示数据包由哪个接口(网卡)流入，定义规则的时候，可以设置。</li>
+<li>out 表示数据包由哪个接口(网卡)流出，定义规则的时候，可以设置。</li>
+<li>source 表示规则对应的源头地址，可以是一个IP，也可以是一个网段。</li>
+<li>destination 表示规则对应的目标地址，可以是一个 IP，也可以是一个网段。<br>当然，我们也可以只查看某个链的规则，并且不让IP进行反解，这样更清晰一些，比如 iptables -nvL INPUT</li>
+<li>line-numbers 显示规则在对应表中的行号，删除的时候，指定行号去删除。</li>
+<li>policy 表示当前链的默认策略，表示所有规则都没有匹配时，默认指定的动作。</li>
+<li>packets 表示当前链（上例为INPUT链）默认策略匹配到的包的数量，0 packets表示默认策略匹配到0个包。</li>
+<li>bytes 表示当前链默认策略匹配到的所有包的大小总和。</li>
+</ul>
+<h2 id="5-将所有链中的数据包和字节计数器清零"><a href="#5-将所有链中的数据包和字节计数器清零" class="headerlink" title="5. 将所有链中的数据包和字节计数器清零"></a>5. 将所有链中的数据包和字节计数器清零</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 将所有链中的数据包和字节计数器清零</span></span><br><span class="line">iptables -t [table] [-Z | --zero ] [chain]</span><br></pre></td></tr></table></figure>
+<h2 id="6-删除规则"><a href="#6-删除规则" class="headerlink" title="6. 删除规则"></a>6. 删除规则</h2><p>删除整个表的规则命令 <code>iptables -t &lt;table&gt;  -F</code> </p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 删除整个 filter 表的规则，不用 -t 指定表就默认时操作 filter 表</span></span><br><span class="line">iptables -F </span><br><span class="line"></span><br><span class="line"><span class="comment"># 删除 nat 表的整个规则</span></span><br><span class="line">iptables -t nat -F</span><br></pre></td></tr></table></figure>
+<p>删除某一条规则的命令 <code>iptables - &lt;table&gt; -D &lt;chain&gt; &lt;line-number&gt; </code>，例子如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"># 查看规则的 chain 和 line-number</span><br><span class="line">iptables -t filter -nL</span><br><span class="line"># 删除规则</span><br><span class="line">iptables -t filter -D INPUT 5  </span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h2 id="参考连接"><a href="#参考连接" class="headerlink" title="参考连接"></a>参考连接</h2><ol>
+<li><a target="_blank" rel="noopener" href="https://www.frozentux.net/iptables-tutorial/cn/iptables-tutorial-cn-1.1.19.html#prelude">https://www.frozentux.net/iptables-tutorial/cn/iptables-tutorial-cn-1.1.19.html#prelude</a></li>
+<li><a target="_blank" rel="noopener" href="https://ipset.netfilter.org/iptables.man.html#lbAH">https://ipset.netfilter.org/iptables.man.html#lbAH</a></li>
+<li><a target="_blank" rel="noopener" href="https://ipset.netfilter.org/iptables-extensions.man.html">https://ipset.netfilter.org/iptables-extensions.man.html</a></li>
+</ol>
+
+            </div>
+        
+        <footer class="article-footer">
+        </footer>
+    </div>
+</article>
+
+
+    
+<nav id="article-nav">
+    
+        <a href="/wiki/Linux/dnf%E8%BD%AF%E4%BB%B6%E5%8C%85%E7%AE%A1%E7%90%86%E5%B7%A5%E5%85%B7/" id="article-nav-newer" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">Newer</strong>
+            <div class="article-nav-title">
+                
+                    dnf 软件包管理工具
+                
+            </div>
+        </a>
+    
+    
+        <a href="/wiki/Linux/yum%20%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/" id="article-nav-older" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">Older</strong>
+            <div class="article-nav-title">YUM 常用命令</div>
+        </a>
+    
+</nav>
+
+
+
+
+
+    
+    
+
+
+
+</section>
+        </div>
+        <footer id="footer">
+    <div class="outer">
+        <div id="footer-info" class="inner">
+            <br> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>. Theme - <a target="_blank" rel="noopener" href="https://github.com/vianlex/hexo-theme-Wikitten">wikitten</a>
+            
+                <br>
+                <span id="busuanzi_container_site_pv"><i class="fa fa-eye"></i> <span id="busuanzi_value_site_pv"></span></span>
+                &nbsp;|&nbsp;
+                <span id="busuanzi_container_site_pv"><i class="fa fa-user"></i> <span id="busuanzi_value_site_uv"></span></span>
+            
+        </div>
+    </div>
+</footer>
+
+        
+
+    
+        
+<script src="/libs/lightgallery/js/lightgallery.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-thumbnail.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-pager.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-autoplay.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-fullscreen.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-zoom.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-hash.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-share.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-video.min.js"></script>
+
+    
+    
+        
+<script src="/libs/justified-gallery/jquery.justifiedGallery.min.js"></script>
+
+    
+    
+        <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true,
+            TeX: {
+                equationNumbers: {
+                  autoNumber: 'AMS'
+                }
+            }
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script async src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+
+
+
+<!-- Custom Scripts -->
+
+<script src="/js/main.js"></script>
+
+    </div>
+</body>
+</html>

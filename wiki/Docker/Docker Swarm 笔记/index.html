@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <meta charset="utf-8">
+    
+    <title>Docker Swarm 笔记 | Vianlex&#39;s Wiki</title>
+    
+    
+        <meta name="keywords" content="Docker Swarm 笔记" />
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <meta name="description" content="Swarm 介绍Swarm 是多个以 Swarm Mode 运行的 Docker 主机组成的集群，Swarm 集群中的 Docker 主机可以充当管理节点（Manager）、工作节点（Worker）或者两者都可以。  管理节点：主要负责整个集群的管理工作包括集群配置、服务管理等所有跟集群有关的工作。 工作节点：主要负责执行运行服务的任务。  Swarm 基本概念Swarm 集群管理涉及的抽象对象有">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Docker Swarm 笔记">
+<meta property="og:url" content="http://example.com/wiki/Docker/Docker%20Swarm%20%E7%AC%94%E8%AE%B0/index.html">
+<meta property="og:site_name" content="Vianlex&#39;s Wiki">
+<meta property="og:description" content="Swarm 介绍Swarm 是多个以 Swarm Mode 运行的 Docker 主机组成的集群，Swarm 集群中的 Docker 主机可以充当管理节点（Manager）、工作节点（Worker）或者两者都可以。  管理节点：主要负责整个集群的管理工作包括集群配置、服务管理等所有跟集群有关的工作。 工作节点：主要负责执行运行服务的任务。  Swarm 基本概念Swarm 集群管理涉及的抽象对象有">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/images/docker-swarm.png">
+<meta property="og:image" content="http://example.com/images/docker-swarm%E7%BD%91%E7%BB%9C%E8%B7%AF%E7%94%B1.png">
+<meta property="article:published_time" content="2023-05-31T13:39:26.110Z">
+<meta property="article:modified_time" content="2023-05-31T13:39:26.110Z">
+<meta property="article:author" content="Vianlex">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/images/docker-swarm.png">
+    
+
+    
+
+    
+        <link rel="icon" href="/favicon.ico" />
+    
+
+    
+<link rel="stylesheet" href="/libs/font-awesome/css/font-awesome.min.css">
+
+    
+<link rel="stylesheet" href="/libs/open-sans/styles.css">
+
+    
+<link rel="stylesheet" href="/libs/source-code-pro/styles.css">
+
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    
+<script src="/libs/jquery/2.1.3/jquery.min.js"></script>
+
+    
+<script src="/libs/jquery/plugins/cookie/1.4.1/jquery.cookie.js"></script>
+
+    
+    
+        
+<link rel="stylesheet" href="/libs/lightgallery/css/lightgallery.min.css">
+
+    
+    
+        
+<link rel="stylesheet" href="/libs/justified-gallery/justifiedGallery.min.css">
+
+    
+    
+    
+    
+
+
+    
+        <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    
+<meta name="generator" content="Hexo 6.3.0"><link rel="alternate" href="/atom.xml" title="Vianlex's Wiki" type="application/atom+xml">
+</head>
+
+<body>
+    <div id="container">
+        <header id="header">
+    <div id="header-main" class="header-inner">
+        <div class="outer">
+            <a href="/" id="logo">
+                <i class="logo"></i>
+                <span class="site-title">Vianlex&#39;s Wiki</span>
+            </a>
+            <nav id="main-nav">
+                
+                    <a class="main-nav-link" href="/">首页</a>
+                
+                    <a class="main-nav-link" href="/archives">归档</a>
+                
+                    <a class="main-nav-link" href="/categories">分类</a>
+                
+                    <a class="main-nav-link" href="/tags">标签</a>
+                
+                    <a class="main-nav-link" href="/about">关于</a>
+                
+            </nav>
+            
+            <div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="Search" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="Type something..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: 'Posts',
+            PAGES: 'Pages',
+            CATEGORIES: 'Categories',
+            TAGS: 'Tags',
+            UNTITLED: '(Untitled)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+
+</div>
+        </div>
+    </div>
+    <div id="main-nav-mobile" class="header-sub header-inner">
+        <table class="menu outer">
+            <tr>
+                
+                    <td><a class="main-nav-link" href="/">首页</a></td>
+                
+                    <td><a class="main-nav-link" href="/archives">归档</a></td>
+                
+                    <td><a class="main-nav-link" href="/categories">分类</a></td>
+                
+                    <td><a class="main-nav-link" href="/tags">标签</a></td>
+                
+                    <td><a class="main-nav-link" href="/about">关于</a></td>
+                
+                <td>
+                    
+    <div class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="Search" />
+    </div>
+
+                </td>
+            </tr>
+        </table>
+    </div>
+</header>
+
+        <div class="outer">
+            
+            
+                <aside id="sidebar">
+   
+        
+    <div class="widget-wrap" id='categories'>
+        <h3 class="widget-title">
+            <span>分类目录</span>
+            &nbsp;
+            <a id='allExpand' href="#">
+                <i class="fa fa-angle-double-down fa-2x"></i>
+            </a>
+        </h3>
+        
+        
+        
+         <ul class="unstyled" id="tree" > 
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            Apache POI
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/Apache%20POI/Excel%20%E8%AE%BE%E7%BD%AE%E8%A1%8C%E9%AB%98%E5%92%8C%E6%8D%A2%E8%A1%8C%E9%97%AE%E9%A2%98/">Excel 设置行高和换行问题</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory open">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder-open"></i>
+                            &nbsp;
+                            Docker
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file active"><a href="/wiki/Docker/Docker%20Swarm%20%E7%AC%94%E8%AE%B0/">Docker Swarm 笔记</a></li>  <li class="file"><a href="/wiki/Docker/Docker%20%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0/">Docker 入门笔记</a></li>  <li class="file"><a href="/wiki/Docker/Docker%20%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/">Docker 常用命令</a></li>  <li class="file"><a href="/wiki/Docker/Docker%20%E6%9D%83%E9%99%90%E9%85%8D%E7%BD%AE/">Docker 权限配置</a></li>  <li class="file"><a href="/wiki/Docker/Dockerfile%20%E4%BD%BF%E7%94%A8%E8%AF%B4%E6%98%8E/">Dockerfile 使用说明</a></li>  <li class="file"><a href="/wiki/Docker/docker%20%E5%AE%89%E8%A3%85%E7%AC%94%E8%AE%B0/">Docker 安装笔记</a></li>  <li class="file"><a href="/wiki/Docker/docker-compose%20%E5%AD%A6%E4%B9%A0%E8%AE%B0%E5%BD%95/">Docker-compose 学习记录</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            Golang
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/Golang/Go%20%E5%9F%BA%E7%A1%80%E8%AF%AD%E6%B3%95/">Go 基础语法</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            Java 知识点
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/Java%20%E7%9F%A5%E8%AF%86%E7%82%B9/Class%E5%AF%B9%E8%B1%A1%E5%92%8CTpye%E5%AF%B9%E8%B1%A1/">Class 对象和 Tpye 对象知识笔记</a></li>  <li class="file"><a href="/wiki/Java%20%E7%9F%A5%E8%AF%86%E7%82%B9/Instrumentation%20%E7%9F%A5%E8%AF%86%E7%AC%94%E8%AE%B0/">Instrumentation 知识笔记</a></li>  <li class="file"><a href="/wiki/Java%20%E7%9F%A5%E8%AF%86%E7%82%B9/Java%20main%20%E5%92%8C%20classpath/">main 方法和 classpath 说明</a></li>  <li class="file"><a href="/wiki/Java%20%E7%9F%A5%E8%AF%86%E7%82%B9/Javassist%20%E7%9F%A5%E8%AF%86%E7%AC%94%E8%AE%B0/">Javassist 知识笔记</a></li>  <li class="file"><a href="/wiki/Java%20%E7%9F%A5%E8%AF%86%E7%82%B9/SecurityManager%20%E7%AC%94%E8%AE%B0/">SecurityManager 笔记</a></li>  <li class="file"><a href="/wiki/Java%20%E7%9F%A5%E8%AF%86%E7%82%B9/byteBuddy%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0/">ByteBuddy 入门笔记</a></li>  <li class="file"><a href="/wiki/Java%20%E7%9F%A5%E8%AF%86%E7%82%B9/Drools%E7%AC%94%E8%AE%B0/">Drools 笔记</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            Java 设计模式
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/Java%20%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/%E4%BB%A3%E7%90%86%E6%A8%A1%E5%BC%8F/">代理模式</a></li>  <li class="file"><a href="/wiki/Java%20%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/%E5%B7%A5%E5%8E%82%E6%A8%A1%E5%BC%8F/">工厂模式</a></li>  <li class="file"><a href="/wiki/Java%20%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/%E6%A8%A1%E6%9D%BF%E6%A8%A1%E5%BC%8F/">模板模式(模板方法模式)</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            Jemeter
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/Jemeter/Jemeter%20%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0/">Jemeter 入门笔记</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            Kubernetes
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/Kubernetes/kubeadm%20%E5%BF%AB%E9%80%9F%E9%83%A8%E7%BD%B2%20k8s%20%E9%9B%86%E7%BE%A4%E6%B5%8B%E8%AF%95%E7%8E%AF%E5%A2%83/">kubeadm 快速部署 kubernetes 集群测试环境</a></li>  <li class="file"><a href="/wiki/Kubernetes/kubeadm%E5%AE%89%E8%A3%85%20k8s%20%E9%97%AE%E9%A2%98%E8%AE%B0%E5%BD%95/">kubeadm安装 k8s 问题记录</a></li>  <li class="file"><a href="/wiki/Kubernetes/K8s%20%E5%85%A5%E9%97%A8%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">K8s 入门学习笔记</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            Linux
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/Linux/SSH%20%E5%AF%86%E7%A0%81%E7%99%BB%E5%BD%95%E5%92%8C%E5%AF%86%E9%92%A5%E9%85%8D%E7%BD%AE%E8%AF%B4%E6%98%8E/">SSH 密码登录和密钥配置说明</a></li>  <li class="file"><a href="/wiki/Linux/ECS%20%E4%BA%91%E6%9C%8D%E5%8A%A1%E5%99%A8%E6%8C%82%E8%BD%BD%E6%95%B0%E6%8D%AE%E7%9B%98/">ECS 云服务器挂载数据盘</a></li>  <li class="file"><a href="/wiki/Linux/Linux%20%E6%9C%8D%E5%8A%A1%E5%99%A8%E6%8C%82%E8%BD%BD%E7%A1%AC%E7%9B%98/"></a></li>  <li class="file"><a href="/wiki/Linux/SSH%20%E7%AB%AF%E5%8F%A3%E8%BD%AC%E5%8F%91/">SSH 端口转发用法说明</a></li>  <li class="file"><a href="/wiki/Linux/dnf%E8%BD%AF%E4%BB%B6%E5%8C%85%E7%AE%A1%E7%90%86%E5%B7%A5%E5%85%B7/">dnf 软件包管理工具</a></li>  <li class="file"><a href="/wiki/Linux/iptables%20%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">iptables 学习笔记</a></li>  <li class="file"><a href="/wiki/Linux/yum%20%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/">YUM 常用命令</a></li>  <li class="file"><a href="/wiki/Linux/%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4%E8%AE%B0%E5%BD%95/">Linux 常用命令记录</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            Maven
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/Maven/Maven%20%E9%97%AE%E9%A2%98%E8%AE%B0%E5%BD%95/">Maven 问题记录</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            MySql
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/MySql/MySql%20%E5%B8%B8%E7%94%A8%E5%87%BD%E6%95%B0/">MySql 常用函数</a></li>  <li class="file"><a href="/wiki/MySql/MySql%20%E5%BC%80%E7%AA%97%E5%87%BD%E6%95%B0/">MySql 开窗函数</a></li>  <li class="file"><a href="/wiki/MySql/Mysql%20%E9%83%A8%E5%88%86%E8%AF%8D%E6%B1%87%E5%90%AB%E4%B9%89/">Mysql 部分词汇含义</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            Nginx
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/Nginx/Nginx%20%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/">Nginx 常用命令</a></li>  <li class="file"><a href="/wiki/Nginx/Tengine%E5%AE%89%E8%A3%85%E7%AC%94%E8%AE%B0/"></a></li>  <li class="file"><a href="/wiki/Nginx/location%20%E6%8C%87%E4%BB%A4%E7%AC%94%E8%AE%B0/">location 和 rewrite 笔记</a></li>  <li class="file"><a href="/wiki/Nginx/ngx_http_proxy_module%E6%A8%A1%E5%9D%97%E7%AC%94%E8%AE%B0/">ngx_http_proxy_module 模块学习笔记</a></li>  <li class="file"><a href="/wiki/Nginx/ngx_http_rewrite_module%20%E6%A8%A1%E5%9D%97%E7%AC%94%E8%AE%B0/">ngx_http_rewrite_module 模块学习笔记</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            NodeJs
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/NodeJs/Node%20%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE%E8%AE%B0%E5%BD%95/">Node 环境配置说明</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            PowerDesigner
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/PowerDesigner/%E4%BD%BF%E7%94%A8%E9%97%AE%E9%A2%98%E8%AE%B0%E5%BD%95/">使用出现问题记录</a></li>  <li class="file"><a href="/wiki/PowerDesigner/%E9%80%86%E5%90%91%E5%AF%BC%E5%85%A5%E9%97%AE%E9%A2%98%E8%AE%B0%E5%BD%95/">SQL 逆向导入生成 PDM</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            Redis
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/Redis/Redis%20%E7%BC%93%E5%AD%98%E7%A9%BF%E9%80%8F%E3%80%81%E5%87%BB%E7%A9%BF%E3%80%81%E9%9B%AA%E5%B4%A9/">Redis 缓存穿透、缓存击穿、缓存雪崩</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            Shell
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/Shell/Awk%20%20%E5%9F%BA%E7%A1%80%E7%94%A8%E6%B3%95/">Awk 基础用法</a></li>  <li class="file"><a href="/wiki/Shell/Sed%20%E5%9F%BA%E7%A1%80%E7%94%A8%E6%B3%95/">Sed 基础用法</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            SpringBoot
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/SpringBoot/SpringBoot%20%E5%B1%9E%E6%80%A7%E9%85%8D%E7%BD%AE/">SpringBoot 属性配置</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            Xml
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/Xml/Dom4j%20%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0/">Dom4j 入门笔记</a></li>  <li class="file"><a href="/wiki/Xml/XPath%20%E7%AC%94%E8%AE%B0/">XPath 笔记</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            other
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/other/%E8%BD%AF%E4%BB%B6%E5%90%8D%E7%A7%B0%E8%AE%B0%E5%BD%95/">软件名称记录</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            计算机网络
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/%E7%BD%91%E7%BB%9C%E8%AE%BE%E5%A4%87%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0/">网络设备入门笔记</a></li>  </ul> 
+                    </li> 
+                     <li class="file"><a href="/wiki/index/"></a></li>  </ul> 
+    </div>
+    <script>
+        $(document).ready(function() {
+            var iconFolderOpenClass  = 'fa-folder-open';
+            var iconFolderCloseClass = 'fa-folder';
+            var iconAllExpandClass = 'fa-angle-double-down';
+            var iconAllPackClass = 'fa-angle-double-up';
+            // Handle directory-tree expansion:
+            // 左键单独展开目录
+            $(document).on('click', '#categories a[data-role="directory"]', function (event) {
+                event.preventDefault();
+
+                var icon = $(this).children('.fa');
+                var expanded = icon.hasClass(iconFolderOpenClass);
+                var subtree = $(this).siblings('ul');
+                icon.removeClass(iconFolderOpenClass).removeClass(iconFolderCloseClass);
+                if (expanded) {
+                    if (typeof subtree != 'undefined') {
+                        subtree.slideUp({ duration: 100 });
+                    }
+                    icon.addClass(iconFolderCloseClass);
+                } else {
+                    if (typeof subtree != 'undefined') {
+                        subtree.slideDown({ duration: 100 });
+                    }
+                    icon.addClass(iconFolderOpenClass);
+                }
+            });
+            // 右键展开下属所有目录
+            $('#categories a[data-role="directory"]').bind("contextmenu", function(event){
+                event.preventDefault();
+                
+                var icon = $(this).children('.fa');
+                var expanded = icon.hasClass(iconFolderOpenClass);
+                var listNode = $(this).siblings('ul');
+                var subtrees = $.merge(listNode.find('li ul'), listNode);
+                var icons = $.merge(listNode.find('.fa'), icon);
+                icons.removeClass(iconFolderOpenClass).removeClass(iconFolderCloseClass);
+                if(expanded) {
+                    subtrees.slideUp({ duration: 100 });
+                    icons.addClass(iconFolderCloseClass);
+                } else {
+                    subtrees.slideDown({ duration: 100 });
+                    icons.addClass(iconFolderOpenClass);
+                }
+            })
+            // 展开关闭所有目录按钮
+            $(document).on('click', '#allExpand', function (event) {
+                event.preventDefault();
+                
+                var icon = $(this).children('.fa');
+                var expanded = icon.hasClass(iconAllExpandClass);
+                icon.removeClass(iconAllExpandClass).removeClass(iconAllPackClass);
+                if(expanded) {
+                    $('#sidebar .fa.fa-folder').removeClass('fa-folder').addClass('fa-folder-open')
+                    $('#categories li ul').slideDown({ duration: 100 });
+                    icon.addClass(iconAllPackClass);
+                } else {
+                    $('#sidebar .fa.fa-folder-open').removeClass('fa-folder-open').addClass('fa-folder')
+                    $('#categories li ul').slideUp({ duration: 100 });
+                    icon.addClass(iconAllExpandClass);
+                }
+            });  
+        });
+    </script>
+
+    
+    <div id="toTop" class="fa fa-angle-up"></div>
+</aside>
+            
+            <section id="main"><article id="post-Docker/Docker Swarm 笔记" class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
+                
+                    <div class="article-meta">
+                        
+    <div class="article-category">
+    	<i class="fa fa-folder"></i>
+        <a class="article-category-link" href="/categories/Docker/">Docker</a>
+    </div>
+
+                        
+                        
+    <div class="article-date">
+        <i class="fa fa-calendar"></i>
+        <a href="/wiki/Docker/Docker%20Swarm%20%E7%AC%94%E8%AE%B0/">
+            <time datetime="2023-05-31T13:39:26.110Z" itemprop="datePublished">2023-05-31</time>
+        </a>
+    </div>
+
+
+                        
+                            <i class="fa fa-bar-chart"></i>
+                            <span id="busuanzi_container_site_pv"><span id="busuanzi_value_page_pv"></span></span>    
+                        
+                        
+                            <div class="article-meta-button">
+                                <a target="_blank" rel="noopener" href='https://github.com/Vianlex/blog/raw/gh-pages/source/_posts/Docker/Docker Swarm 笔记.md'> Source </a>
+                            </div>
+                            <div class="article-meta-button">
+                                <a target="_blank" rel="noopener" href='https://github.com/Vianlex/blog/edit/gh-pages/source/_posts/Docker/Docker Swarm 笔记.md'> Edit </a>
+                            </div>
+                            <div class="article-meta-button">
+                                <a target="_blank" rel="noopener" href='https://github.com/Vianlex/blog/commits/gh-pages/source/_posts/Docker/Docker Swarm 笔记.md'> History </a>
+                            </div>
+                        
+                    </div>
+                
+                
+    
+        <h1 class="article-title" itemprop="name">
+            Docker Swarm 笔记
+        </h1>
+    
+
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+        
+            
+        
+        
+            <h2 id="Swarm-介绍"><a href="#Swarm-介绍" class="headerlink" title="Swarm 介绍"></a>Swarm 介绍</h2><p>Swarm 是多个以 Swarm Mode 运行的 Docker 主机组成的集群，Swarm 集群中的 Docker 主机可以充当管理节点（Manager）、工作节点（Worker）或者两者都可以。</p>
+<ul>
+<li>管理节点：主要负责整个集群的管理工作包括集群配置、服务管理等所有跟集群有关的工作。</li>
+<li>工作节点：主要负责执行运行服务的任务。<br><img src="/images/docker-swarm.png" alt="Swarm架构图"></li>
+</ul>
+<h2 id="Swarm-基本概念"><a href="#Swarm-基本概念" class="headerlink" title="Swarm 基本概念"></a>Swarm 基本概念</h2><p>Swarm 集群管理涉及的抽象对象有三个分别是 Node、Task、Service。</p>
+<ul>
+<li>节点(node)：Swarm 的管理节点(manager)和工作节点(worker)的统称。</li>
+<li>任务(Task)： Task 是 Swarm 中的最小的调度单位，一个运行的容器就是一个 Task。</li>
+<li>服务(Service)：Service 是由一组 Task 组成构成。可以把 Task 看作是 k8s 的 Pod，Service 相当于 K8s 的 Deployment 等工作负载。Service 又分为以下两种：<ol>
+<li>replicated services 按照一定规则在各个工作节点上运行指定个数的任务。</li>
+<li>global services 每个工作节点上都会运行 Service 中的任务。</li>
+</ol>
+</li>
+<li>负载均衡(Load balancing)：Swarm 通过 ingress 负载均衡暴露 Service 外部访问。如果你没有定义端口，则 Swarm 会默认暴露 30000-32767 范围内的一个端口。当有请求访问服务时，Swarm 通过内部的负载均衡将请求分发到相应的 Task 中。</li>
+</ul>
+<p>注意：当你通过 Docker Swarm 创建一个 service 时，你定义了它的理想状态（副本数、网络、存储资源、对外暴露的端口等）。Docker会维持它的状态，例如，如果一个 worker node 不可用了，Docker Swarm 会调度不可用 node 上的 task 到其他 nodes 上。运行在容器中的一个 task，是 swarm service 的一部分，且通过 swarm manager 进行管理和调度，和独立的容器是截然不同的。Swarm service 相比单容器的一个最大优势就是，你能够修改一个服务的配置：包括网络、数据卷，不需要手工重启服务。Docker 将会更新配置，把过期配置的 task 停掉，重新创建一个新配置的容器。</p>
+<h2 id="Swarm-节点管理"><a href="#Swarm-节点管理" class="headerlink" title="Swarm 节点管理"></a>Swarm 节点管理</h2><ol>
+<li>查看节点信息<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker node <span class="built_in">ls</span> </span><br></pre></td></tr></table></figure></li>
+<li>获取添加工作节点或者管理节点的 token<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 获取加入工作节点的 token</span></span><br><span class="line"> docker swarm join-token worker</span><br><span class="line"><span class="comment"># 管理节点</span></span><br><span class="line"> docker swarm join-token manager</span><br></pre></td></tr></table></figure></li>
+<li>节点脱离 swarm 集群<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># -- force 表示强制离开集群</span></span><br><span class="line">docker swarm leave [--force]</span><br></pre></td></tr></table></figure></li>
+<li>删除集群某个节点<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker node remove &lt;节点名称|节点ID&gt;</span><br></pre></td></tr></table></figure></li>
+</ol>
+<h2 id="部署服务"><a href="#部署服务" class="headerlink" title="部署服务"></a>部署服务</h2><p>通过 <code>docker service create</code>命令可以快速部署服务，该命令语法格式为：<code>docker service create &lt;--name 服务名字&gt; &lt;--replicas task副本数&gt; &lt;image&gt; [容器运行后要执行的命令]</code>，常用可选参数如下：</p>
+<ul>
+<li>–name 指定服务的名字</li>
+<li>–replicas 指定 Task 的副本数量</li>
+<li>-w, –workdir 指定容器的工作目录</li>
+<li>env 指定环境变量，如<code> -env JAVA_OPS=&quot;&quot;</code></li>
+<li>–mount 容器目录挂载到主机目录，如：<code>--mount host/xxx/xxx:container/xxx/xxx</code> 或者 <code>--mount type=bind,src=&lt;VOLUME-NAME&gt;,dst=&lt;CONTAINER-PATH&gt; </code>，推荐使用第二种新语法，比较明了</li>
+<li>-p, –publish port 指定端口，如：<code>-p host-port:container-port</code> 或者 <code>--publish published=&lt;host-port&gt;,target=&lt;container-port&gt;</code>，推荐使用第二种新语法，比较明了</li>
+<li>–update-delay 设置滚动更新延迟时间，即为多个副本任务的更新间隔时间</li>
+<li>–update-parallelism 每次并发更新的任务数量</li>
+<li>–mode 指定服务的运行模式可选值有：replicated(按一定规则调度 task 到合适的 node), global(每个工作节点都运行一个 task), replicated-job, global-job</li>
+</ul>
+<ol>
+<li><p>创建服务</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 创一个名 test-swarm 的服务，运行2个副本任务容器</span></span><br><span class="line">docker service create --name test-swarm  -p 2000:80  --replicas 2 nginx:latest</span><br><span class="line"></span><br><span class="line"> endpoint_mode=dnsrr</span><br></pre></td></tr></table></figure></li>
+<li><p>查看正在运行的 services，使用如下命令</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker service <span class="built_in">ls</span> </span><br></pre></td></tr></table></figure></li>
+<li><p>查看 service 信息，使用命令 <code>docker service inspect --pretty &lt;服务名&gt;</code></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 查看名为 test-swarm 的 service 详细信息</span></span><br><span class="line">docker service inspect --pretty test-swarm</span><br></pre></td></tr></table></figure></li>
+<li><p>使用命令<code>docker service ps &lt;服务名&gt;</code>查看服务 Task 的运行信息</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># 查看 test-swarm 服务中 task 的运行情况   </span><br><span class="line">docker service ps test-swarm</span><br></pre></td></tr></table></figure></li>
+<li><p>使用命令<code>docker service update &lt;选项参数&gt; &lt;服务名&gt;</code>，具体支持哪些配置的更新改动可以使用帮助命令查看 <code>docker serivce update --help </code></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 新增 3000:80 端口映射</span></span><br><span class="line">docker service update --publish-add 3000:80</span><br><span class="line"><span class="comment"># 删除端口映射</span></span><br><span class="line">docker service update --publish-rm 3000:80</span><br><span class="line"></span><br></pre></td></tr></table></figure></li>
+<li><p>扩容增加任务副本数量</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 将 test-swarm 服务的任务副本数量修改为 3</span></span><br><span class="line">docker service scale test-swarm=3</span><br><span class="line"><span class="comment"># 等同以上命令</span></span><br><span class="line">docker service update --replicas 3 test-swarm</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>删除服务，使用命令 <code>docker service rm &lt;服务名&gt;</code></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 删除 test-swarm 服务</span></span><br><span class="line">docker service <span class="built_in">rm</span> test-swarm</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>查看服务的日志，使用命令 <code>docker service logs [OPTIONS] &lt;SERVICE|TASK&gt;</code></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 查看服务 test-swarm 的日志</span></span><br><span class="line">docker service logs -f --<span class="built_in">tail</span>=200 test-swarm</span><br></pre></td></tr></table></figure></li>
+</ol>
+<h2 id="部署多个服务"><a href="#部署多个服务" class="headerlink" title="部署多个服务"></a>部署多个服务</h2><p>批量部署多个服务需要使用 docker stack 命令和 docker-compose.yaml 配置文件，docker stack 是 docker serice 在基础上封装了一层，一个 stack 管理着多个 serivces，docker stack 常用命令如下：</p>
+<ul>
+<li>docker stack deploy 部署或者更新 stack </li>
+<li>docker stack ls 查看已部署的 stack 列表</li>
+<li>docker stack ps 查看 stack 部署的服务下的任务列表  </li>
+<li>docker stack rm 删除一个 stack</li>
+<li>docker stack services 查看 stack 部署的所有服务</li>
+</ul>
+<ol>
+<li><p>定义 stack 使用的 docker-compose 文件，<a target="_blank" rel="noopener" href="https://docs.docker.com/compose/compose-file">配置说明</a></p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">version:</span> <span class="string">&#x27;3.7&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="attr">services:</span></span><br><span class="line">  <span class="attr">my-web:</span></span><br><span class="line">    <span class="attr">image:</span> <span class="string">nginx:latest</span></span><br><span class="line">    <span class="attr">ports:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">target:</span> <span class="number">80</span> <span class="comment"># 容器端口 </span></span><br><span class="line">        <span class="attr">published:</span> <span class="number">8080</span> <span class="comment"># 主机端口</span></span><br><span class="line">        <span class="attr">protocol:</span> <span class="string">tcp</span> <span class="comment"># 可选值 tcp、udp</span></span><br><span class="line">        <span class="attr">mode:</span> <span class="string">ingress</span> <span class="comment"># 可选值 host、ingress 默认 ingress</span></span><br><span class="line">    <span class="comment"># 注意如果没有配置 deploy 属性的话，ports 属性中 mode 配置的 ingress 模式是不起作用的，会模式为 host 模式</span></span><br><span class="line">    <span class="attr">deploy:</span></span><br><span class="line">      <span class="attr">mode:</span> <span class="string">replicated</span> <span class="comment"># 可选值 replicated 和 global 默认值 replicated</span></span><br><span class="line">      <span class="attr">replicas:</span> <span class="number">2</span> <span class="comment"># 配置服务副本数量</span></span><br><span class="line">      <span class="attr">endpoint_mode:</span> <span class="string">vip</span> <span class="comment"># 配置服务发现模式，可选值 vip 和 dnsrr, 默认值 vip</span></span><br><span class="line">      <span class="comment"># 配置重启策略</span></span><br><span class="line">      <span class="attr">restart_policy:</span></span><br><span class="line">        <span class="attr">condition:</span> <span class="string">on-failure</span></span><br><span class="line">        <span class="attr">delay:</span> <span class="string">5s</span></span><br><span class="line">        <span class="attr">max_attempts:</span> <span class="number">3</span></span><br><span class="line">        <span class="attr">window:</span> <span class="string">120s</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>使用 <code>docker stack deploy</code> 命令部署服务，命令语法 <code>docker stack deploy [OPTIONS] STACK(表示 stack 名)</code>，常用选项如下：</p>
+</li>
+</ol>
+<ul>
+<li>–compose-file , -c	 指定 docker-compose 配置文件<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 通过 docker-compose 配置文件部署一个名为 mystack 的 stack，部署后生成的服务名格式为：stack 名 + docker-compose 文件配置的服务名，即 mystack_my-web</span></span><br><span class="line">docker stack -c docker-compose.yml mystack </span><br></pre></td></tr></table></figure></li>
+</ul>
+<h2 id="服务发现和负载均衡"><a href="#服务发现和负载均衡" class="headerlink" title="服务发现和负载均衡"></a>服务发现和负载均衡</h2><p>Service 相当于它的所有 Task 的一个反向代理，Service 的服务发现和负载均衡是利用 Linux 内核的 iptables 和 IPVS 的功能来实现。Docker Swarm 提供了两种不同机制的服务发现，分别是：</p>
+<ul>
+<li>VIP(Virtual IP)：Swarm 创建应用服务时，会创建一个应用服务的虚拟 IP，Docker 内嵌的 DNS 服务会维护该虚拟 IP 和应用服务名记录，同时在每个应用服务容器内创建一个 ingress_sbox 网络命令空间，然后利用 Linux 内核的 iptables 和 IPVS 在 ingress_sbox 网络命名空间通过 VIP 转发请求到服务容器的 IP，从而实现负载均衡。 </li>
+<li>DRR(DNS round-robin)：通过 Docker 引擎提供的内嵌 DNS 服务，维护服务名对应 task 容器的 IP 地址列表，当前请求访问服务时，Docker DNS 解析服务名，获取服务所有任务容器的 IP 地址列表，然后将请求转发到其中任意一个(一般默认是第一)，从而实现负载均衡。</li>
+</ul>
+<p>Docker Swarm 通过  ingress overlay 网络实现了网格路由(routing mesh)功能。在 Swarm 集群中所有的工作节点(worker)和管理节点(manager)都会参与到网格路由中。当部署的服务通过 <code>--publish</code> 暴露端口时，由于所有的节点都在网格路由(routing mesh)中，所以全部的节点都会是监听<code>--publish</code>暴露的端口，因此访问集群中的任何节点都可以访问到服务。 如果不想每个节点都监听服务暴露的端口，则需要将暴露的模式指定为 host 模式，来禁用路由网格，如 <code>--publish published=8080,target=80,mode=host </code>。<br><img src="/images/docker-swarm%E7%BD%91%E7%BB%9C%E8%B7%AF%E7%94%B1.png" alt="网格路由"></p>
+<p>路由网格模式只支持 VIP 的服务发现模式，如果使用 DRR 模式是不起作用的。可以通过 <code>--endpoint_mode: vip | drr</code> 指定服务选择那种服务发现，默认是 vip</p>
+<h2 id="管理节点和工作节点的心跳"><a href="#管理节点和工作节点的心跳" class="headerlink" title="管理节点和工作节点的心跳"></a>管理节点和工作节点的心跳</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 修改检测心跳1分钟</span></span><br><span class="line">docker swarm update --dispatcher-heartbeat 60s</span><br></pre></td></tr></table></figure>
+
+<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><ol>
+<li><a target="_blank" rel="noopener" href="https://docs.docker.com/engine/swarm/swarm-tutorial/">https://docs.docker.com/engine/swarm/swarm-tutorial/</a></li>
+<li><a target="_blank" rel="noopener" href="https://docs.docker.com/engine/swarm/how-swarm-mode-works/services/">https://docs.docker.com/engine/swarm/how-swarm-mode-works/services/</a></li>
+<li><a target="_blank" rel="noopener" href="https://docs.docker.com/engine/swarm/networking/">https://docs.docker.com/engine/swarm/networking/</a></li>
+</ol>
+
+            </div>
+        
+        <footer class="article-footer">
+        </footer>
+    </div>
+</article>
+
+
+    
+<nav id="article-nav">
+    
+        <a href="/wiki/Apache%20POI/Excel%20%E8%AE%BE%E7%BD%AE%E8%A1%8C%E9%AB%98%E5%92%8C%E6%8D%A2%E8%A1%8C%E9%97%AE%E9%A2%98/" id="article-nav-newer" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">Newer</strong>
+            <div class="article-nav-title">
+                
+                    Excel 设置行高和换行问题
+                
+            </div>
+        </a>
+    
+    
+        <a href="/wiki/Docker/Docker%20%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0/" id="article-nav-older" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">Older</strong>
+            <div class="article-nav-title">Docker 入门笔记</div>
+        </a>
+    
+</nav>
+
+
+
+
+
+    
+    
+
+
+
+</section>
+        </div>
+        <footer id="footer">
+    <div class="outer">
+        <div id="footer-info" class="inner">
+            <br> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>. Theme - <a target="_blank" rel="noopener" href="https://github.com/vianlex/hexo-theme-Wikitten">wikitten</a>
+            
+                <br>
+                <span id="busuanzi_container_site_pv"><i class="fa fa-eye"></i> <span id="busuanzi_value_site_pv"></span></span>
+                &nbsp;|&nbsp;
+                <span id="busuanzi_container_site_pv"><i class="fa fa-user"></i> <span id="busuanzi_value_site_uv"></span></span>
+            
+        </div>
+    </div>
+</footer>
+
+        
+
+    
+        
+<script src="/libs/lightgallery/js/lightgallery.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-thumbnail.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-pager.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-autoplay.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-fullscreen.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-zoom.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-hash.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-share.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-video.min.js"></script>
+
+    
+    
+        
+<script src="/libs/justified-gallery/jquery.justifiedGallery.min.js"></script>
+
+    
+    
+        <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true,
+            TeX: {
+                equationNumbers: {
+                  autoNumber: 'AMS'
+                }
+            }
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script async src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+
+
+
+<!-- Custom Scripts -->
+
+<script src="/js/main.js"></script>
+
+    </div>
+</body>
+</html>

@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <meta charset="utf-8">
+    
+    <title>ngx_http_rewrite_module 模块学习笔记 | Vianlex&#39;s Wiki</title>
+    
+    
+        <meta name="keywords" content="ngx_http_rewrite_module 模块学习笔记" />
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <meta name="description" content="介绍ngx_http_rewrite_module 主要用于改变请求的 URI，通过 PCRE 正则表达式，return 指令，以及有选择的配置条件去改变。 模块中的 break、if、return、rewrite 和 set 指令会按以下顺序执行处理：  在同一级别指令语句块中按配置文件中出现的位置，按顺序执行； 如果对一个请求 URI 使用 rewrite 重定向，限制最多只能重定向10次。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ngx_http_rewrite_module 模块学习笔记">
+<meta property="og:url" content="http://example.com/wiki/Nginx/ngx_http_rewrite_module%20%E6%A8%A1%E5%9D%97%E7%AC%94%E8%AE%B0/index.html">
+<meta property="og:site_name" content="Vianlex&#39;s Wiki">
+<meta property="og:description" content="介绍ngx_http_rewrite_module 主要用于改变请求的 URI，通过 PCRE 正则表达式，return 指令，以及有选择的配置条件去改变。 模块中的 break、if、return、rewrite 和 set 指令会按以下顺序执行处理：  在同一级别指令语句块中按配置文件中出现的位置，按顺序执行； 如果对一个请求 URI 使用 rewrite 重定向，限制最多只能重定向10次。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-05-31T13:39:26.110Z">
+<meta property="article:modified_time" content="2023-05-31T13:39:26.110Z">
+<meta property="article:author" content="Vianlex">
+<meta name="twitter:card" content="summary">
+    
+
+    
+
+    
+        <link rel="icon" href="/favicon.ico" />
+    
+
+    
+<link rel="stylesheet" href="/libs/font-awesome/css/font-awesome.min.css">
+
+    
+<link rel="stylesheet" href="/libs/open-sans/styles.css">
+
+    
+<link rel="stylesheet" href="/libs/source-code-pro/styles.css">
+
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    
+<script src="/libs/jquery/2.1.3/jquery.min.js"></script>
+
+    
+<script src="/libs/jquery/plugins/cookie/1.4.1/jquery.cookie.js"></script>
+
+    
+    
+        
+<link rel="stylesheet" href="/libs/lightgallery/css/lightgallery.min.css">
+
+    
+    
+        
+<link rel="stylesheet" href="/libs/justified-gallery/justifiedGallery.min.css">
+
+    
+    
+    
+    
+
+
+    
+        <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    
+<meta name="generator" content="Hexo 6.3.0"><link rel="alternate" href="/atom.xml" title="Vianlex's Wiki" type="application/atom+xml">
+</head>
+
+<body>
+    <div id="container">
+        <header id="header">
+    <div id="header-main" class="header-inner">
+        <div class="outer">
+            <a href="/" id="logo">
+                <i class="logo"></i>
+                <span class="site-title">Vianlex&#39;s Wiki</span>
+            </a>
+            <nav id="main-nav">
+                
+                    <a class="main-nav-link" href="/">首页</a>
+                
+                    <a class="main-nav-link" href="/archives">归档</a>
+                
+                    <a class="main-nav-link" href="/categories">分类</a>
+                
+                    <a class="main-nav-link" href="/tags">标签</a>
+                
+                    <a class="main-nav-link" href="/about">关于</a>
+                
+            </nav>
+            
+            <div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="Search" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="Type something..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: 'Posts',
+            PAGES: 'Pages',
+            CATEGORIES: 'Categories',
+            TAGS: 'Tags',
+            UNTITLED: '(Untitled)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+
+</div>
+        </div>
+    </div>
+    <div id="main-nav-mobile" class="header-sub header-inner">
+        <table class="menu outer">
+            <tr>
+                
+                    <td><a class="main-nav-link" href="/">首页</a></td>
+                
+                    <td><a class="main-nav-link" href="/archives">归档</a></td>
+                
+                    <td><a class="main-nav-link" href="/categories">分类</a></td>
+                
+                    <td><a class="main-nav-link" href="/tags">标签</a></td>
+                
+                    <td><a class="main-nav-link" href="/about">关于</a></td>
+                
+                <td>
+                    
+    <div class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="Search" />
+    </div>
+
+                </td>
+            </tr>
+        </table>
+    </div>
+</header>
+
+        <div class="outer">
+            
+            
+                <aside id="sidebar">
+   
+        
+    <div class="widget-wrap" id='categories'>
+        <h3 class="widget-title">
+            <span>分类目录</span>
+            &nbsp;
+            <a id='allExpand' href="#">
+                <i class="fa fa-angle-double-down fa-2x"></i>
+            </a>
+        </h3>
+        
+        
+        
+         <ul class="unstyled" id="tree" > 
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            Apache POI
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/Apache%20POI/Excel%20%E8%AE%BE%E7%BD%AE%E8%A1%8C%E9%AB%98%E5%92%8C%E6%8D%A2%E8%A1%8C%E9%97%AE%E9%A2%98/">Excel 设置行高和换行问题</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            Docker
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/Docker/Docker%20Swarm%20%E7%AC%94%E8%AE%B0/">Docker Swarm 笔记</a></li>  <li class="file"><a href="/wiki/Docker/Docker%20%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0/">Docker 入门笔记</a></li>  <li class="file"><a href="/wiki/Docker/Docker%20%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/">Docker 常用命令</a></li>  <li class="file"><a href="/wiki/Docker/Docker%20%E6%9D%83%E9%99%90%E9%85%8D%E7%BD%AE/">Docker 权限配置</a></li>  <li class="file"><a href="/wiki/Docker/Dockerfile%20%E4%BD%BF%E7%94%A8%E8%AF%B4%E6%98%8E/">Dockerfile 使用说明</a></li>  <li class="file"><a href="/wiki/Docker/docker%20%E5%AE%89%E8%A3%85%E7%AC%94%E8%AE%B0/">Docker 安装笔记</a></li>  <li class="file"><a href="/wiki/Docker/docker-compose%20%E5%AD%A6%E4%B9%A0%E8%AE%B0%E5%BD%95/">Docker-compose 学习记录</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            Golang
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/Golang/Go%20%E5%9F%BA%E7%A1%80%E8%AF%AD%E6%B3%95/">Go 基础语法</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            Java 知识点
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/Java%20%E7%9F%A5%E8%AF%86%E7%82%B9/Class%E5%AF%B9%E8%B1%A1%E5%92%8CTpye%E5%AF%B9%E8%B1%A1/">Class 对象和 Tpye 对象知识笔记</a></li>  <li class="file"><a href="/wiki/Java%20%E7%9F%A5%E8%AF%86%E7%82%B9/Instrumentation%20%E7%9F%A5%E8%AF%86%E7%AC%94%E8%AE%B0/">Instrumentation 知识笔记</a></li>  <li class="file"><a href="/wiki/Java%20%E7%9F%A5%E8%AF%86%E7%82%B9/Java%20main%20%E5%92%8C%20classpath/">main 方法和 classpath 说明</a></li>  <li class="file"><a href="/wiki/Java%20%E7%9F%A5%E8%AF%86%E7%82%B9/Javassist%20%E7%9F%A5%E8%AF%86%E7%AC%94%E8%AE%B0/">Javassist 知识笔记</a></li>  <li class="file"><a href="/wiki/Java%20%E7%9F%A5%E8%AF%86%E7%82%B9/SecurityManager%20%E7%AC%94%E8%AE%B0/">SecurityManager 笔记</a></li>  <li class="file"><a href="/wiki/Java%20%E7%9F%A5%E8%AF%86%E7%82%B9/byteBuddy%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0/">ByteBuddy 入门笔记</a></li>  <li class="file"><a href="/wiki/Java%20%E7%9F%A5%E8%AF%86%E7%82%B9/Drools%E7%AC%94%E8%AE%B0/">Drools 笔记</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            Java 设计模式
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/Java%20%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/%E4%BB%A3%E7%90%86%E6%A8%A1%E5%BC%8F/">代理模式</a></li>  <li class="file"><a href="/wiki/Java%20%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/%E5%B7%A5%E5%8E%82%E6%A8%A1%E5%BC%8F/">工厂模式</a></li>  <li class="file"><a href="/wiki/Java%20%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/%E6%A8%A1%E6%9D%BF%E6%A8%A1%E5%BC%8F/">模板模式(模板方法模式)</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            Jemeter
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/Jemeter/Jemeter%20%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0/">Jemeter 入门笔记</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            Kubernetes
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/Kubernetes/kubeadm%20%E5%BF%AB%E9%80%9F%E9%83%A8%E7%BD%B2%20k8s%20%E9%9B%86%E7%BE%A4%E6%B5%8B%E8%AF%95%E7%8E%AF%E5%A2%83/">kubeadm 快速部署 kubernetes 集群测试环境</a></li>  <li class="file"><a href="/wiki/Kubernetes/kubeadm%E5%AE%89%E8%A3%85%20k8s%20%E9%97%AE%E9%A2%98%E8%AE%B0%E5%BD%95/">kubeadm安装 k8s 问题记录</a></li>  <li class="file"><a href="/wiki/Kubernetes/K8s%20%E5%85%A5%E9%97%A8%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">K8s 入门学习笔记</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            Linux
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/Linux/SSH%20%E5%AF%86%E7%A0%81%E7%99%BB%E5%BD%95%E5%92%8C%E5%AF%86%E9%92%A5%E9%85%8D%E7%BD%AE%E8%AF%B4%E6%98%8E/">SSH 密码登录和密钥配置说明</a></li>  <li class="file"><a href="/wiki/Linux/ECS%20%E4%BA%91%E6%9C%8D%E5%8A%A1%E5%99%A8%E6%8C%82%E8%BD%BD%E6%95%B0%E6%8D%AE%E7%9B%98/">ECS 云服务器挂载数据盘</a></li>  <li class="file"><a href="/wiki/Linux/Linux%20%E6%9C%8D%E5%8A%A1%E5%99%A8%E6%8C%82%E8%BD%BD%E7%A1%AC%E7%9B%98/"></a></li>  <li class="file"><a href="/wiki/Linux/SSH%20%E7%AB%AF%E5%8F%A3%E8%BD%AC%E5%8F%91/">SSH 端口转发用法说明</a></li>  <li class="file"><a href="/wiki/Linux/dnf%E8%BD%AF%E4%BB%B6%E5%8C%85%E7%AE%A1%E7%90%86%E5%B7%A5%E5%85%B7/">dnf 软件包管理工具</a></li>  <li class="file"><a href="/wiki/Linux/iptables%20%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">iptables 学习笔记</a></li>  <li class="file"><a href="/wiki/Linux/yum%20%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/">YUM 常用命令</a></li>  <li class="file"><a href="/wiki/Linux/%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4%E8%AE%B0%E5%BD%95/">Linux 常用命令记录</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            Maven
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/Maven/Maven%20%E9%97%AE%E9%A2%98%E8%AE%B0%E5%BD%95/">Maven 问题记录</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            MySql
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/MySql/MySql%20%E5%B8%B8%E7%94%A8%E5%87%BD%E6%95%B0/">MySql 常用函数</a></li>  <li class="file"><a href="/wiki/MySql/MySql%20%E5%BC%80%E7%AA%97%E5%87%BD%E6%95%B0/">MySql 开窗函数</a></li>  <li class="file"><a href="/wiki/MySql/Mysql%20%E9%83%A8%E5%88%86%E8%AF%8D%E6%B1%87%E5%90%AB%E4%B9%89/">Mysql 部分词汇含义</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory open">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder-open"></i>
+                            &nbsp;
+                            Nginx
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/Nginx/Nginx%20%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/">Nginx 常用命令</a></li>  <li class="file"><a href="/wiki/Nginx/Tengine%E5%AE%89%E8%A3%85%E7%AC%94%E8%AE%B0/"></a></li>  <li class="file"><a href="/wiki/Nginx/location%20%E6%8C%87%E4%BB%A4%E7%AC%94%E8%AE%B0/">location 和 rewrite 笔记</a></li>  <li class="file"><a href="/wiki/Nginx/ngx_http_proxy_module%E6%A8%A1%E5%9D%97%E7%AC%94%E8%AE%B0/">ngx_http_proxy_module 模块学习笔记</a></li>  <li class="file active"><a href="/wiki/Nginx/ngx_http_rewrite_module%20%E6%A8%A1%E5%9D%97%E7%AC%94%E8%AE%B0/">ngx_http_rewrite_module 模块学习笔记</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            NodeJs
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/NodeJs/Node%20%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE%E8%AE%B0%E5%BD%95/">Node 环境配置说明</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            PowerDesigner
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/PowerDesigner/%E4%BD%BF%E7%94%A8%E9%97%AE%E9%A2%98%E8%AE%B0%E5%BD%95/">使用出现问题记录</a></li>  <li class="file"><a href="/wiki/PowerDesigner/%E9%80%86%E5%90%91%E5%AF%BC%E5%85%A5%E9%97%AE%E9%A2%98%E8%AE%B0%E5%BD%95/">SQL 逆向导入生成 PDM</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            Redis
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/Redis/Redis%20%E7%BC%93%E5%AD%98%E7%A9%BF%E9%80%8F%E3%80%81%E5%87%BB%E7%A9%BF%E3%80%81%E9%9B%AA%E5%B4%A9/">Redis 缓存穿透、缓存击穿、缓存雪崩</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            Shell
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/Shell/Awk%20%20%E5%9F%BA%E7%A1%80%E7%94%A8%E6%B3%95/">Awk 基础用法</a></li>  <li class="file"><a href="/wiki/Shell/Sed%20%E5%9F%BA%E7%A1%80%E7%94%A8%E6%B3%95/">Sed 基础用法</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            SpringBoot
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/SpringBoot/SpringBoot%20%E5%B1%9E%E6%80%A7%E9%85%8D%E7%BD%AE/">SpringBoot 属性配置</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            Xml
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/Xml/Dom4j%20%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0/">Dom4j 入门笔记</a></li>  <li class="file"><a href="/wiki/Xml/XPath%20%E7%AC%94%E8%AE%B0/">XPath 笔记</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            other
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/other/%E8%BD%AF%E4%BB%B6%E5%90%8D%E7%A7%B0%E8%AE%B0%E5%BD%95/">软件名称记录</a></li>  </ul> 
+                    </li> 
+                    
+                    <li class="directory">
+                        <a href="#" data-role="directory">
+                            <i class="fa fa-folder"></i>
+                            &nbsp;
+                            计算机网络
+                        </a>
+                         <ul class="unstyled" id="tree" >  <li class="file"><a href="/wiki/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/%E7%BD%91%E7%BB%9C%E8%AE%BE%E5%A4%87%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0/">网络设备入门笔记</a></li>  </ul> 
+                    </li> 
+                     <li class="file"><a href="/wiki/index/"></a></li>  </ul> 
+    </div>
+    <script>
+        $(document).ready(function() {
+            var iconFolderOpenClass  = 'fa-folder-open';
+            var iconFolderCloseClass = 'fa-folder';
+            var iconAllExpandClass = 'fa-angle-double-down';
+            var iconAllPackClass = 'fa-angle-double-up';
+            // Handle directory-tree expansion:
+            // 左键单独展开目录
+            $(document).on('click', '#categories a[data-role="directory"]', function (event) {
+                event.preventDefault();
+
+                var icon = $(this).children('.fa');
+                var expanded = icon.hasClass(iconFolderOpenClass);
+                var subtree = $(this).siblings('ul');
+                icon.removeClass(iconFolderOpenClass).removeClass(iconFolderCloseClass);
+                if (expanded) {
+                    if (typeof subtree != 'undefined') {
+                        subtree.slideUp({ duration: 100 });
+                    }
+                    icon.addClass(iconFolderCloseClass);
+                } else {
+                    if (typeof subtree != 'undefined') {
+                        subtree.slideDown({ duration: 100 });
+                    }
+                    icon.addClass(iconFolderOpenClass);
+                }
+            });
+            // 右键展开下属所有目录
+            $('#categories a[data-role="directory"]').bind("contextmenu", function(event){
+                event.preventDefault();
+                
+                var icon = $(this).children('.fa');
+                var expanded = icon.hasClass(iconFolderOpenClass);
+                var listNode = $(this).siblings('ul');
+                var subtrees = $.merge(listNode.find('li ul'), listNode);
+                var icons = $.merge(listNode.find('.fa'), icon);
+                icons.removeClass(iconFolderOpenClass).removeClass(iconFolderCloseClass);
+                if(expanded) {
+                    subtrees.slideUp({ duration: 100 });
+                    icons.addClass(iconFolderCloseClass);
+                } else {
+                    subtrees.slideDown({ duration: 100 });
+                    icons.addClass(iconFolderOpenClass);
+                }
+            })
+            // 展开关闭所有目录按钮
+            $(document).on('click', '#allExpand', function (event) {
+                event.preventDefault();
+                
+                var icon = $(this).children('.fa');
+                var expanded = icon.hasClass(iconAllExpandClass);
+                icon.removeClass(iconAllExpandClass).removeClass(iconAllPackClass);
+                if(expanded) {
+                    $('#sidebar .fa.fa-folder').removeClass('fa-folder').addClass('fa-folder-open')
+                    $('#categories li ul').slideDown({ duration: 100 });
+                    icon.addClass(iconAllPackClass);
+                } else {
+                    $('#sidebar .fa.fa-folder-open').removeClass('fa-folder-open').addClass('fa-folder')
+                    $('#categories li ul').slideUp({ duration: 100 });
+                    icon.addClass(iconAllExpandClass);
+                }
+            });  
+        });
+    </script>
+
+    
+    <div id="toTop" class="fa fa-angle-up"></div>
+</aside>
+            
+            <section id="main"><article id="post-Nginx/ngx_http_rewrite_module 模块笔记" class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
+                
+                    <div class="article-meta">
+                        
+    <div class="article-category">
+    	<i class="fa fa-folder"></i>
+        <a class="article-category-link" href="/categories/Nginx/">Nginx</a>
+    </div>
+
+                        
+                        
+    <div class="article-date">
+        <i class="fa fa-calendar"></i>
+        <a href="/wiki/Nginx/ngx_http_rewrite_module%20%E6%A8%A1%E5%9D%97%E7%AC%94%E8%AE%B0/">
+            <time datetime="2023-05-31T13:39:26.110Z" itemprop="datePublished">2023-05-31</time>
+        </a>
+    </div>
+
+
+                        
+                            <i class="fa fa-bar-chart"></i>
+                            <span id="busuanzi_container_site_pv"><span id="busuanzi_value_page_pv"></span></span>    
+                        
+                        
+                            <div class="article-meta-button">
+                                <a target="_blank" rel="noopener" href='https://github.com/Vianlex/blog/raw/gh-pages/source/_posts/Nginx/ngx_http_rewrite_module 模块笔记.md'> Source </a>
+                            </div>
+                            <div class="article-meta-button">
+                                <a target="_blank" rel="noopener" href='https://github.com/Vianlex/blog/edit/gh-pages/source/_posts/Nginx/ngx_http_rewrite_module 模块笔记.md'> Edit </a>
+                            </div>
+                            <div class="article-meta-button">
+                                <a target="_blank" rel="noopener" href='https://github.com/Vianlex/blog/commits/gh-pages/source/_posts/Nginx/ngx_http_rewrite_module 模块笔记.md'> History </a>
+                            </div>
+                        
+                    </div>
+                
+                
+    
+        <h1 class="article-title" itemprop="name">
+            ngx_http_rewrite_module 模块学习笔记
+        </h1>
+    
+
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+        
+            
+        
+        
+            <h2 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h2><p>ngx_http_rewrite_module 主要用于改变请求的 URI，通过 PCRE 正则表达式，return 指令，以及有选择的配置条件去改变。</p>
+<p>模块中的 break、if、return、rewrite 和 set 指令会按以下顺序执行处理：</p>
+<ul>
+<li>在同一级别指令语句块中按配置文件中出现的位置，按顺序执行；</li>
+<li>如果对一个请求 URI 使用 rewrite 重定向，限制最多只能重定向10次。</li>
+</ul>
+<p>一个 URL 请求到达 nginx 时，nginx 先会顺序执行 server 指令语句块中的 ngx_http_rewrite_module 指令集合，如果执行到 break 指令会直接返回 404，执行到 return 指令也会直接返回，执行到 rewrite 如果匹配 rewrite 表达式,将会重写请求的 URI 然后使用重写后的 URI 再去匹配 location。如果 server 指令语句块中没有 ngx_http_rewrite_module 指令集合或者有匹配不到的情况下，请求的 URL 则会去匹配 location。</p>
+<p>ngx_http_rewrite_module 模块指令日志记录，记录在 error_log 文件中的，且日志的级别需要改成 notice 级别。rewrite 指令的日志还需要开启 rewrite_log。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">rewrite_log on;</span><br><span class="line">error_log  logs/error.log notice;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h2 id="break-指令"><a href="#break-指令" class="headerlink" title="break 指令"></a>break 指令</h2><p>break 指令的官网语法如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Syntax:	break;</span><br><span class="line">Default:	—</span><br><span class="line">Context:	server, location, if</span><br></pre></td></tr></table></figure>
+<p>break 用于终止 ngx_http_rewrite_module 指令集合,即同一个指令块作用域内的指令集合。使用例子说明如下：</p>
+<figure class="highlight lua"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line">http &#123;</span><br><span class="line"></span><br><span class="line">    # ngx_http_rewrite_module 模块中的指令的优先级比 ngx_http_core_module 模块中的指令高。</span><br><span class="line">    server &#123;</span><br><span class="line"></span><br><span class="line">       </span><br><span class="line">        # 访问 <span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span>/b3 时，依次顺序执行 ngx_http_rewrite_module 指令，执行 <span class="keyword">break</span> 执行后，将无法在执行后面的  rewrite ^/b3 /test/b3 指令，故会返回 <span class="number">404</span>。</span><br><span class="line">        rewrite ^/b1 /test/b1;</span><br><span class="line">        rewrite ^/(b2) /test/$<span class="number">1</span>;</span><br><span class="line">        # 执行到 <span class="keyword">break</span> 指令, 将不会执行下面的 rewrite，因为 <span class="keyword">break</span> 指令会终止 ngx_http_rewrite_module 模块中的指令执行</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">        rewrite ^/b3 /test/b3;</span><br><span class="line"></span><br><span class="line">    </span><br><span class="line">        location /test/b3 &#123;</span><br><span class="line">            add_header Content-Type <span class="string">&#x27;text/html; charset=utf-8&#x27;</span>;</span><br><span class="line">            <span class="keyword">return</span> <span class="number">200</span> <span class="string">&quot;Hello My is test-b3&quot;</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        location /test &#123;</span><br><span class="line">            # 注意 <span class="keyword">break</span> 只能终止 ngx_http_rewrite_module 指令集合，所以执行 <span class="keyword">break</span> 指令后, <span class="keyword">return</span> 不会在执行，但是会执行 pass_proxy</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">            <span class="keyword">return</span> <span class="number">200</span> <span class="string">&quot;this test break &quot;</span>;</span><br><span class="line">            pass_proxy: <span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span>/xxx/</span><br><span class="line">        &#125;     </span><br><span class="line">        </span><br><span class="line">        location /<span class="keyword">break</span> &#123;</span><br><span class="line">            # 通过 <span class="keyword">break</span> 语句，控制改走 <span class="keyword">return</span> 还是走 pass_proxy</span><br><span class="line">            <span class="keyword">if</span> ( $uri == <span class="string">&#x27;/break/xx&#x27;</span>) &#123;</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            # 上面的 <span class="keyword">if</span> 指令满足后，执行 <span class="keyword">break</span> 指令，会终止 <span class="keyword">return</span> 执行，然后运行 pass_proxy 执行，如果条件不满足，不执行 <span class="keyword">break</span> 则会执行 <span class="keyword">return</span> 语句直接返回，就会执行不到 pass_proxy 指令</span><br><span class="line">            <span class="keyword">return</span> <span class="number">200</span> <span class="string">&quot;this test break &quot;</span>;</span><br><span class="line">            pass_proxy: <span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span>/<span class="keyword">break</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h2 id="if-指令"><a href="#if-指令" class="headerlink" title="if 指令"></a>if 指令</h2><p>if 指令的官方语法如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Syntax:	if (condition) &#123; ... &#125;</span><br><span class="line">Default:	—</span><br><span class="line">Context:	server, location</span><br></pre></td></tr></table></figure>
+<p>if 指令支持的判断条件如下：</p>
+<ol>
+<li><p>空字符串和 0 默认 false，在1.0.1版本之前，任何以 0开头的字符串也被认为是 false</p>
+<figure class="highlight lua"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">set $var <span class="number">0</span>;</span><br><span class="line">location /test &#123;</span><br><span class="line">     add_header Content-Type <span class="string">&#x27;text/html; charset=utf-8&#x27;</span>;</span><br><span class="line">    <span class="keyword">if</span> ($var) &#123;</span><br><span class="line">       <span class="keyword">return</span> <span class="number">200</span> <span class="string">&quot;this is true&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">200</span> <span class="string">&quot;this is flase&quot;</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>变量和字符串比较只支持 &#x3D; 和 !&#x3D; 符号</p>
+<figure class="highlight lua"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">location /test &#123;</span><br><span class="line">    add_header Content-Type <span class="string">&#x27;text/html; charset=utf-8&#x27;</span>;</span><br><span class="line">    <span class="keyword">if</span> ($request_method = POST) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">200</span> <span class="string">&quot;this is POST method&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    # 变量支持在字符串中使用</span><br><span class="line">    <span class="keyword">return</span> <span class="number">200</span> <span class="string">&quot;unkown $request_method method&quot;</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>支持变量和正则表达式匹配，<code>~</code> 符号表示区分大小写匹配，<code>~*</code> 表示不区分大小写匹配，正则匹配支持非运算符 <code>!~</code> 和 <code>!~*</code>，同时支持捕获组，捕获组可通过 $1..$9 变量获取值。<br>如果正则表示式包含 <code>&#125;</code> 和 <code>;</code> 符号，那么正则表达式必须使用引号包起来。</p>
+<figure class="highlight lua"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">location /test &#123;</span><br><span class="line">     add_header Content-Type <span class="string">&#x27;text/html; charset=utf-8&#x27;</span>;</span><br><span class="line">    <span class="keyword">if</span> ($http_cookie ~* <span class="string">&quot;id=([^;]+)(?:;|$)&quot;</span>) &#123;</span><br><span class="line">       <span class="keyword">return</span> <span class="number">200</span> <span class="string">&quot;id = $0&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">200</span> <span class="string">&quot;hello world&quot;</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>支持使用 <code>-f</code> 和 <code>!-f</code> 符号检查文件是否存在 </p>
+<figure class="highlight lua"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">location /exists &#123;</span><br><span class="line">    add_header Content-Type <span class="string">&#x27;text/html; charset=utf-8&#x27;</span>;</span><br><span class="line">    <span class="keyword">if</span> (-f C:/DevTools/nginx<span class="number">-1.22</span><span class="number">.1</span>/html/index.html) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">200</span> <span class="string">&quot;file is exists&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">200</span> <span class="string">&quot;file is not exists&quot;</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>支持使用 <code>-d</code> 和 <code>!-d</code> 符号检查目录是否存在 </p>
+<figure class="highlight lua"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">location /exists &#123;</span><br><span class="line">    add_header Content-Type <span class="string">&#x27;text/html; charset=utf-8&#x27;</span>;</span><br><span class="line">    <span class="keyword">if</span> (-d C:/DevTools/nginx<span class="number">-1.22</span><span class="number">.1</span>/html) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">200</span> <span class="string">&quot;dir is exists&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">200</span> <span class="string">&quot;dir is not exists&quot;</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>支持使用 <code>-e</code> 和 <code>!-e</code> 运算符检查文件、目录或符号链接是否存在</p>
+<figure class="highlight lua"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">location /exists &#123;</span><br><span class="line">    add_header Content-Type <span class="string">&#x27;text/html; charset=utf-8&#x27;</span>;</span><br><span class="line">    <span class="keyword">if</span> (-e C:/DevTools/nginx<span class="number">-1.22</span><span class="number">.1</span>/html/index.html) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">200</span> <span class="string">&quot;dir is exists&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">200</span> <span class="string">&quot;dir is not exists&quot;</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>支持使用 <code>-x</code> 和 <code>-x</code> 运算符检查可执行文件</p>
+<figure class="highlight lua"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">location /exec &#123;</span><br><span class="line">    add_header Content-Type <span class="string">&#x27;text/html; charset=utf-8&#x27;</span>;</span><br><span class="line">    <span class="keyword">if</span> (-x C:/DevTools/nginx<span class="number">-1.22</span><span class="number">.1</span>/nginx.exe) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">200</span> <span class="string">&quot;file is exec&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">200</span> <span class="string">&quot;file is not exec&quot;</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><p>不支持与或逻辑符号判断,但是可以通过变量拼接字符串的形式实现</p>
+<figure class="highlight lua"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">set $flag  <span class="string">&quot;&quot;</span>;</span><br><span class="line">location /test &#123;</span><br><span class="line">    <span class="keyword">if</span> ($request_method = POST) &#123;</span><br><span class="line">        set $flag <span class="string">&quot;$flag1&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> ($protocol = HTTP) &#123;</span><br><span class="line">        set $flag <span class="string">&quot;$flag1&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> ($flag = <span class="string">&quot;11&quot;</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">200</span> <span class="string">&quot;this is and &quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">200</span> <span class="string">&quot;hello world&quot;</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure></li>
+</ol>
+<h2 id="rewrite-指令"><a href="#rewrite-指令" class="headerlink" title="rewrite 指令"></a>rewrite 指令</h2><p>rewrite 指令的官方语法如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Syntax:	rewrite regex replacement [flag];</span><br><span class="line">Default:	—</span><br><span class="line">Context:	server, location, if</span><br></pre></td></tr></table></figure>
+<p>If the specified regular expression matches a request URI, URI is changed as specified in the replacement string. The rewrite directives are executed sequentially in order of their appearance in the configuration file. It is possible to terminate further processing of the directives using flags. If a replacement string starts with “http:&#x2F;&#x2F;”, “https:&#x2F;&#x2F;”, or “$scheme”, the processing stops and the redirect is returned to a client.</p>
+<p>如果指定的 regex 正则表达式匹配请求的 URI, URI 将会被替换成指定 replacement 字符串。重写指令按照它们在配置文件中出现的顺序依次执行。可以使用标志符来终止对指令的进一步处理。如果 repalcement 字符串以 “http:&#x2F;&#x2F;“、”https:&#x2F;&#x2F;“ 或 “$scheme” 开头，则停止处理并将重定向返回给客户。</p>
+<p>falg 可选值说明：</p>
+<ul>
+<li>last：表示 regex 正则表达式匹配到 URI 后立即停止处理当前 ngx_http_rewrite_module 指令集合，并用 replactment 后的 URI 匹配查找 location</li>
+<li>break：表示 regex 正则表达式匹配到 URI 停止处理当前 ngx_http_rewrite_module 指令集合，如同处理 break 指令一样</li>
+<li>redirect：返回一个状态是 302 的临时重定向</li>
+<li>permanent：返回一个状态是 301 的永久重定向</li>
+</ul>
+<p>永久重定向和临时重定向的区别是：浏览器会缓存永久重定向会记录，比如浏览器第一次访问 A 链接，如果返回 301 永久重定向到 B 链接，浏览器就会缓存 A 链接到 B 链接重定向记录，当浏览器再访问 A 链接时，如果缓存中有重定向记录则会直接重定向到 B 链接。如果第一次访问返回的 302 临时重定到 B 链接，浏览器每次都会重新 A 链接由 nginx 判断是不是重定向。即永久重定向会读缓存减轻服务器压力，临时重定向不会缓存，因为是临时的，临时说明随时会改变的所以不能缓存起来。</p>
+<p>rewrite 指令在 server 指令语句块的例子说明： </p>
+<figure class="highlight lua"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">http&#123;</span><br><span class="line"></span><br><span class="line">    # 注意，在同一指令语句块中所有的 rewrite 指令是一个集合，nginx 会按顺序匹配，并且优选高于 location，在 server 指令中使用 last 和 <span class="keyword">break</span> 符号，其效果是一样的。</span><br><span class="line">    server&#123;</span><br><span class="line"></span><br><span class="line">        # 没有使用 last 或者 <span class="keyword">break</span> 标识符，如访问 <span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span>/test  会按 rewrite 指令的顺序去匹配 /test ，匹配到 ^/test 后，还会继续使用重写后的 URI 重写匹配，一直往下匹配到 test5，然后在使用 test5 去匹配查找 location </span><br><span class="line">        rewrite ^/test /test1;</span><br><span class="line">        rewrite ^/test1 /test2;</span><br><span class="line">        rewrite ^/test2 /test3;</span><br><span class="line">        rewrite ^/test3 /test4;</span><br><span class="line">        rewrite ^/test4 /test5;</span><br><span class="line"></span><br><span class="line">     </span><br><span class="line">        # 如访问 <span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span>/last2 时，nginx 会按顺序从上面的 ^/test 开头的 rewirte 一直到 ^/last2 时匹配成功，重写 URI 为 /last3 因为 last 标识符结尾，所以直接终止匹配，然后使用 /last3 去匹配 location，</span><br><span class="line">        # 如果能匹配查找到 location 则返回结果，否则直接返回 <span class="number">404</span></span><br><span class="line">        rewrite ^/last /last1 last;</span><br><span class="line">        rewrite ^/last1 /last2 last;</span><br><span class="line">        rewrite ^/last2 / last3 last;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        # 注意, 如果重写的 URI 使用的是 http 协议开头，则相当于临时重定向，会直接返回给浏览器，浏览器在重定向请求新的 URL。只有重写请求的 URI 部分，nginx 才会去重新执行后续的 rewrite 或者匹配查找 location</span><br><span class="line">        rewrite ^/redirect http://<span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span>/test.com;</span><br><span class="line">        rewrite ^/redirect/last http://<span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span>/test.com last;</span><br><span class="line">        rewrite ^/redirect/<span class="keyword">break</span> http://<span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span>/test.com <span class="keyword">break</span>;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        # 如访问访问 <span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span>/hello 也是先匹配 rewrite 集合如果匹配不到，再匹配查找 location，如果都匹配不到的话，nginx 会直接返回 <span class="number">404</span> </span><br><span class="line">        location /hello &#123;</span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        location /last3 &#123;</span><br><span class="line">            add_header Content-Type <span class="string">&#x27;text/html; charset=utf-8&#x27;</span>;</span><br><span class="line">            <span class="keyword">return</span> <span class="number">200</span> <span class="string">&quot;this is /last2 rewrite /last3&quot;</span></span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        location /test5 &#123;</span><br><span class="line">            add_header Content-Type <span class="string">&#x27;text/html; charset=utf-8&#x27;</span>;</span><br><span class="line">            <span class="keyword">return</span> <span class="number">200</span> <span class="string">&quot;this is /test rewrite /test5&quot;</span></span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>在 location 指令中的 rewrite 指令例子：</p>
+<figure class="highlight lua"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">location /<span class="keyword">break</span> &#123;</span><br><span class="line">    # location 中的 rewrite 使用 <span class="keyword">break</span> 标识，如果匹配了，就会去访问 nginx 安装目录下 html 目录的 test/page 文件</span><br><span class="line">    rewrite ^/<span class="keyword">break</span> /test/page <span class="keyword">break</span>;</span><br><span class="line">    # 如果 rewrite 不匹配，执行 <span class="keyword">return</span> </span><br><span class="line">    add_header Content-Type <span class="string">&#x27;text/html; charset=utf-8&#x27;</span>;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">200</span> <span class="string">&quot;can&#x27;t match rewrite, so return&quot;</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">location /last &#123;</span><br><span class="line">    # location 中的 rewrite 如果使用 last 标识，根 server 指令中的效果一致 </span><br><span class="line">    rewrite ^/<span class="keyword">break</span> /test last;</span><br><span class="line">    # 匹配不通过就走 <span class="keyword">return</span>, 因为 <span class="keyword">return</span> 的优先级比 pass_proxy 高</span><br><span class="line">    pass_proxy <span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span>/hello;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">200</span> <span class="string">&quot;Hello this is last&quot;</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>获取正则表达的值： </p>
+<figure class="highlight lua"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"># 访问 http://<span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span>/download/public/media/test.mp3</span><br><span class="line">location /download/ &#123;</span><br><span class="line">    rewrite ^(/download/.*)/media/(.*)\..*$ $<span class="number">1</span>/mp3/$<span class="number">2.</span>mp3 <span class="keyword">break</span>;</span><br><span class="line">    rewrite ^(/download/.*)/audio/(.*)\..*$ $<span class="number">1</span>/mp3/$<span class="number">2.</span>ra  <span class="keyword">break</span>;</span><br><span class="line">    <span class="keyword">return</span>  <span class="number">403</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+<h2 id="return-指令"><a href="#return-指令" class="headerlink" title="return 指令"></a>return 指令</h2><p>return 的官方语法如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">Syntax:	return code [text];</span><br><span class="line">return code URL;</span><br><span class="line">return URL;</span><br><span class="line">Default:	—</span><br><span class="line">Context:	server, location, if</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>常用例子如下：</p>
+<figure class="highlight lua"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"># 单独返回状态码</span><br><span class="line">location /return0 &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">404</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"># 返回字符串</span><br><span class="line">location /return1 &#123;</span><br><span class="line">    add_header Content-Type <span class="string">&#x27;text/html; charset=utf-8&#x27;</span>;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">200</span> <span class="string">&quot;request is success&quot;</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"># <span class="number">302</span> 重定向请求</span><br><span class="line">location /return2 &#123;</span><br><span class="line">    <span class="keyword">return</span> https://baidu.com; </span><br><span class="line">    # 或者 </span><br><span class="line">    <span class="keyword">return</span> <span class="number">302</span> https://baidu.com;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"># 返回内置变量</span><br><span class="line">location /return3 &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">200</span> <span class="string">&quot;请求的 URI : $uri ，请求的IP地址：$remote_addr&quot;</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h2 id="set-指令"><a href="#set-指令" class="headerlink" title="set 指令"></a>set 指令</h2><p>set 指令用于定义变量，其官方语法如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Syntax:	set $variable value;</span><br><span class="line">Default:	—</span><br><span class="line">Context:	server, location, if</span><br></pre></td></tr></table></figure>
+
+<p>常用例子如下：</p>
+<figure class="highlight lua"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">http &#123;</span><br><span class="line"></span><br><span class="line">    set hostname xx.test.com;</span><br><span class="line"></span><br><span class="line">    server &#123;</span><br><span class="line"></span><br><span class="line">        location / &#123;</span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+
+
+
+<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><ol>
+<li><a target="_blank" rel="noopener" href="https://nginx.org/en/docs/http/ngx_http_rewrite_module.html">https://nginx.org/en/docs/http/ngx_http_rewrite_module.html</a></li>
+</ol>
+
+            </div>
+        
+        <footer class="article-footer">
+        </footer>
+    </div>
+</article>
+
+
+    
+<nav id="article-nav">
+    
+        <a href="/wiki/Nginx/ngx_http_proxy_module%E6%A8%A1%E5%9D%97%E7%AC%94%E8%AE%B0/" id="article-nav-newer" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">Newer</strong>
+            <div class="article-nav-title">
+                
+                    ngx_http_proxy_module 模块学习笔记
+                
+            </div>
+        </a>
+    
+    
+        <a href="/wiki/Java%20%E7%9F%A5%E8%AF%86%E7%82%B9/Drools%E7%AC%94%E8%AE%B0/" id="article-nav-older" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">Older</strong>
+            <div class="article-nav-title">Drools 笔记</div>
+        </a>
+    
+</nav>
+
+
+
+
+
+    
+    
+
+
+
+</section>
+        </div>
+        <footer id="footer">
+    <div class="outer">
+        <div id="footer-info" class="inner">
+            <br> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>. Theme - <a target="_blank" rel="noopener" href="https://github.com/vianlex/hexo-theme-Wikitten">wikitten</a>
+            
+                <br>
+                <span id="busuanzi_container_site_pv"><i class="fa fa-eye"></i> <span id="busuanzi_value_site_pv"></span></span>
+                &nbsp;|&nbsp;
+                <span id="busuanzi_container_site_pv"><i class="fa fa-user"></i> <span id="busuanzi_value_site_uv"></span></span>
+            
+        </div>
+    </div>
+</footer>
+
+        
+
+    
+        
+<script src="/libs/lightgallery/js/lightgallery.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-thumbnail.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-pager.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-autoplay.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-fullscreen.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-zoom.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-hash.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-share.min.js"></script>
+
+        
+<script src="/libs/lightgallery/js/lg-video.min.js"></script>
+
+    
+    
+        
+<script src="/libs/justified-gallery/jquery.justifiedGallery.min.js"></script>
+
+    
+    
+        <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true,
+            TeX: {
+                equationNumbers: {
+                  autoNumber: 'AMS'
+                }
+            }
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script async src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+
+
+
+<!-- Custom Scripts -->
+
+<script src="/js/main.js"></script>
+
+    </div>
+</body>
+</html>
