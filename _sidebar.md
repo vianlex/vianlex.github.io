@@ -18,8 +18,8 @@
   - [Jemeter 入门笔记](/Jemeter/Jemeter_入门笔记.md)
 
 - **Mysql**
-    - [Mysql 字符串常用函数](/MySql/Mysql字符串常用函数.md)
-    - [Mysql 开窗函数](/MySql/Mysql开窗函数.md)
+    - [Mysql 字符串常用函数](/Mysql/Mysql字符串常用函数.md)
+    - [Mysql 开窗函数](/Mysql/Mysql开窗函数.md)
 
 - **Docker**
     - [Docker 安装笔记](/Docker/Docker_安装笔记.md)
