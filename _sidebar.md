@@ -31,7 +31,7 @@
     - [Docker-Swarm 笔记](/Docker/Docker-Swarm_笔记.md)
 
 - **kubernetes**
-  - [K8s 入门笔记](/kubernetes/K8s_入门笔记.md)
+  - [K8s 入门笔记](/Kubernetes/K8s_入门笔记.md)
   - [kubeadm 部署 k8s 集群环境](/Kubernetes/kubeadm部署k8s集群.md)
   - [kubeadm安装k8s问题记录](/Kubernetes/kubeadm安装k8s问题记录.md)
 
