@@ -76,6 +76,12 @@
         }
       ]
     };
+    
+    // 注册离线模式
+    if (typeof navigator.serviceWorker !== 'undefined') {
+      navigator.serviceWorker.register('sw.js')
+    }
+
   </script>
 
   <!-- Required: docsify -->
