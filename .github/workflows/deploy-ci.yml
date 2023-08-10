@@ -1,9 +1,10 @@
-name: CI
+name: deply-doc-ci
 
-on:
-  push:
-    branches:
-      - main
+# 触发条件关闭
+# on:
+#   push:
+#     branches:
+#       - main
 
 env:
   GIT_USER: vianlex
@@ -40,11 +41,11 @@ jobs:
           ssh-keyscan github.com > ~/.ssh/known_hosts
           git config --global user.name $GIT_USER
           git config --global user.email $GIT_EMAIL
-      - name: Install dependencies
-        run: |
-          npm install hexo-cli -g
-          npm install
-      - name: Hexo deploy
+      #- name: Install dependencies
+      #  run: |
+      #    npm install hexo-cli -g
+      #    npm install
+      - name: docs deploy
         run: |
           hexo clean
           hexo d
