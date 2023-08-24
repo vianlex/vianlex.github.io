@@ -8,6 +8,7 @@
 - **Java设计模式**
   - [模板模式](/Java设计模式/模板模式.md)
   - [策略模式](/Java设计模式/策略模式.md)
+  - [工厂模式](/Java设计模式/工厂模式.md)
 
 - **规则引擎**
   - [Drools 笔记](/RuleEngine/Drools笔记.md)
