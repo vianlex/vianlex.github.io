@@ -134,7 +134,7 @@ cp ./resource/logback.xml ./target
 
 ```
 
-运行 helloProject 项目，通过 -classpath 参数 Jvm 查找类和依赖路径时，需要指定类包的所在目录即可，但依赖的 jar 不能指定 jar 所在的目录, 需要指定到具体的 jar 名
+运行 helloProject 项目，通过 -classpath 参数 Jvm 查找类和依赖路径时，需要指定类包的所在目录即可，但依赖的 jar 不能单单指定 jar 所在的目录, 需要指定到具体的 jar 名
 
 ```bash
 java -classpath "./bin;./libraries/logback-classic-1.2.11.jar;./libraries/logback-core-1.2.11.jar;./libraries/slf4j-api-1.7.36.jar"  com/github/HelloWorld

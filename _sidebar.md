@@ -4,11 +4,15 @@
   - [Class 对象和 Tpye 对象](/Java知识点/Class对象和Tpye对象.md)
   - [Instrumentation 入门笔记](/Java知识点/Instrumentation_知识笔记.md)
   - [main 和 classpath 相关知识](/Java知识点/Java_main_classpath.md)
+  - [Java SPI 机制](/Java知识点/Java_SPI.md)
 
 - **Java设计模式**
+  - [代理模式](/Java设计模式/代理模式.md)
   - [模板模式](/Java设计模式/模板模式.md)
   - [策略模式](/Java设计模式/策略模式.md)
   - [工厂模式](/Java设计模式/工厂模式.md)
+  - [责任链模式](/Java设计模式/责任链模式.md)
+  - [适配器模式](/Java设计模式/适配器模式.md)
 
 - **规则引擎**
   - [Drools 笔记](/RuleEngine/Drools笔记.md)
