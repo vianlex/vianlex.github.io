@@ -89,14 +89,14 @@ docker-compose logs <service-name> -f --tail=200
 
 ```bash
 # 根据服务名进入容器内部
-docker-compose exec -it <service-name> </bin/sh | /bash>
+docker-compose exec  <service-name> </bin/sh | /bash>
 
 # 根据服务名运行容器中的命令
-docker-compose exec -it <service-name> ls -il
+docker-compose exec  <service-name> ls -il
 
-docker-compose exec -it <service-name> env # 查看环境变量
+docker-compose exec  <service-name> env # 查看环境变量
 
-docker-compose exec -it <service-name> nginx -t # 运行 nginx 配置文件验证命令
+docker-compose exec <service-name> nginx -t # 运行 nginx 配置文件验证命令
 ```
 
 #### docker-compose cp 
