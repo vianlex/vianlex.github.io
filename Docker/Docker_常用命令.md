@@ -68,6 +68,8 @@ docker images -q | xargs docker rmi
 docker rmi $(docker images -q)
 # 删除 tag 是 none 的所有镜像
 docker rmi $(docker images -f "dangling=true" -q)
+# 删除镜像，xargs 的 -r 参数表示如果参数为空则不执行后面的命令
+docker images -f="dangling=true" -q | xargs -r docker rmi
 ```
 
 
