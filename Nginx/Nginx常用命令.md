@@ -15,11 +15,24 @@ nginx -p /path/
 2. window 启动方式
 
 ```bash
+
 # 注意需要 nginx 的安装目录去执行命令，如果配置了 nginx 的环境变量，默认读取的用户用户的下的配置，需要 conf、logs 等相关文件夹复制到用户目录才行
 start nginx 
+
+# 修改配置文件重新加载
+nginx -s reload 
+
 ```
 
 ## 其他常用命令
+
+```bash
+
+# 查看帮助信息
+nginx [-h | -?]
+
+
+```
 
 1. -?,-h : 查看帮助信息
 2. -v : 显示版本信息
