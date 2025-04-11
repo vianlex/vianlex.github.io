@@ -41,7 +41,7 @@ ssh-keygen -t rsa -C "vianlex@email.com" -f ~/.ssh/vianlex_rsa
 
 ```bash
 
-# 将公钥复制到程服务器 ~/.ssh/authorizeys 文件中
+# 使用 ssh-copy-id 命令将公钥复制到程服务器 ~/.ssh/authorized_keys 文件中
 # -i 参数指定公钥文件，不指定的话，ssh-copy-id 命令默认读取用户目录下 .ssh 文件夹中的 id_rsp.pub 文件
 ssh-copy-id -i ~/.ssh/id_rsp.pub  username@host -p 22
 
