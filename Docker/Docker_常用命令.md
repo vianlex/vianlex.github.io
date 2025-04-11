@@ -10,6 +10,7 @@ docker images 语法格式 `docker images [OPTIONS] [REPOSITORY[:TAG]]`，可选
 - docker images -q	列出显示镜像 ID
 
 ```bash
+
 # 查看所有镜像
 docker images 
 
@@ -48,6 +49,7 @@ docker images --format "{{.Repository}} -- {{.ID}} -- {{.Size}}"
 docker images --format "{{.Repository}} {{.ID}} {{.Size}} {{.di}}"
 # 或者 
 docker images --fotmat "{{.ID}}"
+
 ```
 
 
@@ -56,6 +58,7 @@ docker images --fotmat "{{.ID}}"
 docker rmi 命令语法格式：`docker rmi [ repository:tag | imageId  ] `，可选参数 -f 指定强制删除
 
 ```bash
+
 # 根据镜像仓库加标签删除 
 docker rmi nginx:latest
 
@@ -70,6 +73,7 @@ docker rmi $(docker images -q)
 docker rmi $(docker images -f "dangling=true" -q)
 # 删除镜像，xargs 的 -r 参数表示如果参数为空则不执行后面的命令
 docker images -f="dangling=true" -q | xargs -r docker rmi
+
 ```
 
 
@@ -104,6 +108,7 @@ docker images -f="dangling=true" -q | xargs -r docker rmi
 ```bash
 #创建并启动 nginx 容器
 docker run -p 81:80  -v /data:/usr/share/nginx/html --name mynginx -d nginx:latest
+
 ```
 ### 2. docker ps 查看容器
 
@@ -120,6 +125,7 @@ docker run -p 81:80  -v /data:/usr/share/nginx/html --name mynginx -d nginx:late
     - label 根据标签过滤
 
 ```bash
+
 docker ps --filter "label=color"
 
 docker ps --filter "name=xxxxx"
@@ -138,18 +144,22 @@ docker ps -f before=9c3527ed70ce
 docker stop 语法格式 `docker stop [--time , -t] container [container...]` 停止一个或者多个正在运行的容器，可选参数 -t 指定运行命令多少秒后停止容器
 
 ```bash
+
 # 根据容器 id 停止容器
 docker stop 9c3527ed70ce
 
 # 根据条件过滤停止容器
 docker stop  $(docker ps -q -f name=myNginx)
+
 ```
 
 ### 3. docker start 启动容器
 
 ```bash
+
 # 根据容器名称或者id启动容器
 docker start [container-name|container-id]
+
 ```
 
 ### 4. docker restart 者重启容器
@@ -157,6 +167,7 @@ docker start [container-name|container-id]
 可选参数 `--time, -t ` 指定多少秒后停止并重启容器
 
 ```bash
+
 # 根据容器 id 重启容器
 docker restart 9c3527ed70ce
 docker restart  $(docker ps -q -f name=myNginx)
@@ -170,6 +181,7 @@ docker restart  $(docker ps -q -f name=myNginx)
 ```bash
 # 删除容器，
 docker rm [container-name|container-id]
+
 ```
 
 ### 6. docker logs 查看容器运行日志
@@ -186,6 +198,7 @@ docker logs --since 30m container_id
 
 #查看某时间段日志：
 docker logs -t --since="2018-02-08T13:23:37" --until "2018-02-09T12:23:37" container_id
+
 ```
 
 ### 7. docker exec 命令
@@ -193,6 +206,7 @@ docker logs -t --since="2018-02-08T13:23:37" --until "2018-02-09T12:23:37" conta
 在宿主机运行容器中的命令，使用例子如下：
 
 ```bash
+
 # 进入容器的终端命令行
 docker exec -it [container_id | container_name] [/bin/sh | /bin/bash] 
 
@@ -201,6 +215,7 @@ docker exec [container_id | container_name]  cat /logs/ils.2020-08-19.log
 
 # 运行容器的命令
 docker exec -it [container_id | container_name] nginx -s reload 
+
 ```
 
 ### 8. docker cp 命令
@@ -208,11 +223,13 @@ docker exec -it [container_id | container_name] nginx -s reload
 将容器中的文件复制到宿主机中或者将宿主机的文件复制容器中
 
 ```bash
+
 # 将容器文件复制到宿主机中
 docker cp [container_id | container_name]:/xxx/xxx  /home/xxxxxx
 
 # 将宿主机文件复制到容器中
 docker cp /home/xxxxxx  [container_id | container_name]:/xxx/xxx
+
 ```
 
 
@@ -223,21 +240,28 @@ docker cp /home/xxxxxx  [container_id | container_name]:/xxx/xxx
 docker save 命令语法 ` docker save [ -o | --output | > ]  filename.tar [ reposity:tag | imageId ] `
 
 ```bash
+
 #第一种方式
 docker save -o flannel.tar rancher/mirrored-flannelcni-flannel:v0.20.0
 #第二种方式
-docker save -o > flannel-cni-plugin.tar fcecffc7ad4a
+docker save  > flannel-cni-plugin.tar fcecffc7ad4a
+
 ```
 ### 2. docker load 命令将镜像归档文件导入镜像仓库
 
 docker load 命令语法 `docker load [ --input | < ] filename.tar` 
 
 ```bash
+
 # 第一种方式
 docker load --input filename.tar
 
 # 第二种方式
 docker load < filename.tar
+
+# 如果导入的镜像没有仓库和标签，使用 docker tag 命令修改
+docker tag ancher/mirrored-flannelcni-flannel:1.0.0  container_id
+
 ```
 
 
