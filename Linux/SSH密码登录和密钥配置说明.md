@@ -74,7 +74,7 @@ chmod -R 700 ~/.ssh
 port 2222
 # 允许 root 用户通过ssh登录
 PermitRootLogin yes
-# 禁用密码登录
+# 禁用密码登录（阿里云服务器重置 Root 密码时，会自动修改 yes，开启密码登录）
 PasswordAuthentication no
 # 允许使用ssh权限登录
 RSAAuthentication yes
