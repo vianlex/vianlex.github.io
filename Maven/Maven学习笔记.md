@@ -47,16 +47,60 @@ Maven 会检验远程仓库是否存在依赖的 Jar 包，如果存在，才会
 
 2. 匹配模式规则说明：
 
-- * 表示匹配所有仓库，即 Maven 通过 repositories 配置的仓库查找依赖时，会将 repositories 仓库的地址替换成 mirror 镜像地址，再去查找依赖包。
-- external:* 表示匹配所有非本地文件协议的仓库
-- repo1	表示只匹配 repo1 仓库
-- repo1,repo2 表示只匹配 repo1, repo2 两个仓库
-- *,!repo1	匹配除 repo1 外的所有仓库
-- external:http:*	匹配所有 HTTP 协议的仓库
+- `*` 表示匹配所有仓库，即 Maven 通过 repositories 配置的仓库查找依赖时，会将 repositories 仓库的地址替换成 mirror 镜像地址，再去查找依赖包。
+- `repo1` 表示只匹配 repo1 仓库
+- `repo1,repo2` 表示只匹配 repo1, repo2 两个仓库
+- `*,!repo1` 表示匹配除 repo1 外的所有仓库
+- `external:*` 表示匹配所有非 file:// 协议的仓库
+- `external:http:*`	表示匹配所有 HTTP 协议的仓库
+- `external:https:*`	表示匹配所有 HTTPS 协议的仓库
 
 
-3. 多个 mirror 匹配优先级
+3. 多个 mirror 匹配规则说明
 
+3.1 精确匹配优先于通配符
+
+```xml
+
+<mirrors>
+    <!-- 对 central 使用这个镜像 -->
+    <mirror>
+        <id>aliyun-central</id>
+        <mirrorOf>central</mirrorOf>
+        <url>https://maven.aliyun.com/repository/central</url>
+    </mirror>
+    
+    <!-- 对其他仓库使用这个镜像 -->
+    <mirror>
+        <id>aliyun-others</id>
+        <mirrorOf>*</mirrorOf>
+        <url>https://maven.aliyun.com/repository/public</url>
+    </mirror>
+</mirrors>
+
+```
+
+3.2 排除语法
+
+```xml
+
+<mirrors>
+    <!-- 匹配除了 internal-repo 外的所有仓库 -->
+    <mirror>
+        <id>public-mirror</id>
+        <mirrorOf>*,!internal-repo</mirrorOf>
+        <url>https://public-mirror.com</url>
+    </mirror>
+    
+    <!-- 为 internal-repo 单独配置 -->
+    <mirror>
+        <id>internal-mirror</id>
+        <mirrorOf>internal-repo</mirrorOf>
+        <url>http://internal.company.com</url>
+    </mirror>
+</mirrors>
+
+```
 
 
 
