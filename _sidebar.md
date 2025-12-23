@@ -21,6 +21,8 @@
   - [Drools 笔记](/RuleEngine/Drools笔记.md)
 
 - **Maven**
+  - [Maven 学习笔记](/Maven/Maven学习笔记.md)
+  - [Maven 常用命令](/Maven/Maven常用命令.md) 
   - [Maven 问题记录](/Maven/Maven问题记录.md)
 
 - **Jmeter**
