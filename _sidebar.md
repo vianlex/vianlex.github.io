@@ -47,6 +47,8 @@
   - [kubeadm 部署 k8s 集群环境](/Kubernetes/kubeadm部署k8s集群.md)
   - [kubeadm安装k8s问题记录](/Kubernetes/kubeadm安装k8s问题记录.md)
 
+- **分布式知识点**
+  - [ShardingSphere 分库分表](/分布式知识点/ShardingSphere分库分表.md) 
 
 - **Linux**
   - [Linux 常用命令](/Linux/常用命令记录.md)
