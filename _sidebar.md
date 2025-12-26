@@ -24,6 +24,7 @@
   - [Maven 学习笔记](/Maven/Maven学习笔记.md)
   - [Maven 常用命令](/Maven/Maven常用命令.md) 
   - [Maven 问题记录](/Maven/Maven问题记录.md)
+  - [Mvnw 知识点](/Maven/mvnw知识点.md)
 
 - **Jmeter**
   - [Jemeter 入门笔记](/Jemeter/Jemeter_入门笔记.md)

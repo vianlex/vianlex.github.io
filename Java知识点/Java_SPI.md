@@ -256,7 +256,3 @@ public class JdkProxyFactory extends ProxyFactory {
 3. 通过 InputStream 流将文件里面的具体实现类的全类名读取出来，
 4. 根据获取到的全类名，先判断跟 spi 接口是否为同一类型，如果是的，那么就通过反射的机制构造对应的实例对象，
 5. 将构造出来的实例对象添加到 Providers 的列表中。
-
-1. 通过类加载器 ClassLoader 的 getResources() 
-
-Enumeration<URL> getResources(String name)
