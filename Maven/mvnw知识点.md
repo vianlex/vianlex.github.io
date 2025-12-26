@@ -70,16 +70,15 @@ mvnw 命令使用示例：
 ```
 
 
-## `mvn wrapper:wrapper ` 命令常用可选参数说明
+## `Maven Wrapper`命令常用可选参数说明
 
 - `wrapperVersion` 指定 wrapper 插件版本
 - `maven | mavenVersion` 指定项目要使用的 Maven 版本
 - `distributionBase` 指定 maven 版本 zip 包的缓存目录，默认是 `~/.m2/wrapper/dists`，我们可以设置为 `-DdistributionBase=.mvw/wrapper/dists `
-- `distributionPath` 指定 maven 版本解压后的目录， mvnw 命令构建项目调用的该目录的 maven，默认是 `~/.m2/wrapper/dists `
+- `distributionPath` 指定 maven 版本解压后的目录， mvnw 命令构建项目调用该目录的 maven，默认是 `~/.m2/wrapper/dists `
 - `distributionUrl` 指定 maven 版本的下载地址，如：`https://repo.maven.apache.org/maven2/org/apache/maven/apache-maven/3.8.6/apache-maven-3.8.6-bin.zip`，不指定下载地址的话，会自动根据命令指定的版本生成。
 - `wrapperUrl`	指定 Wrapper JAR 的完整的下载地址，默认自动生成。
 - `wrapperBase` 指定本地存储 Wrapper JAR 的目录，默认值 `-DwrapperBase=.mvn/wrapper`
-
 
 
 注意：项目安装 `maven wrapper`, 当我们要修改 `maven wrapper` 的参数，直接修改 `maven-wrapper.properties` 配置文件即可。
