@@ -5,6 +5,7 @@
   - [Instrumentation 入门笔记](/Java知识点/Instrumentation_知识笔记.md)
   - [main 和 classpath 相关知识](/Java知识点/Java_main_classpath.md)
   - [Java SPI 机制](/Java知识点/Java_SPI.md)
+  - [Java 进制转换和位运算](/Java知识点/Java进制转换和位运算.md)
 
 - **Java设计模式**
   - [代理模式](/Java设计模式/代理模式.md)
@@ -16,6 +17,8 @@
 
 - **Spring**
   - [ANT 和 MVC 路径模式](/Spring/ANT和MVC路径模式.md)
+  - [SpringBoot 常用注解说明](Spring/SpringBoot常用注解说明.md)
+  - [SpringBoot 问题记录](/Spring/SpringBoot问题记录.md)
 
 - **规则引擎**
   - [Drools 笔记](/RuleEngine/Drools笔记.md)
@@ -25,6 +28,7 @@
   - [Maven 常用命令](/Maven/Maven常用命令.md) 
   - [Maven 问题记录](/Maven/Maven问题记录.md)
   - [Mvnw  知识点](/Maven/mvnw知识点.md)
+  - [Maven 常用插件](/Maven/Maven常用插件.md)
 
 - **Jmeter**
   - [Jemeter 入门笔记](/Jemeter/Jemeter_入门笔记.md)
@@ -89,6 +93,4 @@
 - **计算机网络**
   - [域名知识记录.md](/计算机网络/域名知识记录.md)
   - [网络设备知识记录](/计算机网络/网络设备知识记录.md)
-
-- **其他知识点**
-  - [软件名称记录](/other/软件名称记录.md)   
+  - [软件名称记录](/计算机网络/软件名称记录.md)   
