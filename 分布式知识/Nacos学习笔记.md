@@ -1,7 +1,7 @@
 # Nacos 学习笔记
 
 
-## SpringBoot 使用 Nacos 配置
+## SpringBoot 使用配置
 
 ### 启动读取配置
 
@@ -63,17 +63,44 @@ SpringBoot 启动读取 Nacos 配置时，遵循以下两种路径。
 - 配置合并：如果找到了 user-service-dev.yaml，系统仍然会合并 user-service.yaml 的配置（如果存在），环境特定配置优先级更高
 
 
-### 配置加载与合并
+### 配置加载与合并流程
 
 ```text
-
-最低 ← 本地 bootstrap 或者 application 配置
-      ← dataId 为 ${prefix}.${extension} 的配置 (如 user-service.yaml)
-      ← dataId 为 ${prefix}-${profile}.${extension} 的配置 (user-service-dev.yaml) [覆盖通用]
-      ← shared-configs 配置 (多个 shared-configs 按配置顺序加载，后加载的优先级高)
-      ← extension-configs 配置 (多个 extension-configs，按配置顺序加载，后加载的优先级高)
-      ← 启动参数 (命令行参数) → 最高
-
+开始
+  │
+  ├─→ 检查bootstrap.yml中是否显式配置了data-id?
+  │     │
+  │     ├─→ 是：直接模式
+  │     │     ├─→ 使用指定的data-id
+  │     │     ├─→ 忽略spring.application.name
+  │     │     └─→ 忽略spring.profiles.active
+  │     │
+  │     └─→ 否：推导模式
+  │           ├─→ 读取spring.application.name
+  │           ├─→ 读取spring.profiles.active
+  │           ├─→ 读取file-extension
+  │           │
+  │           └─→ 生成候选DataId列表（优先级从高到低）：
+  │                1. ${prefix}-${profile}.${extension}
+  │                2. ${prefix}.${extension}
+  │                3. ${prefix}
+  │                4. application-${profile}.${extension}
+  │                5. application.${extension}
+  │
+  ├─→ 按优先级在Nacos Server上查找配置
+  │     │
+  │     ├─→ 找到：加载该配置
+  │     │     ├─→ 如果找到的是环境特定配置
+  │     │     │    还会合并通用配置（如果存在）
+  │     │     └─→ 环境配置覆盖通用配置
+  │     │
+  │     └─→ 未找到：尝试下一个候选DataId
+  │
+  ├─→ 加载共享配置（shared-configs）
+  ├─→ 加载扩展配置（extension-configs）
+  ├─→ 合并所有配置源
+  ├─→ 建立Nacos配置监听
+  └─→ 完成配置加载
 ```
 
 
