@@ -53,6 +53,11 @@
 
 - **分布式知识点**
   - [ShardingSphere 分库分表](/分布式知识点/ShardingSphere分库分表.md) 
+  - [Kafka 学习笔记](/分布式知识点/Kafka学习笔记.md)
+  - [Kafka 安装笔记](/分布式知识点/Kafka安装笔记.md)
+  - [Kafka 消息缓存机制](/分布式知识点/Kafka生产者消息缓存机制.md)
+  - [RocketMQ 学习笔记](/分布式知识点/RocketMQ学习笔记.md)
+  - [Nacos 学习笔记](/分布式知识点/Nacos学习笔记.md)
 
 - **Linux**
   - [Linux 常用命令](/Linux/常用命令记录.md)
