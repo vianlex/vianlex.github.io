@@ -85,6 +85,10 @@
 - **Shell 知识记录**
   - [Awk 基础用法](/Shell/Awk基础用法.md)
   - [Sed 基础用法](/Shell/Sed基础用法.md)
+  
+-  **Git 知识记录**
+   - [Git 学习笔记](/Git/Git学习笔记.md)
+   - [Git 快捷操作技巧](/Git/Git 快捷操作技巧.md)
 
 - **XML相关知识**
   - [Dom4j 入门笔记](/Xml/Dom4j入门笔记.md)
