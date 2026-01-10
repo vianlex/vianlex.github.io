@@ -15,7 +15,7 @@ seata:
   enable-auto-data-source-proxy: true  
   service:
     vgroup-mapping:
-      # 表示 my_tx_group 微服务事务分组，使用 default 集群的 Seata TC 服务 
+      # 表示同一个 my_tx_group 微服务事务分组的服务（注意：要将使用同个 Seata TC 服务的，微服务都定义为相同的事务组），使用 default 集群的 Seata TC 服务 
       my_tx_group: default
     grouplist:
       # 设置 Seata Server 的服务地址
