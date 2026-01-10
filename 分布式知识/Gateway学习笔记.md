@@ -55,7 +55,8 @@ spring:
       routes:
         # 定义路由 ID
         - id: order-server
-          # 定义路由的 URL 要转发到哪个服务器，lb 转发逻辑是在 ReactiveLoadBalancerClientFilter 全局过滤器中实现的
+          # lb 转发逻辑是在 ReactiveLoadBalancerClientFilter 全局过滤器中实现的，需要整合负载均衡器 loadbalancer
+          # 定义路由的 URL 要转发到哪个服务器
           uri: lb://order-server 
           # 谓词断言，表示需要匹配哪些 URL 地址转发到 uri 服务
           predicates:
@@ -395,7 +396,7 @@ spring:
 
 全局过滤器（GlobalFilter）：对所有进入网关的请求都生效的过滤器，无论请求匹配哪个路由。
 
-自定义全局过滤器，只需要实现 `GlobalFilter` 接口，然后交给 Spring 容器管理即可。
+自定义全局过滤器，只需要实现 `GlobalFilter` 接口，然后交给 Spring 容器管理即可，不需要在配置文件中配置，。
 
 ```java
 @Component
