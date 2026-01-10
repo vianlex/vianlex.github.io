@@ -429,3 +429,34 @@ public class AuthGlobalFilter implements GlobalFilter, Ordered {
     }
 }
 ```
+
+
+## 整合 Sentinel 限流
+
+支持路由维度和 API 维度两种颗粒度限流。
+
+第一步：引入 Sentinel 限流依赖
+
+```xml
+<!-- 网关限流引入 sentinel 依赖  -->
+<dependency>
+    <groupId>com.alibaba.cloud</groupId>
+    <artifactId>spring-cloud-alibaba-sentinel-gateway</artifactId>
+</dependency>
+
+<dependency>
+    <groupId>com.alibaba.cloud</groupId>
+    <artifactId>spring-cloud-starter-alibaba-sentinel</artifactId>
+</dependency>
+```
+
+第二步：在配置文件中添加以下配置即可
+
+```yaml
+spring:
+  cloud:
+    sentinel:
+      transport:
+        port: 8719
+        dashboard: localhost:8858
+```
