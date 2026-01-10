@@ -9,13 +9,13 @@
 seata:
   enable: true
   application-id: ${spring.application.name}
-  # seata 服务分组，注意 tx-service-group 配置的值 service.vgroup_mapping 配置的属性
+  # 定义微服务所属的分布式事务组，注意 tx-service-group 配置的值 service.vgroup_mapping 配置的属性
   tx-service-group: my_tx_group
   # 自动代理数据源
   enable-auto-data-source-proxy: true  
   service:
     vgroup-mapping:
-      # 将事务组映射到 Seata 集群
+      # 表示 my_tx_group 微服务事务分组，使用 default 集群的 Seata TC 服务 
       my_tx_group: default
     grouplist:
       # 设置 Seata Server 的服务地址

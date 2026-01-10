@@ -60,7 +60,8 @@
   - [Gateway 学习笔记](/分布式知识点/Gateway学习笔记.md)
   - [Nacos 学习笔记](/分布式知识点/Nacos学习笔记.md)
   - [OpenFeign 学习笔记](/分布式知识点/OpenFeign学习笔记.md)
-  - [Sentinel 学习笔记](分布式知识点/Sentinel学习笔记.md)
+  - [Sentinel 学习笔记](/分布式知识点/Sentinel学习笔记.md)
+  - [SkyWalking 学习笔记](/分布知识点/SkyWalking学习笔记.md)
 
 - **Linux**
   - [Linux 常用命令](/Linux/常用命令记录.md)
