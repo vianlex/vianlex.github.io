@@ -20,6 +20,9 @@ git commit -m "初始化仓库代码"
 # 将本地仓库代码推送远程仓库
 git push origin master
 
+# 如果存在冲突文件，想丢弃远程文件，可以通过 -f 强制覆盖推送
+git push origin master -f
+
 ```
 
 
