@@ -1,3 +1,15 @@
+- **分布式知识点**
+  - [ShardingSphere 分库分表](/分布式知识点/ShardingSphere分库分表.md) 
+  - [Kafka 学习笔记](/分布式知识点/Kafka学习笔记.md)
+  - [Kafka 安装笔记](/分布式知识点/Kafka安装笔记.md)
+  - [Kafka 消息缓存机制](/分布式知识点/Kafka生产者消息缓存机制.md)
+  - [RocketMQ 学习笔记](/分布式知识点/RocketMQ学习笔记.md)
+  - [Gateway 学习笔记](/分布式知识点/Gateway学习笔记.md)
+  - [Nacos 学习笔记](/分布式知识点/Nacos学习笔记.md)
+  - [OpenFeign 学习笔记](/分布式知识点/OpenFeign学习笔记.md)
+  - [Sentinel 学习笔记](/分布式知识点/Sentinel学习笔记.md)
+  - [SkyWalking 学习笔记](/分布知识点/SkyWalking学习笔记.md)
+
 - **规则引擎**
   - [Drools 笔记](/RuleEngine/Drools笔记.md)
 
@@ -29,17 +41,6 @@
   - [kubeadm 部署 k8s 集群环境](/Kubernetes/kubeadm部署k8s集群.md)
   - [kubeadm安装k8s问题记录](/Kubernetes/kubeadm安装k8s问题记录.md)
 
-- **分布式知识点**
-  - [ShardingSphere 分库分表](/分布式知识点/ShardingSphere分库分表.md) 
-  - [Kafka 学习笔记](/分布式知识点/Kafka学习笔记.md)
-  - [Kafka 安装笔记](/分布式知识点/Kafka安装笔记.md)
-  - [Kafka 消息缓存机制](/分布式知识点/Kafka生产者消息缓存机制.md)
-  - [RocketMQ 学习笔记](/分布式知识点/RocketMQ学习笔记.md)
-  - [Gateway 学习笔记](/分布式知识点/Gateway学习笔记.md)
-  - [Nacos 学习笔记](/分布式知识点/Nacos学习笔记.md)
-  - [OpenFeign 学习笔记](/分布式知识点/OpenFeign学习笔记.md)
-  - [Sentinel 学习笔记](/分布式知识点/Sentinel学习笔记.md)
-  - [SkyWalking 学习笔记](/分布知识点/SkyWalking学习笔记.md)
 
 - **Linux**
   - [Linux 常用命令](/Linux/常用命令记录.md)
@@ -49,7 +50,6 @@
   - [iptables 学习笔记](/Linux/iptables学习笔记.md)
   - [SSH 密码登录和密钥配置说明](/Linux/SSH密码登录和密钥配置说明.md)
 
-
 - **Nginx**
   - [location 指令笔记](/Nginx/location指令笔记.md)
   - [ngx_http_proxy_module模块笔记](/Nginx/ngx_http_proxy_module模块笔记.md)
@@ -58,11 +58,19 @@
   - [Nginx 常用命令](/Nginx/Nginx常用命令.md)
 
 
+- **前端知识点**
+  - [Node 环境配置记录](/前端知识点/Node环境配置记录.md)
+  - [JS的 bind、call、apply 用法](/前端知识点/JavaScript中的bind用法.md)
+  - [JS的 this 对象](/前端知识点/JavaScript中的this对象.md)
+  - [JS事件循环.md](/前端知识点/JavaScript事件循环.md)
+  - [JS变量声明和作用域](/前端知识点/JavaScript变量声明和作用域.md)
+  - [JS继承和原型链](/前端知识点/JavaScript继承和原型链.md)
+  - [JS正则表达式](/前端知识点/JavaScript正则表达式.md)
+  - [JS闭包](/前端知识点/JavaScript闭包.md)
+  - [JS虚拟 DOM](/前端知识点/JavaScript虚拟DOM.md)
+
 - **Redis**
   - [Redis缓存穿透、击穿、雪崩](/Redis/Redis缓存穿透-击穿-雪崩.md)
-
-- **NodeJs**
-  - [Node 环境配置记录](/NodeJs/Node环境配置记录.md)
 
 - **Shell 知识记录**
   - [Awk 基础用法](/Shell/Awk基础用法.md)
