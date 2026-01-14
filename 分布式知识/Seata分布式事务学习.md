@@ -1,4 +1,4 @@
-# Nacos 学习笔记
+# Seata 分布事务学习笔记
 
 
 ## SpringBoot 整合 Seata 配置
@@ -56,5 +56,21 @@ seata:
     vgroup-mapping:
       # 事务组映射到 Seata 集群，表示事务组使用的是哪个集群的 seata-server 服务端
       my_tx_group: default
+
+```
+
+## ShardingJdbc 使用 Seata 分布事务
+
+第一步引入依赖
+
+```xml
+
+
+```
+
+第二步修改配置文件
+
+```yaml
+
 
 ```
