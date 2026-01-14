@@ -49,6 +49,7 @@
   - [ECS 云服务器挂载数据盘](/Linux/ECS云服务器挂载数据盘.md)
   - [iptables 学习笔记](/Linux/iptables学习笔记.md)
   - [SSH 密码登录和密钥配置说明](/Linux/SSH密码登录和密钥配置说明.md)
+  - [Shell 脚本学习笔记](/Linux/Shell脚本学习笔记.md)
 
 - **Nginx**
   - [location 指令笔记](/Nginx/location指令笔记.md)
