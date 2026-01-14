@@ -8,7 +8,7 @@
   - [Nacos 学习笔记](/分布式知识点/Nacos学习笔记.md)
   - [OpenFeign 学习笔记](/分布式知识点/OpenFeign学习笔记.md)
   - [Sentinel 学习笔记](/分布式知识点/Sentinel学习笔记.md)
-  - [SkyWalking 学习笔记](/分布知识点/SkyWalking学习笔记.md)
+  - [SkyWalking 学习笔记](/分布式知识点/SkyWalking学习笔记.md)
 
 - **规则引擎**
   - [Drools 笔记](/RuleEngine/Drools笔记.md)
