@@ -9,6 +9,8 @@
   - [OpenFeign 学习笔记](/分布式知识点/OpenFeign学习笔记.md)
   - [Sentinel 学习笔记](/分布式知识点/Sentinel学习笔记.md)
   - [SkyWalking 学习笔记](/分布式知识点/SkyWalking学习笔记.md)
+  - [ES 基础概念学习笔记](/分布式知识点/ES基础概念笔记.md)
+  - [ES 语法查询学习笔记](/分布式知识点/ES语法查询学习笔记.md)
 
 - **规则引擎**
   - [Drools 笔记](/RuleEngine/Drools笔记.md)
