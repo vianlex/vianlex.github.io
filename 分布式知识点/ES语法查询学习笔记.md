@@ -796,3 +796,23 @@ GET /locations/_search
   }
 }
 ```
+
+5、按距离排序
+
+```json
+GET /locations/_search
+{
+  "sort": [
+    {
+      "_geo_distance": {
+        "location": [116.4074, 39.9042],  // 中心点
+        "order": "asc",  // 升序：从近到远
+        "unit": "km",    // 单位
+        "distance_type": "plane",  // 计算方式：plane/arc
+        "mode": "min",   // 模式：min/max/median/avg
+        "ignore_unmapped": true  // 忽略未映射字段
+      }
+    }
+  ]
+}
+```
