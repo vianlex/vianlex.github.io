@@ -442,14 +442,16 @@ GET /order_index/_search
 
 ## mutil_match 多字段分词查询
 
+mutil_match 查询会对多个字段的倒排索引进行匹配查询。
+
 ```json
 GET /order_index/_search
 {
   "query": {
     "multi_match": {
       "query": "北京分批",
-      // 多字段 or 分词查询
-      "fields": ["remark", "address"]
+      // 多字段匹配查询, ^ 指定查询字段的权重来计算分数，分数越高越排前面
+      "fields": ["remark^2", "address"]
     }
   }
 }
