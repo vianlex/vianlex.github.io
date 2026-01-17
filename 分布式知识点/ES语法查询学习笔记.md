@@ -960,3 +960,30 @@ GET /order_index/_search
     }
 }
 ```
+
+## 管道聚合
+
+通过管道的方式，将上一个聚合操作的结果，传给下一个聚合操作。
+
+
+```json
+GET /order_index/_search
+{
+  "aggs": {
+    "totalQuantity": {
+      "terms": {"field": "orderNumber.keyword"},
+      "aggs": {
+        "totalAmount": {
+          "sum": { "field": "amount" }
+        }
+      }
+    },
+    // 获取 totalQuantity 和 totalAmount 分组后最小桶
+    "min_amount_bucket": {
+        "min_bucket": {
+        "buckets_path": "totalQuantity>totalAmount"
+        }
+    }
+  }
+}
+```
