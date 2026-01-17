@@ -151,13 +151,13 @@ Java   | 102, 105
 
 #### 索引基本操作
 
-1、创建索引
+1、创建索引（添加文档时，如果索引不存在，会自动创建）
 
-```bash
-# 简单创建索引
+```json
+// 简单创建索引
 PUT http://127.0.0.1:9200/order_index
 
-# 创建索引时指定配置和字段信息
+// 创建索引时指定配置和字段信息
 PUT http://127.0.0.1:9200/order_index
 {
     "settings": {
@@ -180,11 +180,11 @@ PUT http://127.0.0.1:9200/order_index
 
 2、查询索引
 
-```bash
+```json
 GET http://127.0.0.1:9200/order_index
 
 
-# 查询索引的数据
+// 查询索引的数据
 GET /order_index/_search
 {
     "query": {
@@ -263,7 +263,7 @@ GET /order_index
 ##### 索引别名的基本操作
 
 1、一个别名可以指向多个索引
-```
+```json
 // 别名 orders 同时指向两个索引
 POST /_aliases
 {
@@ -292,7 +292,7 @@ GET /orders/_search
 
 2、一个索引创建多个别名
 
-```
+```json
 // 一个索引拥有多个别名
 POST /_aliases
 {
@@ -321,7 +321,7 @@ POST /_aliases
 
 3、索引的别名可以自带过滤条件
 
-```
+```json
 // 创建带过滤条件的别名
 POST /_aliases
 {
@@ -347,7 +347,7 @@ GET /orders_paid/_search
 
 4、别名可以指定路由
 
-```
+```json
 // 创建带路由的别名
 POST /_aliases
 {
@@ -399,7 +399,7 @@ POST /_aliases
 
 #### 文档基本操作
 
-1、写入文档
+1、写入文档（index 索引不存在时，会自动创建）
 
 ```bash
 # 写入文档时，指定文档 ID
