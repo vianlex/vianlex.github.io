@@ -934,3 +934,29 @@ GET /order_index/_search
     }
 }
 ```
+
+3、多字段嵌套分组
+
+```json
+GET /order_index/_search
+{
+    "query": {
+        "match": {"remark": "配送"}
+    },
+    "aggs": {
+      "group1": {
+        "terms": {
+            "field": "remark.keyword"
+        },
+        "aggs": {
+          "group2": {
+            // 统计 min、max、count、sum
+            "stats": {
+                "field": "quantity"
+            }
+          }
+        }
+      }
+    }
+}
+```
