@@ -755,7 +755,7 @@ GET /locations/_search
 
 ```
 
-3、geo_bounding_box - 矩形范围查询例子
+3、geo_bounding_box 矩形范围查询例子
 
 ```json
 GET /locations/_search
@@ -771,6 +771,26 @@ GET /locations/_search
           "lat": 39.8,
           "lon": 116.5
         }
+      }
+    }
+  }
+}
+```
+
+4、geo_polygon 多边形范围查询例子
+
+```json
+GET /locations/_search
+{
+  "query": {
+    "geo_polygon": {
+      "location": {
+        "points": [
+          { "lat": 40.0, "lon": 116.0 },
+          { "lat": 40.0, "lon": 116.5 },
+          { "lat": 39.5, "lon": 116.5 },
+          { "lat": 39.5, "lon": 116.0 }
+        ]
       }
     }
   }
