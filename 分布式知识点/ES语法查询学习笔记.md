@@ -818,3 +818,118 @@ GET /locations/_search
   ]
 }
 ```
+
+
+## 聚合查询
+
+### max 等聚合查询
+
+```json
+GET /order_index/_search
+{
+    "query": {
+        "term": {"remark": "配送"}
+    },
+    "_source": ["quantity"],
+    "aggs": {
+      "maxQuantity": {"max": { "field": "quantity" }},
+      "minQuantity": {"min": { "field": "quantity" }},
+      "sumQuantity": {"sum": {"field": "quantity"}}
+    }
+}
+```
+
+### stats 聚合查询
+
+stats 聚合查询会直接返回 max、min、count、sum 等聚合结果
+
+```json
+GET /order_index/_search
+{
+    "query": {
+        "term": {"remark": "配送"}
+    },
+    "_source": ["quantity"],
+    "aggs": {
+      "statsQuantity": {"stats": { "field": "quantity" }}
+    }
+}
+
+// 输出结果
+"aggregations": {
+    "statsQuantity": {
+      "count": 3,
+      "min": 2,
+      "max": 10,
+      "avg": 5.333333333333333,
+      "sum": 16
+    }
+}
+```
+
+### cardinate 去重查询
+
+```json
+GET /order_index/_search
+{
+    "query": {
+        "term": {"remark": "配送"}
+    },
+    "aggs": {
+      "cardinate": {
+        // 注意不能 text 类型去重，如果 text 类型想去重需要字段映射属性需要设置 fielddata=true
+        "cardinality": {"field": "orderNumber.keyword"}
+      }
+    }
+}
+```
+
+
+## 桶(分组)聚合查询
+
+桶聚合查询是分组聚合查询
+
+```json
+GET /order_index/_search
+{
+    "query": {
+        "match": {"remark": "配送"}
+    },
+    "aggs": {
+       // 返回结果字段名称
+      "remarkGroup": {
+        "terms": {
+            // 按 remark.keyword 分组统计数量
+            "field": "remark.keyword",
+            // 默认返回全部数据
+            "size": 10,
+            // 对分组统计结果进行排序
+            "order":{"_count": "desc"}
+        }
+      }
+    }
+}
+```
+
+按 range 范围统计数量的例子
+
+```json
+GET /order_index/_search
+{
+    "query": {
+        "match": {"remark": "配送"}
+    },
+    "aggs": {
+      "quantityRangeCount": {
+        "range": {
+            "field": "quantity",
+            "ranges": [
+              {"key":"大于等0小于2", "to": 2},
+              {"key":"2<=quantity<5", "from": 2, "to": 5},
+              {"key": "统计大于10的", "to": 10}
+            ]
+        }
+      }
+    }
+}
+```
