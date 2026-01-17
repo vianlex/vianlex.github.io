@@ -887,7 +887,8 @@ GET /order_index/_search
 
 ## 桶(分组)聚合查询
 
-桶聚合查询是分组聚合查询
+
+1、按 terms(分组)统计数量的例子
 
 ```json
 GET /order_index/_search
@@ -911,7 +912,7 @@ GET /order_index/_search
 }
 ```
 
-按 range 范围统计数量的例子
+2、按 range 范围统计数量的例子
 
 ```json
 GET /order_index/_search
