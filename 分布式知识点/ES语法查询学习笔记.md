@@ -213,7 +213,8 @@ ES 中常见时间表达式
 - now-1m 表示从当前时间减去一个月的时间
 - now-1y 表示从当前时间减去一年的时间
 - now+1h 表示从当前时间加上一个小时的时间
-  
+
+
 ```json
 GET /order_index/_search
 {
@@ -223,7 +224,6 @@ GET /order_index/_search
         }
     }
 }
-
 ```
 
 
@@ -241,7 +241,6 @@ GET /order_index/_search
         }
     }
 }
-
 ```
 
 
@@ -259,7 +258,6 @@ GET /order_index/_search
         }
     }
 }
-
 ```
 
 
