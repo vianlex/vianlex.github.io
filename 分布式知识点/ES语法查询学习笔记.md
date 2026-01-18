@@ -440,7 +440,7 @@ GET /order_index/_search
 ```
 
 
-## mutil_match 多字段分词查询
+## mutil_match 一值匹配多字段分词查询
 
 mutil_match 查询会对多个字段的倒排索引进行匹配查询。
 
