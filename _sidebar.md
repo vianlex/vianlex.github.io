@@ -52,6 +52,8 @@
   - [iptables 学习笔记](/Linux/iptables学习笔记.md)
   - [SSH 密码登录和密钥配置说明](/Linux/SSH密码登录和密钥配置说明.md)
   - [Shell 脚本学习笔记](/Linux/Shell脚本学习笔记.md)
+  - [Tmux 命令学习笔记](/Linux/tmux命令笔记.md)
+  - [WSL 离线安装 Ubuntu](/Linux/WSL离线安装Ubuntu.md)
 
 - **Nginx**
   - [location 指令笔记](/Nginx/location指令笔记.md)
