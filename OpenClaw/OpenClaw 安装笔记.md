@@ -87,14 +87,23 @@ API Key 输入：ak_2Od9F79Ud0Gq3Oc8Le7Y16Fx71212
 openclaw gateway status
 ```
 
-## 安装插件
+## channels 通道
 
-### 安装飞书插件
-
-1、运行以下命令安装 
+### 通道基本命令
 
 ```bash
-# 运行命令，然后选择安装飞书插件
+# 查看当前有哪些通道
+openclaw channels list
+# 添加通道，并指定通道属于哪个 agent 
+openclaw channels add --type feishu --agent taizi
+```
+
+### 安装飞书通道插件
+
+1、运行以下命令安装（最新版，已内置飞书通道插件，不需要安装，直接配置即可）
+
+```bash
+# 运行命令，然后选择安装飞书飞书插件
 openclaw channels add 
 # 1. 安装成功后，输入密钥信息
 # 2. 链接模式（Feishu connection mode）选择 WebSocket 模式
@@ -106,7 +115,7 @@ openclaw channels add
 openclaw gateway restart
 ```
 
-2、查看 `~/.openclaw/openclaw.jso` 配置文件，检查飞书密钥信息是否已配置成功，如果没有手动添加以下配置
+2、查看 `~/.openclaw/openclaw.json` 配置文件，检查飞书密钥信息是否已配置成功，如果没有手动添加以下配置
 
 ```js
 // 如果配置格式不对，我们可以通过 openclaw doctor --fix 修复 openclaw 

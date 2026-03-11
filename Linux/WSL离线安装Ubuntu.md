@@ -140,34 +140,16 @@ wsl --unregister Ubuntu-24.04
 
 ## 网络代理
 
-1、临时生效（当前终端，关闭即失效）
+Windows 版本是 22H2 以上的系统，直接开启镜像网络模式即可，在 Window 用户目录下找到 `.wslconfig` 配置文件（不存在则创建），添加以下配置开启镜像网络模式。
 
 ```bash
-# WSL2 与宿主机共享网络协议栈，访问宿主机上的代理服务时，通过 cat /etc/resolv.conf 查看宿主机的自动分配 IP。
-export WIN_IP=$(cat /etc/resolv.conf | grep nameserver | awk '{print $2}')
-export http_proxy=http://$WIN_IP:7890
-export https_proxy=http://$WIN_IP:7890
-export all_proxy=socks5://$WIN_IP:7891
-export no_proxy=localhost,127.0.0.1,::1,10.0.0.0/8,172.16.0.0/12,192.168.0.0/16
+# 修改配置后，必须通过 wsl --shutdown 关闭所有 WSL 系统后，重启才生效
+[wsl2]
+networkingMode=mirrored
 ```
 
-2、apt 工具临时走代理
+非 22H2 版本的 Window 系统，需要通过 NET 端口转发的方式才能实现代理。
 
-```bash
-sudo apt -o Acquire::http::Proxy="http://$WIN_IP:7890" update
-```
-
-3、永久生效（所有终端 / 重启后都生效）
-
-在 ~/.bashrc 文件中添加以下内容，然后  `source ~/.bashrc` 使其生效
-
-```bash
-export WIN_IP=$(cat /etc/resolv.conf | grep nameserver | awk '{print $2}') 
-export http_proxy=http://$WIN_IP:7890 
-export https_proxy=http://$WIN_IP:7890  
-export all_proxy=socks5://$WIN_IP:7891 
-export no_proxy=localhost,127.0.0.1,::1,10.0.0.0/8,172.16.0.0/12,192.168.0.0/16
-```
 
 ## WSL 启动 bash 配置文件问题
 
