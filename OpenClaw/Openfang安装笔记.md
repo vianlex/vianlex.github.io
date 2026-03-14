@@ -52,7 +52,24 @@ openfang --help
 openfang agent spawn agents/hello-world/agent.toml
 ```
 
+### 自定义默认模型
 
+1、修改配置 ~/.openfang/config.toml 文件，指定自定义的默认模型
+
+```bash
+[default_model]
+provider = "longCat"
+model = "longCat/LongCat-Flash-Thinking-2601"
+api_key_env = "LONG_CAT_API_KEY"
+base_url = "https://api.longcat.chat/openai"
+```
+
+2、通过环境变量配置模型的 APK_KEY
+
+```bash
+# 在文件 ~/.openfang/.env
+LONG_CAT_API_KEY=ak_1Od9F79Yd0Gq3Oc8Me7Y20Fx8qi4V
+```
 
 ## 文档链接
 
