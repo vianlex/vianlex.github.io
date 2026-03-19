@@ -38,3 +38,11 @@ $PSDefaultParameterValues['Get-Content:Encoding'] = 'UTF8' # 设置 Get-Content 
 $PSDefaultParameterValues['Out-File:Encoding'] = 'UTF8' # 设置 Out-File 默认编码为 UTF-8（PowerShell 7+）
 
 ```
+
+## PowerShell 禁止运行脚本问题
+
+如果 PowerShell 提示「在此系统上禁止运行脚本」，请以管理员身份运行 PowerShell 并执行：
+
+```bash
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned
+```
