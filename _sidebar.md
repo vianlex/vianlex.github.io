@@ -84,7 +84,8 @@
   
 - **Window知识**
   - [OpenSSH 服务安装](/Window/OpenSSH服务安装笔记.md)
-  - [Cmd 常用](/Window/Cmd常用命令.md)
+  - [Cmd 常用命令](/Window/Cmd常用命令.md)
+  - [PowerShell 常用命令](/Window/PowerShell常用命令.md)
 
 -  **Git 知识记录**
    - [Git 学习笔记](/Git/Git学习笔记.md)
