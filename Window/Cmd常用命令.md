@@ -63,7 +63,7 @@ chcp 65001
 more utf8编码的文件.txt
 ```
 
-## findstr 命令（类型 grep 命令）
+## findstr 查找文件内容（类型 grep 命令）
 
 1、findstr 查看文件内容
 
@@ -75,6 +75,38 @@ findstr /N "^" 文件名.txt
 2、查找文件内容
 
 ```bash
+# 1. 在单个文件中搜索指定文本
+findstr "error" app.log
+
+# 2. 在多个文件中搜索（当前目录所有 .txt 文件）
+findstr "warning" *.txt
+
+# 3. 搜索时忽略大小写
+findstr /i "ERROR" app.log
+
+# 4. 显示匹配行的行号
+findstr /n "success" app.log
+
+# 5. 从管道接收内容并搜索（比如搜索目录中的特定文件）
+dir | findstr /i "test"
 
 ```
 
+3、查找文件内容，输出乱码问题
+
+```bash
+# 将 Cmd 切换为 UTF-8 编码
+chcp 65001  
+# 查找内容，并忽略大小写
+findstr /i "中文" utf8文件.txt
+```
+
+## netstat 查看端口
+
+1、基础用法
+
+```bash
+
+# 查看 8080 端口占用情况
+netstat -nao | findstr ":8080"
+```
