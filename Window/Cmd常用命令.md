@@ -72,7 +72,7 @@ more utf8编码的文件.txt
 findstr /N "^" 文件名.txt
 ```
 
-2、查找文件内容
+2、基础用法
 
 ```bash
 # 1. 在单个文件中搜索指定文本
@@ -91,8 +91,20 @@ findstr /n "success" app.log
 dir | findstr /i "test"
 
 ```
+3、正在表达式，查找文件内容
 
-3、查找文件内容，输出乱码问题
+```bash
+# 匹配以 "error" 开头，后跟数字的行（如 error123、error456）
+findstr /r /n "error[0-9]+" app.log
+
+# 匹配行首为 "INFO"，行尾为 "success" 的行
+findstr /r /b /e "INFO.*success" app.log
+
+# 匹配包含手机号（11位数字）的行
+findstr /r "1[3-9][0-9]{9}" user.txt
+```
+
+4、查找文件内容，输出乱码问题
 
 ```bash
 # 将 Cmd 切换为 UTF-8 编码
@@ -106,7 +118,10 @@ findstr /i "中文" utf8文件.txt
 1、基础用法
 
 ```bash
-
 # 查看 8080 端口占用情况
+# 参数 -a 表示显示所有端口
+# 参数 -n 表示以数字形式显示地址和端口（不解析域名 / 服务名）
+# 参数 -o 表示显示连接对应的进程 ID (PID)
+# 参数 -b 表示显示连接的应用程序
 netstat -nao | findstr ":8080"
 ```
