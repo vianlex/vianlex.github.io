@@ -82,6 +82,10 @@
   - [Awk 基础用法](/Shell/Awk基础用法.md)
   - [Sed 基础用法](/Shell/Sed基础用法.md)
   
+- **Window知识**
+  - [OpenSSH 服务安装](/Window/OpenSSH服务安装笔记.md)
+  - [Cmd 常用](/Window/Cmd常用命令.md)
+
 -  **Git 知识记录**
    - [Git 学习笔记](/Git/Git学习笔记.md)
    - [Git 快捷操作技巧](/Git/Git 快捷操作技巧.md)
