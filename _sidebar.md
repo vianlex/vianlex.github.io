@@ -53,7 +53,6 @@
   - [SSH 密码登录和密钥配置说明](/Linux/SSH密码登录和密钥配置说明.md)
   - [Shell 脚本学习笔记](/Linux/Shell脚本学习笔记.md)
   - [Tmux 命令学习笔记](/Linux/tmux命令笔记.md)
-  - [WSL 离线安装 Ubuntu](/Linux/WSL离线安装Ubuntu.md)
 
 - **Nginx**
   - [location 指令笔记](/Nginx/location指令笔记.md)
@@ -87,6 +86,7 @@
   - [Cmd 常用命令](/Window/Cmd常用命令.md)
   - [PowerShell 常见问题](/Window/PowerShell常见问题.md)
   - [PowerShell 知识点](/Window/PowerShell知识点.md)
+  - [WSL 离线安装 Ubuntu](/Linux/WSL离线安装Ubuntu.md)
 
 -  **Git 知识记录**
    - [Git 学习笔记](/Git/Git学习笔记.md)
@@ -104,4 +104,4 @@
 - **计算机网络**
   - [域名知识记录.md](/计算机网络/域名知识记录.md)
   - [网络设备知识记录](/计算机网络/网络设备知识记录.md)
-  - [软件名称记录](/计算机网络/软件名称记录.md)   
+  - [软件名称记录](/计算机网络/软件名称记录.md)
