@@ -1,4 +1,4 @@
-# OpenClaw Agent 完整详细教程
+# OpenClaw 基础知识
 
 > 本教程介绍 OpenClaw 中 Agent（智能体）的概念、作用、如何配置多个 Agent，以及 Agent 之间如何协作。
 > 消息通道：仅使用 **飞书（Feishu/Lark）**
