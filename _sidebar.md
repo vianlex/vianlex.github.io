@@ -77,8 +77,9 @@
   - [Redis缓存穿透、击穿、雪崩](/Redis/Redis缓存穿透-击穿-雪崩.md)
 
 - **Shell 知识记录**
-  - [Shell 脚本学习笔记](/Linux/Shell脚本学习笔记.md)
+  - [Shell 脚本学习笔记](/Shell/Shell脚本学习笔记.md)
   - [Awk 基础用法](/Shell/Awk基础用法.md)
+  - [Awk 学习指南](/Shell/Awk学习指南.md)
   - [Sed 基础用法](/Shell/Sed基础用法.md)
   
 - **Window知识**
