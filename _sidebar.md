@@ -51,7 +51,6 @@
   - [ECS 云服务器挂载数据盘](/Linux/ECS云服务器挂载数据盘.md)
   - [iptables 学习笔记](/Linux/iptables学习笔记.md)
   - [SSH 密码登录和密钥配置说明](/Linux/SSH密码登录和密钥配置说明.md)
-  - [Shell 脚本学习笔记](/Linux/Shell脚本学习笔记.md)
   - [Tmux 命令学习笔记](/Linux/tmux命令笔记.md)
 
 - **Nginx**
@@ -78,6 +77,7 @@
   - [Redis缓存穿透、击穿、雪崩](/Redis/Redis缓存穿透-击穿-雪崩.md)
 
 - **Shell 知识记录**
+  - [Shell 脚本学习笔记](/Linux/Shell脚本学习笔记.md)
   - [Awk 基础用法](/Shell/Awk基础用法.md)
   - [Sed 基础用法](/Shell/Sed基础用法.md)
   
