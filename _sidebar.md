@@ -1,4 +1,4 @@
-- **分布式知识点**
+- **Middleware 知识点**
   - [ShardingSphere 分库分表](/分布式知识点/ShardingSphere分库分表.md) 
   - [Kafka 学习笔记](/分布式知识点/Kafka学习笔记.md)
   - [Kafka 安装笔记](/分布式知识点/Kafka安装笔记.md)
@@ -12,24 +12,24 @@
   - [ES 基础概念学习笔记](/分布式知识点/ES基础概念笔记.md)
   - [ES 语法查询学习笔记](/分布式知识点/ES语法查询学习笔记.md)
 
-- **规则引擎**
+- **RuleEngine 知识点**
   - [Drools 笔记](/RuleEngine/Drools笔记.md)
 
-- **Maven**
+- **Maven 知识点**
   - [Maven 学习笔记](/Maven/Maven学习笔记.md)
   - [Maven 常用命令](/Maven/Maven常用命令.md) 
   - [Maven 问题记录](/Maven/Maven问题记录.md)
   - [Mvnw  知识点](/Maven/mvnw知识点.md)
   - [Maven 常用插件](/Maven/Maven常用插件.md)
 
-- **Jmeter**
+- **Jmeter 知识点**
   - [Jemeter 入门笔记](/Jemeter/Jemeter_入门笔记.md)
 
-- **Mysql**
+- **Mysql 知识点**
     - [Mysql 字符串常用函数](/Mysql/Mysql字符串常用函数.md)
     - [Mysql 开窗函数](/Mysql/Mysql开窗函数.md)
 
-- **Docker**
+- **Docker 知识点**
     - [Docker 安装笔记](/Docker/Docker_安装笔记.md)
     - [Docker 入门笔记](/Docker/Docker_入门笔记.md)
     - [Dockerfile 使用说明](/Docker/Dockerfile_使用说明.md)
@@ -38,13 +38,13 @@
     - [Docker-compose 学习记录](/Docker/Docker-compose_学习记录.md)
     - [Docker-Swarm 笔记](/Docker/Docker-Swarm_笔记.md)
 
-- **kubernetes**
+- **kubernetes 知识点**
   - [K8s 入门笔记](/Kubernetes/K8s_入门笔记.md)
   - [kubeadm 部署 k8s 集群环境](/Kubernetes/kubeadm部署k8s集群.md)
   - [kubeadm安装k8s问题记录](/Kubernetes/kubeadm安装k8s问题记录.md)
 
 
-- **Linux**
+- **Linux 知识点**
   - [Linux 常用命令](/Linux/常用命令记录.md)
   - [Linux 用户文件权限](/Linux/Linux用户文件权限.md)
   - [dnf 软件包管理工具](/Linux/dnf软件包管理工具.md)
@@ -53,7 +53,7 @@
   - [SSH 密码登录和密钥配置说明](/Linux/SSH密码登录和密钥配置说明.md)
   - [Tmux 命令学习笔记](/Linux/tmux命令笔记.md)
 
-- **Nginx**
+- **Nginx 知识点**
   - [location 指令笔记](/Nginx/location指令笔记.md)
   - [ngx_http_proxy_module模块笔记](/Nginx/ngx_http_proxy_module模块笔记.md)
   - [ngx_http_rewrite_module 模块笔记](/Nginx/ngx_http_rewrite_module模块笔记.md)
@@ -61,7 +61,7 @@
   - [Nginx 常用命令](/Nginx/Nginx常用命令.md)
 
 
-- **前端知识点**
+- **Frontend 知识点**
   - [Node 环境配置记录](/前端知识点/Node环境配置记录.md)
   - [JS的 bind、call、apply 用法](/前端知识点/JavaScript中的bind用法.md)
   - [JS的 this 对象](/前端知识点/JavaScript中的this对象.md)
@@ -73,39 +73,39 @@
   - [JS虚拟 DOM](/前端知识点/JavaScript虚拟DOM.md)
   - [React 基础知识](/前端知识点/React基础知识.md)
 
-- **Redis**
+- **Redis 知识点**
   - [Redis缓存穿透、击穿、雪崩](/Redis/Redis缓存穿透-击穿-雪崩.md)
 
-- **Shell 知识记录**
+- **Shell 知识点**
   - [Shell 脚本学习笔记](/Shell/Shell脚本学习笔记.md)
   - [Awk 基础用法](/Shell/Awk基础用法.md)
   - [Awk 学习指南](/Shell/Awk学习指南.md)
   - [Sed 基础用法](/Shell/Sed基础用法.md)
   
-- **Window知识**
+- **Window 知识点**
   - [OpenSSH 服务安装](/Window/OpenSSH服务安装笔记.md)
   - [Cmd 常用命令](/Window/Cmd常用命令.md)
   - [PowerShell 常见问题](/Window/PowerShell常见问题.md)
   - [PowerShell 知识点](/Window/PowerShell知识点.md)
   - [WSL 离线安装 Ubuntu](/Linux/WSL离线安装Ubuntu.md)
 
--  **Git 知识记录**
+-  **Git 知识点**
    - [Git 学习笔记](/Git/Git学习笔记.md)
    - [Git 快捷操作技巧](/Git/Git快捷操作技巧.md)
 
-- **开发工具**
+- **Development 工具**
   - [Mise 版本管理](/Tools/Mise版本管理工具.md)
 
-- **XML相关知识**
+- **XML 知识点**
   - [Dom4j 入门笔记](/Xml/Dom4j入门笔记.md)
   - [XPath 知识笔记](/Xml/XPath笔记.md)
   
-- **PowerDesigner**
+- **PowerDesigner 知识点**
   - [使用问题记录](/PowerDesigner/使用问题记录.md)
   - [逆向导入问题记录](/PowerDesigner/逆向导入问题记录.md)
 
 
-- **计算机网络**
+- **Computer 网络**
   - [域名知识记录.md](/计算机网络/域名知识记录.md)
   - [网络设备知识记录](/计算机网络/网络设备知识记录.md)
   - [软件名称记录](/计算机网络/软件名称记录.md)
