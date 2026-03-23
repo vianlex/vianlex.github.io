@@ -91,7 +91,7 @@
 
 -  **Git 知识记录**
    - [Git 学习笔记](/Git/Git学习笔记.md)
-   - [Git 快捷操作技巧](/Git/Git 快捷操作技巧.md)
+   - [Git 快捷操作技巧](/Git/Git快捷操作技巧.md)
 
 - **开发工具**
   - [Mise 版本管理](/Tools/Mise版本管理工具.md)
