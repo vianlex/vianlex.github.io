@@ -93,6 +93,9 @@
    - [Git 学习笔记](/Git/Git学习笔记.md)
    - [Git 快捷操作技巧](/Git/Git快捷操作技巧.md)
 
+- **Groovy 知识点**
+  - [Groovy 基础知识](/Groovy/Groovy基础知识点.md)
+
 - **Development 工具**
   - [Mise 版本管理](/Tools/Mise版本管理工具.md)
 
