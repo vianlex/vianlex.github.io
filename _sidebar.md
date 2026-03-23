@@ -87,7 +87,7 @@
   - [Cmd 常用命令](/Window/Cmd常用命令.md)
   - [PowerShell 常见问题](/Window/PowerShell常见问题.md)
   - [PowerShell 知识点](/Window/PowerShell知识点.md)
-  - [WSL 离线安装 Ubuntu](/Linux/WSL离线安装Ubuntu.md)
+  - [WSL 离线安装 Ubuntu](/Window/WSL离线安装Ubuntu.md)
 
 -  **Git 知识点**
    - [Git 学习笔记](/Git/Git学习笔记.md)
