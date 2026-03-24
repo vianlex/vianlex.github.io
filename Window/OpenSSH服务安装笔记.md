@@ -77,3 +77,23 @@ New-NetFirewallRule -Name sshd -DisplayName "OpenSSH Server" -Enabled True -Dire
 ```
 
 2. 入站配置好后，需要运行命令 `Restart-Service sshd` 重启服务
+
+
+## 常见问题
+
+### Q1：正确 SSH 免登录，还是无法免登录 Window 下的 OpenSSH 服务
+
+1. 打开配置 C:\ProgramData\ssh\sshd_config 文件，作如下修改：
+
+```bash
+# 启用公钥认证
+PubkeyAuthentication yes
+# 允许密码认证（调试阶段保留，免密成功后可关闭）
+PasswordAuthentication yes
+# 禁用管理员组的公钥权限限制（Windows 特有的坑）
+# 注释掉这两行（否则 administrator 用户的公钥认证会被拒绝）
+# Match Group administrators
+#       AuthorizedKeysFile __PROGRAMDATA__/ssh/administrators_authorized_keys
+```
+
+2. 在用户目录 `~/.ssh/authorized_keys` 的文件(文件不存在，则手动创建)中，添加免密登录公钥，如果有多个公钥，需要换行添加。
