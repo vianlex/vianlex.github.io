@@ -3,6 +3,8 @@
 
 ## 前置条件
 
+**官方参考地址**：https://learn.microsoft.com/zh-cn/windows/wsl/install-manual 
+
 1、虚拟化要求
 
 - BIOS/UEFI 已开启 Intel VT-x / AMD-V 硬件虚拟化
@@ -14,12 +16,15 @@
 dism.exe /online /enable-feature /featurename:Microsoft-Windows-Subsystem-Linux /all /norestart
 # 启用 WSL 2 必需的虚拟机平台
 dism.exe /online /enable-feature /featurename:VirtualMachinePlatform /all /norestart
-# 参考地址：https://learn.microsoft.com/zh-cn/windows/wsl/install-manual 
 ```
 
-3、下载内核安装包（已安装过，则忽略）
+3、更新内核（已安装过，则忽略）
 
-下载地址：https://github.com/microsoft/WSL/releases 下载完成后，双击安装，安装完成后重启即可。
+方式1：运行命令 `wsl --update`
+
+方式2：通过地址：https://learn.microsoft.com/zh-cn/windows/wsl/install-manual  找到 wsl 更新包，下载安装即可。
+
+方式3：从 Githud 地址：https://github.com/microsoft/WSL/releases 下载完整 wsl 安装，双击安装即可。
 
 注意：如果系统已经存在 WSL setting 应用，则说明已经安装过内核了，不需要再安装。
 
