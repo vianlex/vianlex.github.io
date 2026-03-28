@@ -96,6 +96,9 @@
 - **Groovy 知识点**
   - [Groovy 基础知识](/Groovy/Groovy基础知识点.md)
 
+- **Golang 知识点**
+  -[Import 知识点](/Golang/Import知识点.md)
+
 - **Development 工具**
   - [Mise 版本管理](/Tools/Mise版本管理工具.md)
 
