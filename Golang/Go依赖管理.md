@@ -1,268 +1,328 @@
 # Go 依赖管理
 
-## 一、GOPATH 时代（Go 1.0 ~ 1.10）
+## 第一章 演进历史
 
-### 什么是 GOPATH？
+### 1.1 三代依赖管理方案
 
-GOPATH 是 Go 早期的工作区机制，所有 Go 代码必须放在 GOPATH 指定的目录下。
+| 时代 | 方案 | Go 版本 | 状态 |
+|------|------|---------|------|
+| 第一代 | GOPATH | 1.0 ~ 1.10 | 已淘汰 |
+| 第二代 | Vendor | 1.5 ~ 1.16 | 可选辅助 |
+| 第三代 | Go Modules | 1.11+ | 官方标准 |
 
-查看当前 GOPATH
+### 1.2 演进时间线
+
+```
+2009年  Go 发布，GOPATH 机制诞生
+2015年  Go 1.5，引入 Vendor 支持
+2016年  dep 工具发布（社区标准）
+2018年  Go 1.11，Go Modules 实验性引入
+2019年  Go 1.13，GOPROXY 默认开启
+2021年  Go 1.16，Go Modules 默认开启
+2022年  Go 1.17+，go.mod 更精确记录间接依赖
+```
+
+## 第二章 GOPATH 机制
+
+### 2.1 什么是 GOPATH
+
+GOPATH 是 Go 早起的工作区机制，所有代码必须放在 GOPATH 目录下。
+
 ```bash
 go env GOPATH
+# 默认值：~/go（Linux/macOS）或 %USERPROFILE%\go（Windows）
 ```
-默认值：~/go（Linux/macOS）或 %USERPROFILE%\go（Windows）
 
-### 目录结构
+### 2.2 目录结构
 
 ```
 $GOPATH/
-├── src/          # 源代码（你的项目 + 依赖）
+├── src/          # 源代码（项目 + 依赖）
 │   ├── github.com/user/myproject/
 │   └── github.com/gin-gonic/gin/
 ├── pkg/          # 编译缓存（.a 文件）
 │   └── linux_amd64/
-└── bin/          # 编译后的可执行文件
+└── bin/          # 编译产物
 ```
 
-### 工作方式
+### 2.3 工作方式
 
-下载依赖（放到 $GOPATH/src）
 ```bash
+# 下载依赖到 $GOPATH/src
 go get github.com/gin-gonic/gin
-```
 
-代码中导入
-```bash
+# 代码中导入
 import "github.com/gin-gonic/gin"
 ```
 
-### GOPATH 的问题
+### 2.4 存在的问题
 
-- 无版本管理  go get 永远拉最新代码，无法锁定版本
-- 全局共享  所有项目共用同一份依赖，版本冲突无解
-- 必须在 GOPATH 下  项目路径受限，不灵活
-- 无法复现构建  不同机器/时间构建结果可能不同
+- **无版本管理**：`go get` 永远拉最新代码，无法锁定版本
+- **全局共享**：所有项目共用同一份依赖，版本冲突无解
+- **路径受限**：必须在 GOPATH 下，项目位置不灵活
+- **构建不可复现**：不同机器/时间构建结果可能不同
 
-## 二、Vendor 机制（Go 1.5+）
+## 第三章 Vendor 机制
 
-### 什么是 Vendor？
+### 3.1 什么是 Vendor
 
-Vendor 是将依赖代码直接复制到项目目录的方案，解决了依赖版本不一致的问题。
+Vendor 是将依赖代码直接复制到项目目录的方案。
 
-### 目录结构
+### 3.2 目录结构
 
-```txt
+```
 myproject/
 ├── main.go
-├── vendor/              # 依赖代码全部放这里
-│   ├── github.com/
-│   │   └── gin-gonic/
-│   │       └── gin/
-│   └── vendor.json      # 依赖清单（工具生成）
-└── ...
+├── vendor/
+│   └── github.com/
+│       └── gin-gonic/
+│           └── gin/
+└── vendor.json
 ```
 
-### 工作方式
-
-使用 dep 工具（当时最流行的 vendor 管理工具）
+### 3.3 工作方式
 
 ```bash
-dep init          # 初始化
-dep ensure        # 安装/更新依赖到 vendor/
-dep ensure -add github.com/gin-gonic/gin  # 添加依赖
-```
+# 使用 dep 工具管理
+dep init
+dep ensure
+dep ensure -add github.com/gin-gonic/gin
 
-编译时自动优先使用 vendor/ 目录
-```bash
+# 编译时自动优先使用 vendor/
 go build ./...
 ```
 
-### Vendor 的优缺点
+### 3.4 优缺点
 
-优点 ✅
-- 依赖代码随项目一起提交，构建完全可复现
+**优点**
+- 依赖代码随项目提交，构建完全可复现
 - 离线可构建
 - 版本锁定
 
-缺点 ❌
-- vendor 目录体积庞大，污染 git 仓库
+**缺点**
+- vendor 目录体积庞大，污染 Git 仓库
 - 工具不统一（dep、glide、govendor 各自为战）
-- 官方没有标准方案，生态混乱
+- 官方无标准方案
 
-## 三、Go Modules（Go 1.11+ 官方标准）
+## 第四章 Go Modules（推荐）
 
-### 什么是 Go Modules？
+### 4.1 核心文件
 
-Go 1.11 引入、1.16 默认开启的官方依赖管理方案，彻底解决了 GOPATH 和 Vendor 的问题。
+#### go.mod — 依赖声明文件
 
-## 核心文件
+```go
+module github.com/myuser/myproject
 
-go.mod — 依赖声明文件
-```
-module github.com/myuser/myproject  // 模块路径
-
-go 1.21  // Go 版本要求
+go 1.21
 
 require (
     github.com/gin-gonic/gin v1.9.1
     github.com/stretchr/testify v1.8.4
 )
 
-// 间接依赖（被依赖的依赖）
 require (
     golang.org/x/net v0.17.0 // indirect
 )
 
-// 替换依赖（本地开发/镜像）
 replace github.com/some/pkg => ../local-pkg
 
-// 排除某个版本
 exclude github.com/bad/pkg v1.2.3
 ```
 
-go.sum — 依赖校验文件
+#### go.sum — 依赖校验文件
 
 ```bash
-# 每个依赖有两行：模块 hash + go.mod hash，防止依赖被篡改
+# 格式：模块名 版本 h1:Hash / go.mod Hash
 github.com/gin-gonic/gin v1.9.1 h1:4idEAncQnU5cB7BeOkPtxjfCSye0AAm1R0RVIqJ+Jmg=
 github.com/gin-gonic/gin v1.9.1/go.mod h1:hPrL7YrpYKXt5YId3A/Tnip5kqbEAP+KLuI3SUcPTeU=
 ```
 
-### 常用命令
+### 4.2 常用命令
 
 ```bash
-#初始化模块
+# 初始化模块
 go mod init github.com/myuser/myproject
 
-#添加/更新依赖, 
+# 添加依赖
 go get github.com/gin-gonic/gin          # 最新版
 go get github.com/gin-gonic/gin@v1.9.1   # 指定版本
 go get github.com/gin-gonic/gin@latest   # 最新稳定版
 
-#整理依赖（删除未用的，补充缺失的）
+# 整理依赖（删除未用的，补充缺失的）
 go mod tidy
 
-#下载所有依赖到本地缓存
+# 下载所有依赖
 go mod download
 
-#查看依赖图
+# 查看依赖图
 go mod graph
 
-#验证依赖完整性
+# 验证依赖完整性
 go mod verify
 
-#将依赖复制到 vendor/（可选，用于离线构建）
+# 复制依赖到 vendor/（离线构建）
 go mod vendor
 
-#查看可用版本
+# 查看可用版本
 go list -m -versions github.com/gin-gonic/gin
 ```
 
-### 版本选择规则（MVS）
+### 4.3 版本选择规则（MVS）
 
-Go Modules 使用 最小版本选择（Minimum Version Selection） 算法：
+Go Modules 使用**最小版本选择（Minimum Version Selection）**算法：
 
-- 项目 A 依赖 gin v1.8.0
-- 项目 A 依赖 B，B 依赖 gin v1.9.1
+```
+项目 A 依赖 gin v1.8.0
+项目 A 依赖 B，B 依赖 gin v1.9.1
 
-→ 最终选择 gin v1.9.1（满足所有需求的最小版本），不会自动升级到更高版本，保证构建稳定性
+→ 最终选择 gin v1.9.1（满足所有需求的最小版本）
+```
 
-语义化版本
+**语义化版本**
+
 ```
 v1.9.1
-│ │ └── Patch：bug 修复，向后兼容
-│ └──── Minor：新功能，向后兼容
-└────── Major：破坏性变更
+ │ │ └── Patch：bug 修复，向后兼容
+ │ └──── Minor：新功能，向后兼容
+ └────── Major：破坏性变更
 ```
 
-v2+ 需要修改模块路径！
-```
+**v2+ 必须修改模块路径**
+
+```go
 import "github.com/gin-gonic/gin/v2"
 ```
 
-### 本地缓存位置
-
-- 所有下载的模块缓存在：`$GOPATH/pkg/mod/`
-
-- 查看缓存：`ls $GOPATH/pkg/mod/cache/download/`
-
-- 清理缓存：`go clean -modcache`
-
-## 四、三者对比总结
-
-|特性 | GOPATH |  Vendor | Go Modules
-|:--| :--| :--| :--|
-|版本锁定 | ❌ | ✅ | ✅|
-|官方支持 | ✅  |半官方  ✅ | 官方标准
-|项目位置限制 |  必须在 GOPATH | 无限制  | 无限制 |
-|离线构建 | ❌ | ✅ | ✅（需缓存）|
-|git 仓库体积  | 小 |   大 | 小 |
-|构建可复现 |  ❌ | ✅ | ✅ |
-|当前状态 |  已淘汰 |  可选辅助 |  推荐使用|
-
-## 五、Go Modules 实战配置
-
-### 国内加速（必备）
-
-设置代理（七牛云，推荐）
-- 使用七牛云： `go env -w GOPROXY=https://goproxy.cn,direct`
-- 使用阿里云: `go env -w GOPROXY=https://mirrors.aliyun.com/goproxy/,direct`
-
-私有仓库不走代理
-```
-go env -w GOPRIVATE=gitlab.mycompany.com
-```
-
-关闭校验（私有仓库）
-```
-go env -w GONOSUMCHECK=gitlab.mycompany.com
-```
-
-### 典型项目结构
+### 4.4 本地缓存
 
 ```bash
+# 缓存位置
+$GOPATH/pkg/mod/
+
+# 查看缓存
+ls $GOPATH/pkg/mod/cache/download/
+
+# 清理缓存
+go clean -modcache
+```
+
+## 第五章 实战配置
+
+### 5.1 国内镜像加速
+
+```bash
+# 七牛云（推荐）
+go env -w GOPROXY=https://goproxy.cn,direct
+
+# 阿里云
+go env -w GOPROXY=https://mirrors.aliyun.com/goproxy/,direct
+
+# 多个镜像组合
+go env -w GOPROXY=https://goproxy.cn,https://mirrors.aliyun.com/goproxy/,direct
+```
+
+### 5.2 私有仓库配置
+
+```bash
+# 设置私有仓库不走代理
+go env -w GOPRIVATE=gitlab.mycompany.com
+
+# 关闭私有仓库校验
+go env -w GONOSUMCHECK=gitlab.mycompany.com
+
+# 或使用通配符
+go env -w GOPRIVATE=*.mycompany.com
+```
+
+### 5.3 典型项目结构
+
+```
 myproject/
-├── go.mod          # 依赖声明
-├── go.sum          # 依赖校验
+├── go.mod
+├── go.sum
 ├── main.go
 ├── internal/       # 内部包（外部不可导入）
 ├── pkg/            # 可复用包
-├── cmd/            # 多个可执行程序入口
-│   ├── server/
-│   └── cli/
-└── vendor/         # 可选，go mod vendor 生成
+├── cmd/
+│   ├── server/     # 服务入口
+│   └── cli/        # CLI 入口
+└── vendor/         # 可选
 ```
 
-### 常见问题
+### 5.4 replace 用法
 
-问题1：依赖下载失败
+```go
+// 本地开发
+replace github.com/some/pkg => ../local-pkg
 
-解决：设置 GOPROXY, 如下设置七牛云加速代理：`go env -w GOPROXY=https://goproxy.cn,direct`
+// 替换为 fork 版本
+replace github.com/original/pkg => github.com/myfork/pkg v1.2.3
 
-问题2：go.sum 校验失败
+// 替换为本地版本
+replace github.com/original/pkg => /Users/me/local/pkg
+```
+
+## 第六章 常见问题
+
+### 6.1 依赖下载失败
+
 ```bash
+# 设置代理
+go env -w GOPROXY=https://goproxy.cn,direct
+
+# 清除缓存重新下载
+go clean -modcache
+go mod download
+```
+
+### 6.2 go.sum 校验失败
+
+```bash
+# 验证依赖
 go mod verify
-go clean -modcache && go mod download
+
+# 重新整理
+go clean -modcache
+go mod tidy
+go mod download
 ```
 
-问题3：想用本地修改的依赖
-```bash
-# 在 go.mod 中添加：
-replace github.com/some/pkg => ../local-fork
-```
+### 6.3 升级所有依赖
 
-问题4：升级所有依赖
 ```bash
 go get -u ./...
 go mod tidy
 ```
 
-## 六、演进时间线
+### 6.4 版本冲突
 
-- 2009  Go 发布，GOPATH 机制
-- 2015  Go 1.5，引入 Vendor 支持
-- 2016  dep 工具发布（社区标准）
-- 2018  Go 1.11，Go Modules 实验性引入
-- 2019  Go 1.13，GOPROXY 默认开启
-- 2021  Go 1.16，Go Modules 默认开启，GOPATH 模式退出历史舞台
-- 2022  Go 1.17+，go.mod 更精确记录间接依赖
+```bash
+# 查看依赖树
+go mod graph
+
+# 查看特定依赖的版本
+go list -m -versions github.com/gin-gonic/gin
+```
+
+## 第七章 三者对比
+
+| 特性 | GOPATH | Vendor | Go Modules |
+|------|--------|--------|------------|
+| 版本锁定 | ❌ | ✅ | ✅ |
+| 官方支持 | ✅ | 半官方 | ✅ 官方标准 |
+| 项目位置限制 | 必须在 GOPATH | 无限制 | 无限制 |
+| 离线构建 | ❌ | ✅ | ✅（需缓存） |
+| Git 仓库体积 | 小 | 大 | 小 |
+| 构建可复现 | ❌ | ✅ | ✅ |
+| 当前状态 | 已淘汰 | 可选辅助 | 推荐使用 |
+
+## 附录：环境变量速查
+
+```bash
+go env GOPATH              # 工作区路径
+go env GOMODCACHE          # 模块缓存路径
+go env GOPROXY             # 代理地址
+go env GOPRIVATE           # 私有仓库域名
+go env GONOSUMCHECK        # 不校验的仓库
+go env GOSUMDB             # 校验数据库
+```
