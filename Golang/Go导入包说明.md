@@ -1,140 +1,153 @@
 # Go 导入包说明
 
-## Go import 两种使用场景
+## 第一章 import 使用场景
 
-1. import 标准库包（fmt, net/http）
-2. import 模块包（本地项目或者第三方包） 
+### 1.1 两种导入类型
 
-## import 标准库包
+| 类型 | 示例 | 查找路径 |
+|------|------|----------|
+| 标准库 | `import "fmt"` | `GOROOT/src` |
+| 模块包 | `import "github.com/gin-gonic/gin"` | `GOMODCACHE` |
 
-```bash
+## 第二章 标准库导入
+
+```go
 import "fmt"
 import "net/http"
 ```
 
-import 标准库包，实际查找路径为：`GOROOT/src`
+标准库实际查找路径：
 
 ```bash
-# GOROOT 为 Go 的安装根目录
 GOROOT/src/fmt
 GOROOT/src/net/http
 ```
 
-## import 模块包（本地项目包 + 第三方包）
+## 第三章 模块包导入
 
-### import 本地项目包
+### 3.1 模块包类型
 
-import 规则：`import 路径 = go.mod 里的模块名 + 从项目根出发的包目录`, 如下例子：
+```
+模块包
+├── 本地项目包    # 自定义包
+└── 第三方包      # 外部依赖
+```
 
-```txt
-项目go.mod声明的模块名：github.com/abc/demo
+### 3.2 导入规则
+
+```
+import 路径 = go.mod 模块名 + 包目录
+```
+
+**示例：**
+
+```
+模块名：github.com/abc/demo
 包目录：internal/service
-import 必须写为： import github.com/abc/demo/internal/service
+import 路径：github.com/abc/demo/internal/service
 ```
 
-本地项目不同包之前 import 包查找说明：
+### 3.3 本地项目包导入
 
-1. 看当前项目根目录有没有 go.mod
-2. 读取第一行模块名
-3. import 时，把模块名当作 “项目根路径别名”
-4. 直接从项目根开始找目录
+**目录结构：**
 
-#### import 本地项目包示例
-
-1. go.mod 第一行（模块名）
-
-```bash
-#go.mod 文件第一行
-module github.com/xxx/demo
 ```
-
-2. 本地项目目录结构
-
-```bash
 mydemo/
 ├── go.mod
 ├── main.go
-└── user/        # 这是一个包
+└── user/
     └── user.go
 ```
 
-3. import 写法
+**go.mod：**
 
-```bash
-# 如在 main.go 中需要引入 user 包时，写法如下
+```go
+module github.com/xxx/demo
+```
+
+**main.go 中引入 user 包：**
+
+```go
 import "github.com/xxx/demo/user"
 ```
 
-4. 实际引入路径
+**查找流程：**
 
-```bash
-# 
-本地项目目录/user/
-```
+1. 读取 go.mod 第一行作为模块名
+2. 模块名作为项目根路径别名
+3. 从项目根目录开始查找包目录
 
-### import 第三方包
+### 3.4 第三方包导入
 
-1. import 写法
-
-```bash
+```go
 import "github.com/gin-gonic/gin"
 ```
 
-2. 真实路径
+**实际路径：**
 
 ```bash
 GOMODCACHE/github.com/gin-gonic/gin@v1.9.1/
-# 通过以下命令可以查看 GOMODCACHE 的路径
+
+# 查看 GOMODCACHE 路径
 go env GOMODCACHE
 ```
 
-## import 总结
+## 第四章 跨项目引用
 
-- 标准库 → 去 GOROOT/src 找
-- 本地项目 → 以 go.mod 模块名为根目录找
-- 第三方包 → 去模块缓存 GOMODCACHE 里找
+### 4.1 方式一：GitHub 引用
 
-## 本地不同项目引用
-
-### 第一种方式
-
-将项目上传到 github 然后直接引用即可。
-
-```bash
+```go
 import "github.com/xxx/demo/user"
 ```
 
-### 第二种方式
-
-通过 go mod edit + 本地路径方式实现
+### 4.2 方式二：replace 本地路径
 
 ```bash
-# 通过 replace 替换成实际的应用路径
-go mod edit -replace=github.com/xxx/demo/user=/xx/xx/demo/user
+go mod edit -replace=github.com/xxx/demo/user=/path/to/local/demo/user
 ```
 
-## Go Mod 常用命令
+## 第五章 Go Mod 常用命令
+
+### 5.1 初始化
 
 ```bash
-# 初始化模块
 mkdir go-demo && cd go-demo
 go mod init github.com/xxx/go-demo
+```
 
-# 下载指定依赖，并将依赖添加到 go.mod 文件中
+### 5.2 依赖管理
+
+```bash
+# 添加依赖（自动写入 go.mod）
 go get github.com/gin-gonic/gin
 
-# 根据 go.mod 下载所有依赖
+# 下载所有依赖
 go mod download
 
-# 整理依赖
+# 整理依赖（删除未用、补充缺失）
 go mod tidy
 
-# 查看依赖
+# 查看依赖列表
 go list -m all
 
-# 替换依赖，将 github.com/old 依赖替换成新的 github.com/new 依赖
+# 替换依赖
 go mod edit -replace github.com/old=github.com/new
-
-# 代理配置（国内代理）
-go env GOPROXY=https://goproxy.cn,direct
 ```
+
+### 5.3 代理配置
+
+```bash
+# 国内代理
+go env -w GOPROXY=https://goproxy.cn,direct
+
+# 私有仓库不走代理
+go env -w GOPRIVATE=gitlab.mycompany.com
+```
+
+## 第六章 导入总结
+
+| 导入类型 | 查找路径 |
+|----------|----------|
+| 标准库 | `GOROOT/src` |
+| 本地项目 | 以 go.mod 模块名为根目录 |
+| 第三方包 | `GOMODCACHE` |
