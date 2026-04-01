@@ -103,6 +103,10 @@
 - **Development 工具**
   - [Mise 版本管理](/Tools/Mise版本管理工具.md)
 
+- **OpenClaw 知识点**
+  - [OpenClaw 安装笔记.md](/OpenClaw/OpenClaw安装笔记.md)
+  - [飞书 lark-cli 安装笔记](/OpenClaw/飞书lark-cli安装笔记.md)
+
 - **XML 知识点**
   - [Dom4j 入门笔记](/Xml/Dom4j入门笔记.md)
   - [XPath 知识笔记](/Xml/XPath笔记.md)
