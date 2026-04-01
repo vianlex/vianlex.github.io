@@ -104,7 +104,8 @@
   - [Mise 版本管理](/Tools/Mise版本管理工具.md)
 
 - **OpenClaw 知识点**
-  - [OpenClaw 安装笔记.md](/OpenClaw/OpenClaw安装笔记.md)
+  - [OpenClaw 安装笔记](/OpenClaw/OpenClaw安装笔记.md)
+  - [OpenClaw 基础知识](/OpenClaw/OpenClaw基础知识.md)
   - [飞书 lark-cli 安装笔记](/OpenClaw/飞书lark-cli安装笔记.md)
 
 - **XML 知识点**
