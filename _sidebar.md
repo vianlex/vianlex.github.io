@@ -54,6 +54,7 @@
   - [Tmux 命令学习笔记](/Linux/tmux命令笔记.md)
 
 - **Nginx 知识点**
+  - [Nginx 知识点](/Nginx/Nginx知识点.md)
   - [location 指令笔记](/Nginx/location指令笔记.md)
   - [ngx_http_proxy_module模块笔记](/Nginx/ngx_http_proxy_module模块笔记.md)
   - [ngx_http_rewrite_module 模块笔记](/Nginx/ngx_http_rewrite_module模块笔记.md)
