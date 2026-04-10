@@ -5,7 +5,7 @@
 
 location 指令由 ngx_http_core_module 模块提供，官方文档说明
 
-```
+```bash
 Syntax:	location [ = | ~ | ~* | ^~ ] uri { ... }
 location @name { ... }
 Default:	—
@@ -56,18 +56,22 @@ Let’s illustrate the above by an example:
 location = / {
     [ configuration A ]
 }
+
 # 普通前缀匹配
 location / {
     [ configuration B ]
 }
+
 # 普通前缀匹配
 location /documents/ {
     [ configuration C ]
 }
-# 普通前缀匹配，^~ 符号表示，最长普通前缀匹配到后，就不再匹配正则表达式
+
+# 普通字符串前缀匹配 + 优先级提升，前缀匹配到后，就不再匹配正则表达式
 location ^~ /images/ {
     [ configuration D ]
 }
+
 # 不区分大小写正则表达式匹配
 location ~* \.(gif|jpg|jpeg)$ {
     [ configuration E ]
@@ -106,4 +110,5 @@ location = /user {
 
 
 ## 参考链接
-1. https://nginx.org/en/docs/http/ngx_http_core_module.html#location
+1. [location 官方文档](https://nginx.org/en/docs/http/ngx_http_core_module.html#location)
+2. [在线测试 nginx 链接](https://nginx-playground.wizardzines.com/)
