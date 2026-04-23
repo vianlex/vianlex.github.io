@@ -109,6 +109,10 @@
   - [OpenClaw 基础知识](/OpenClaw/OpenClaw基础知识.md)
   - [飞书 lark-cli 安装笔记](/OpenClaw/飞书lark-cli安装笔记.md)
 
+- **Android 知识点**
+  - [Capacitor 知识点](/Android/Capacitor知识点.md)
+  - [Cordova 知识点](/Android/Cordova知识点.md)
+
 - **XML 知识点**
   - [Dom4j 入门笔记](/Xml/Dom4j入门笔记.md)
   - [XPath 知识笔记](/Xml/XPath笔记.md)
