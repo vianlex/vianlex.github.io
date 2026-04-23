@@ -12,6 +12,8 @@ npm install -g @capacitor/cli
 ```bash
 # 1. 创建项目， 按提示输入：项目名 my-app 、包名（如 com.example.app）、框架（Vanilla/React/Vue/Angular）
 npm init @capacitor/app@latest
+# 或者
+npm cap init <appName> <appId 包名(com.example.app)>
 
 # 2. 进入目录
 cd my-app
