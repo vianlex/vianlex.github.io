@@ -46,3 +46,25 @@ npx cap add android
 npm install @capacitor/ios
 npx cap add ios
 ```
+
+## 构建项目并打包
+
+```bash
+# 1. 编译项目
+npm run build 
+
+# 2. 将编译后项目，同步到项目根目录下的 android 或者 ios 运行原生平台项目代码中 
+npx cap sync
+
+# 3. 启动 Android Studio 并加载当前 Capacitor 项目的 Android 原生工程
+npx cap open android
+
+# 4. 在 Android Studio 中点击以下菜单 build -> Generate App Bundles or APKs -> Generate APKs 打包应用
+```
+
+## 模拟器运行应用
+
+```bash
+# 将应用安装模拟器，并运行
+npx cap run android
+```
