@@ -25,11 +25,15 @@ Maven 依赖查找整体流程：本地仓库 → 远程仓库，优先从本地
 方案一（临时生效）：Maven 3.9 之前版本，通过启动参数关闭远程校验，即运行 Maven 构建命令时，加上以下参数：
 
 ```bash
+# maven 3.9 之前的版本
 mvn clean package  -llr 
 # 或者
 mvn clean package --legacy-local-repository 
 # 或者
 mvn clean package -Dmaven.legacyLocalRepo=true
+
+# maven 3.9 之后的版本
+mvn clean install -Dmaven.artifact.enhancedLocalRepository.enabled=false
 ```
 
 方案二（手动修复）：删除依赖目录下 _remote.repositories 文件，手动上传本地 Jar 至仓库
@@ -39,6 +43,16 @@ mvn install:install-file -Dfile=D:/xx.jar -DgroupId=com.ils -DartifactId=xx -Dve
 ```
 
 方案三（永久规避）：新增镜像配置，将镜像地址指向本地仓库目录：`file://D:/maven/repo/`
+
+```xml
+<!-- 本地私有镜像：将所有仓库都指向本地仓库 -->
+<mirror>
+    <id>local-mirror</id>
+    <mirrorOf>*</mirrorOf>
+    <url>file://D:/maven/repo-local</url>
+</mirror>
+```
+
 
 ### 2. 远程仓库查找优先级
 
