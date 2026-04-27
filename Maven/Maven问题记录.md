@@ -29,19 +29,17 @@ jdk8：下载 javase-jce8.jar https://www.oracle.com/java/technologies/javase-jc
 直接更换 OpenJDK 成 OracleJDK。
 ```
 
-### 本地仓库存在依赖包，但是还是一直提示找不到依赖包（Could not find artifact）
+## 本地仓库存在依赖包，但是还是一直提示找不到依赖包（Could not find artifact）
 
-#### 原因
+### 原因
 
 Maven 读取本地依赖包时，会有一个 Verifying availability 验证依赖包可用性的过程（执行命令时加上 -e -X 参数，通过日志可看到该过程），如果本地仓库依赖包目录下有 _remote.repositories 文件，则 maven 会不管本地仓库是否存在依赖包，都会校验远程仓库上有对应的依赖才行。
 
-#### 解决方式
+### 解决方式
 
 1. 第一种方式，将本地仓库的依赖包目录下的 __remote.repositories 文件删掉即可；
 
-2. 第二种方式，执行命令时加上 `-llr 或 --legacy-local-repository ` 参数表示不使用 __remote.repositories 文件；
-
-3. 第三种方式，执行命令时，指定命令以 ` --offline 或 -o ` 离线模式运行，该解决方式没有作用，因为 Maven 是强依赖于远程仓库的。
+2. 第二种方式，执行命令时加上 `-llr 或 -Dmaven.artifact.enhancedLocalRepository.enabled=false ` 参数表示不使用 __remote.repositories 文件。
 
 
 ## maven 编译项目时，提示 JDK 版本不对
@@ -81,3 +79,65 @@ org.apache.maven.plugins:maven-compiler-plugin:3.13.0:compile (default-compile) 
 <sha1>1.0.0<sha1>
 
 ```
+
+## Maven 仓库手动上传 Jar 项目还是无法下载依赖
+
+### 原因
+
+通过 Maven 私服界面或命令上传第三方 JAR 时，没有勾选 `Generate a POM file with these coordinates` 自动生成 POM 文件。
+
+如果是通过命令行上传的，可以创建一个 POM 文件，然后通过 -DpomFile=<path-to-pom> 指定上传 JAR 包的 POM 文件，简单的 POM 文件示例如下：
+
+```xml
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+<modelVersion>4.0.0</modelVersion>
+
+    <!-- 当前上传 JAR 的坐标信息 -->
+    <groupId>com.example</groupId>
+    <artifactId>bos-webapi-sdk</artifactId>
+    <version>8.2.0</version>
+
+    <!-- 可选：JAR 包的描述信息 -->
+    <name>example utils</name>
+    <description>一些常用的工具类</description>
+
+    <!-- 可选：当前上传 JAR 包，需要依赖包的列表 -->
+    <dependencies>
+        <!-- 可选的，如果不指定当前当前上传 JAR 的包的依赖，当我们在使用该 JAR 时，需要而外在项目 POM 文件中，手动添加该 JAR 包的依赖即可 -->
+    </dependencies>
+
+</project>
+```
+
+
+### 解决方式
+
+删除之前上传的 JAR 文件，然后重新上传，并且勾选 `Generate a POM file with these coordinates` 。
+
+注意，勾选 `Generate a POM file with these coordinates` 后，Maven 仓库会自动生成的 pom.xml 文件，但是内容非常精简，如下
+
+```xml 
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+<modelVersion>4.0.0</modelVersion>
+
+    <!-- 当前上传 JAR 的坐标信息 -->
+    <groupId>com.example</groupId>
+    <artifactId>bos-webapi-sdk</artifactId>
+    <version>8.2.0</version>
+
+</project>
+```
+
+Maven 仓库自动生成的 POM 文件非常精简，不会包含任何 `<dependencies>` 信息
+
+- 后果：如果你上传的 JAR 本身又依赖了其他库（比如它需要 `commons-lang` 才能运行），这个自动生成的 pom 文件里并没有声明这些依赖。
+- 导致的问题：在项目A中依赖这个JAR后，编译时可能会报错，提示找不到 `commons-lang` 中的类。因为你项目A的 Maven 无法得知这个传递性依赖，所以不会自动下载 `commons-lang`。
+- 解决办法：你必须到项目A的 `pom.xml` 里，手动添加 `commons-lang` 的依赖。
+
+
+### 问题解释
+
+`Maven` 仓库存储每一个制品，都有一个严格约定：一个制品由 JAR 文件和 POM 文件共同组成。
+
+- 如果你只上传一个 `JAR` 而不上传对应的 `pom.xml`，在仓库看来，这个“制品”是不完整的。
+- 当其他项目尝试通过坐标（`groupId`， `artifactId`, `version`）引用这个 `JAR` 时，`Maven` 会先去仓库找 `.pom` 文件。如果找不到，就会报错，导致构建失败。
