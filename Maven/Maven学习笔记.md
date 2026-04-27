@@ -131,6 +131,60 @@ mvn install:install-file -Dfile=D:/xx.jar -DgroupId=com.ils -DartifactId=xx -Dve
 
 ```
 
+## release 正式版本和 snapshot 快照版本
+
+Maven 如何判断一个 JAR 包是 `release` 版本还是 `snapshot` 版本，主要是通过版本号后缀 `-SNAPSHOT` 来区分的。
+
+例如：`1.0.0-SNAPSHOT` 版本号带后缀 `-SNAPSHOT` 则为快照版本，`1.0.0` 版本号不带后缀 `-SNAPSHOT` 则为正式版本。
+
+快照版本和正式版本的区别如下：
+
+| 特性 | 快照版本（SNAPSHOT） | 正式版本（Release） |
+| ---- | ---- | ---- |
+| 命名格式 | 1.0.0-SNAPSHOT | 1.0.0、2.1.5 |
+| 使用阶段 | 开发中、未发布 | 已完成、正式发布 |
+| 覆盖规则 | 同一版本号可以反复覆盖更新 | 版本号一旦发布，绝对不能修改 / 覆盖 |
+| 依赖更新 | Maven 会自动检查最新代码 | 依赖固定不变，必须升级版本号才更新 |
+
+
+
+
+## 仓库配置
+
+```xml
+<repository>
+    <!-- 仓库ID -->
+    <id>aliyun</id>
+    <!-- 仓库地址 -->
+    <url>https://maven.aliyun.com/repository/public</url>
+    <!-- releases 控制仓库是否允许下载【正式版依赖】 -->
+    <releases>
+        <!-- 是否允许下载 -->
+        <enabled>true</enabled>
+        <!-- 更新策略
+            never：从不检查
+            daily：每天检查一次
+            always：每次构建都检查
+            interval:60：每 60 分钟检查一次
+        -->
+        <!-- 正式包不会变，从不主动更新，只拉取一次 -->
+        <updatePolicy>never</updatePolicy>
+        <!-- 校验失败策略
+            warn：校验出错只警告（默认）
+            fail：校验出错直接构建失败
+            ignore：忽略校验
+        -->
+        <checksumPolicy>warn</checksumPolicy>
+    </releases>
+    <!-- snapshots 控制仓库是否允许下载【快照版依赖】 -->
+    <snapshots>
+        <enabled>true</enabled>
+        <!-- 快照包是开发中、经常变的，所以要选择每次都要检查快照版本是最新的-->
+        <updatePolicy>always</updatePolicy>
+    </snapshots>
+</repository>
+```
+
 ## 私有仓库认证
 
 `server` 的 `id` 必须和 `mirror、repository` 的 `id` 一致，`Maven` 才会自动带入账号密码。
