@@ -21,6 +21,7 @@
   - [Maven 问题记录](/Maven/Maven问题记录.md)
   - [Mvnw  知识点](/Maven/mvnw知识点.md)
   - [Maven 常用插件](/Maven/Maven常用插件.md)
+  - [Maven 仓库类型](/Maven/Maven仓库类型.md)
 
 - **Jmeter 知识点**
   - [Jemeter 入门笔记](/Jemeter/Jemeter_入门笔记.md)
