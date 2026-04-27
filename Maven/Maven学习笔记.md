@@ -94,7 +94,7 @@ mvn install:install-file -Dfile=D:/xx.jar -DgroupId=com.ils -DartifactId=xx -Dve
 - `repo1` 表示只匹配 repo1 仓库
 - `repo1,repo2` 表示只匹配 repo1, repo2 两个仓库
 - `*,!repo1` 表示匹配除 repo1 外的所有仓库
-- `external:*` 表示匹配所有非 file:// 协议的仓库
+- `external:*` 表示匹配所有外部仓库（排除 localhost 和 file://）
 - `external:http:*`	表示匹配所有 HTTP 协议的仓库
 - `external:https:*`	表示匹配所有 HTTPS 协议的仓库
 
