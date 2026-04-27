@@ -131,5 +131,97 @@ mvn install:install-file -Dfile=D:/xx.jar -DgroupId=com.ils -DartifactId=xx -Dve
 
 ```
 
+## 私有仓库认证
 
+`server` 的 `id` 必须和 `mirror、repository` 的 `id` 一致，`Maven` 才会自动带入账号密码。
 
+```xml
+<servers>
+    <!-- 公司 Nexus 私服 -->
+    <server>
+        <id>nexus-releases</id>
+        <username>admin</username>
+        <password>123456</password>
+    </server>
+    <server>
+        <id>nexus-snapshots</id>
+        <username>admin</username>
+        <password>123456</password>
+    </server>
+</servers>
+```
+
+## 网络代理配置（公司内网 / 翻墙用）
+
+```xml
+<proxies>
+    <proxy>
+        <id>http-proxy</id>
+        <active>true</active>
+        <protocol>http</protocol>
+        <host>127.0.0.1</host>
+        <port>7890</port>
+        <!-- <username>xxx</username> -->
+        <!-- <password>xxx</password> -->
+        <nonProxyHosts>localhost|127.0.0.1</nonProxyHosts>
+    </proxy>
+</proxies>
+```
+
+##  多环境(profiles)配置
+
+每个 `profile` 是一套环境（仓库、JDK、属性），通过 `id` 切换。
+
+### 常用 profiles 配置 
+
+```xml
+<profiles>
+    <!-- 开发环境：JDK8 + 阿里云 -->
+    <profile>
+        <id>dev-jdk8</id>
+        <activation>
+            <activeByDefault>true</activeByDefault> <!-- 默认激活 -->
+        </activation>
+        <properties>
+            <maven.compiler.source>1.8</maven.compiler.source>
+            <maven.compiler.target>1.8</maven.compiler.target>
+            <maven.compiler.encoding>UTF-8</maven.compiler.encoding>
+        </properties>
+        <repositories>
+            <repository>
+                <id>aliyun-public</id>
+                <url>https://maven.aliyun.com/repository/public</url>
+                <releases>
+                    <enabled>true</enabled>
+                </releases>
+                <snapshots>
+                    <enabled>false</enabled>
+                </snapshots>
+            </repository>
+        </repositories>
+    </profile>
+
+    <!-- 生产环境：JDK11 + 公司私服 -->
+    <profile>
+        <id>prod-jdk11</id>
+        <properties>
+            <maven.compiler.source>11</maven.compiler.source>
+            <maven.compiler.target>11</maven.compiler.target>
+        </properties>
+        <repositories>
+            <repository>
+                <id>nexus-releases</id>
+                <url>http://192.168.1.100:8081/repository/maven-releases/</url>
+            </repository>
+        </repositories>
+    </profile>
+</profiles>
+```
+
+### 激活指定 profile 配置
+
+```xml
+<activeProfiles>
+    <activeProfile>dev-jdk8</activeProfile>
+</activeProfiles>
+```
