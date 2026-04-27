@@ -109,6 +109,20 @@ org.apache.maven.plugins:maven-compiler-plugin:3.13.0:compile (default-compile) 
 </project>
 ```
 
+通过以下命令，上传第三 JAR 包
+
+```bash
+mvn deploy:deploy-file 
+  -Dfile=D:/xxx/bos-webapi-sdk-8.2.0.jar 
+  -DgroupId=com.kingdee 
+  -DartifactId=bos-webapi-sdk 
+  -Dversion=8.2.0 
+  -Dpackaging=jar 
+  -DpomFile=D:/xxx/bos-webapi-sdk-8.2.0.pom 
+  -Durl=http://192.168.18.226:8888/repository/maven-releases/ 
+  -DrepositoryId=maven-releases
+```
+
 
 ### 解决方式
 
