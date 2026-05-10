@@ -285,17 +285,84 @@ p3()
 
 ### await 关键字
 
-await 关键字，用于等待 Promise 完成，只能在 async 函数内使用，注意 await 不能等待普通函数。
+await 关键字，用于等待 Promise 完成，即暂停函数执行，等 Promise 状态变成 resolved/rejected 再往下走。
+
+注意：await 只能在 async 修饰的函数内部使用，并且不能等待普通函数。
 
 ```js
+function request() {
+  return new Promise((resolve) => {
+    setTimeout(() => resolve("接口数据"), 1000);
+  });
+}
 
+// 必须加 async
+async function getData() {
+  // await 等待 Promise 完成
+  const res = await request();
+  console.log(res);
+}
 
-
+getData();
 ```
 
+### await 重点知识
 
+await 内部底层就是等价于 Promise.then 在等结果，await 底层本质就是隐式用了 then，如果 await Promise 返回的是 rejected 状态的，则会直接抛出异常。
 
+#### await 的底层本质例子
 
+```js
+const p = Promise.resolve(666);
+
+// 1. 传统 then
+p.then(v => console.log("then接收", v)); // 输出 666
+
+// 2. await 写法
+async function test() {
+  const v = await p;
+  console.log("await接收", v); // 输出 666
+}
+test();
+```
+
+#### await 等待的结果是 rejected 状态的 Promise 对象  
+
+```js
+async function fn() {
+  // Promise 是 reject 状态
+  const p = Promise.reject("接口失败");
+  const res = await p; // 这里直接抛出错误，程序崩
+  console.log("不会执行到这里")
+}
+fn();
+```
+
+#### async 和 await 的标准写法
+
+```js 
+async function fn() {
+  try {
+    // 外层使用 try-catch 防止返回的 rejected 状态的 Promise 对象，导致程序异常 
+    const res = await new Promise((resolve, reject)=>{
+      // todo 
+    });
+  } catch (err) {
+    console.log("手动捕获错误：", err);
+  }
+}
+fn();
+
+async function fn() {
+  // 先自己兜底 catch 防止返回 rejected 状态的 Promise 导致程序异常
+  const p = new Promise((resolve, reject)=>{
+    //todo 
+  }).catch(err => err);
+  const res = await p; 
+  console.log(res); 
+}
+fn();
+```
 
 
 
