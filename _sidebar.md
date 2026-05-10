@@ -74,6 +74,7 @@
   - [JS闭包](/Frontend/JavaScript闭包.md)
   - [JS虚拟 DOM](/Frontend/JavaScript虚拟DOM.md)
   - [React 基础知识](/Frontend/React基础知识.md)
+  - [Promise知识点](/Frontend/Promise知识点.md)
 
 - **Redis 知识点**
   - [Redis缓存穿透、击穿、雪崩](/Redis/Redis缓存穿透-击穿-雪崩.md)
