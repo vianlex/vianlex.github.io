@@ -231,3 +231,86 @@ class SimplePromise {
 } 
 
 ```
+
+## Promise + async/await
+
+async/await 是 Promise 的语法糖，本质还是 Promise，只是把链式写法改成同步写法。
+
+### async 关键字
+
+使用 async 关键字，可以将函数声明为异步函数，自动返回 Promise。
+
+1. aysnc 修饰没有返回值的函数
+
+```js 
+// async 修饰的普通函数，没有显示指定返回值，则默认返回一个已成功值为 undefined 的 Promise 对象 
+async function hello() {
+  console.log("Hello World")
+}
+// 执行函数后，会默认返回一个 fulfilled 已成功的 Promise 对象，Promise 的 value 默认为 undefined 
+hello()
+```
+
+2. async 修饰有返回值的函数
+
+```js
+async function p1() {
+  return "HelloWorld"
+}
+
+// 执行函数后，返回一个已成功的值为 helloWorld 的 Promise 对象。
+p1()
+
+
+async function p2() { 
+  return setTimeout(()=> console.log("HelloWorld"), 5000)
+}
+// 执行后函数后，返回一个已成功的值 Promise 对象
+timer()
+
+async function p3() { 
+  return new Promise((resolve, reject)=>{
+    setTimeout(()=> resolve("HelloWorld"), 5000)
+  })
+}
+// 注意 p3 和 p4 是等价的
+function p4() { 
+  return new Promise((resolve, reject)=>{
+    setTimeout(()=> resolve("HelloWorld"), 5000)
+  })
+}
+// 执行函数后，会一个待处理状态的 Promise 对象。
+p3()
+```
+
+### await 关键字
+
+await 关键字，用于等待 Promise 完成，只能在 async 函数内使用，注意 await 不能等待普通函数。
+
+```js
+
+
+
+```
+
+
+
+
+
+
+
+
+
+
+
+## 六、常见面试点总结
+
+1. 三态 + 不可逆：pending → fulfilled/rejected，一旦改变不能回退。
+2. 链式调用原理：.then 返回新 Promise，实现链式。
+3. 错误冒泡：链式错误会传到最近的 .catch。
+4. Promise.all/race/allSettled/any 区别：
+  - all：全成才成，一败即败
+  - race：谁先完用谁
+  - allSettled：全完成，返回所有结果
+  - any：第一个成功，全败才败
+  5. async/await 是语法糖：基于 Promise，用 try/catch 处理错误。
