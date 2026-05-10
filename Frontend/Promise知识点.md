@@ -19,7 +19,7 @@
 
 ## 三、基础用法
 
-3.1 基础语法
+### 3.1 基础语法
 
 ```bash
 const p = new Promise((resolve, reject) => {
@@ -37,6 +37,128 @@ const p = new Promise((resolve, reject) => {
 
 Promise 构造函数的参数必须是一个函数，该参数函数必须有两个参数分别是 resolve、reject 形参，初始化 Promise 对象时，会将 Promise 类内部定义的 resolve 函数
 和 reject 函数，分别赋值给参数函数中的 resolve 和 reject 形参。
+
+
+### 3.2 核心实例方法
+
+#### then(onFulfilled, onRejected)
+
+- onFulfilled 成功回调函数（必选），onRejected 失败回调函数（可选）
+- 返回新 Promise，支持链式调用
+
+```js
+new Promise((resolve,reject)=>{
+  // todo
+}).then(
+  (res) => { console.log("成功：", res); },
+  (err) => { console.error("失败：", err); }
+);
+```
+
+#### catch(onRejected)
+
+- 专门注册失败回调，等价于 .then(null, onRejected)
+- 链式中任何环节出错，都会跳过后续 then，直接进入 catch
+
+```js
+new Promise((resolve, reject)=>{
+  // todo 
+})
+.then(res => { throw new Error("中间出错");  })
+.then(res=>{console.log("第一个 then 出错后，不会再执行该 then, 直接进入 catch。")})
+.catch(err => { console.error("统一错误处理：", err); });
+```
+
+#### finally(onFinally)
+
+- 无论成功 / 失败都会执行（如隐藏 loading、清理状态）
+- 不接收参数，返回新 Promise
+
+```js
+new Promise((resolve, reject)=>{
+  //todo 
+}).then(res => { console.log("成功：", res) })
+ .catch(err => { console.log("出错：", err) })
+ .finally(() => { console.log("操作结束"); });
+```
+
+### 3.3 Promise 静态方法
+
+#### Promise.resolve(value)
+
+- 创建一个已成功状态的 Promise 对象。
+
+```js
+Promise.resolve("成功").then(res => console.log(res)); 
+```
+
+#### Promise.reject(reason) 
+
+- 快速创建一个已失败的 Promise
+
+```js
+Promise.reject(new Error("失败")).catch(err => console.error(err)); // 失败
+```
+
+### Promise.all(promises[])
+
+- 并行执行所有 Promise，全部成功才成功，返回结果数组（顺序对应）
+- 任意一个失败 → 立即 reject（短路）
+- 注意和 `Promise.allSettled` 的区别
+
+```js
+const p1 = Promise.resolve(1);
+const p2 = new Promise(resolve => setTimeout(() => resolve(2), 1000));
+const p3 = Promise.resolve(3);
+
+Promise.all([p1, p2, p3]).then(results => {
+  console.log(results); // 1 秒后，输出 [1,2,3]
+}).catch(err => console.error(err));
+```
+
+#### Promise.allSettled(promises[])
+
+- 并行执行，等待所有完成（无论成功 / 失败），返回结果对象数组
+- 每个对象：{ status: 'fulfilled', value } 或 { status: 'rejected', reason }
+- 与 `Promise.all` 的区别是 `Promise.all` 中所有 promises 成功才执行 then，只有一个 promise 执行失败立即执行 catch
+
+```js
+const p1 = Promise.resolve(1);
+const p2 = Promise.reject(new Error("错误"));
+
+Promise.allSettled([p1, p2])
+.then(results => {
+  console.log(results);
+  // [
+  //   { status: 'fulfilled', value: 1 },
+  //   { status: 'rejected', reason: Error: 错误 }
+  // ]
+});
+```
+
+
+#### Promise.race(promises[])
+
+- 并行执行，谁先完成就用谁的结果（无论成功 / 失败）
+
+```js
+const p1 = new Promise(resolve => setTimeout(() => resolve("快"), 500));
+const p2 = new Promise(resolve => setTimeout(() => resolve("慢"), 1000));
+
+Promise.race([p1, p2]).then(res => console.log(res)); // 快（500ms后）
+```
+
+#### Promise.any(promises[])（ES2021）
+
+- 并行执行，第一个成功的结果，全部失败才 reject（AggregateError）
+
+```js
+const p1 = Promise.reject(new Error("错1"));
+const p2 = Promise.resolve("成功");
+const p3 = Promise.reject(new Error("错2"));
+
+Promise.any([p1, p2, p3]).then(res => console.log(res)); // 成功
+```
 
 ## 四、手写 Promise（理解原理）
 
