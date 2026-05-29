@@ -1178,6 +1178,29 @@ export default function Counter() {
 
 ```
 
+#### useRef 配合 forwardRef 使用
+
+```jsx
+import React, { useRef } from 'react'
+
+// 定义 forwardRef 类型的子组件
+const MyInput = forwardRef((props, ref) => {
+  return <input ref={ref} />;
+});
+
+// 父组件
+export default function App() {
+   // useRef 创建
+  const inputRef = useRef(null);
+  return (
+    <div> 
+      {/* MyInput 是 forwardRef 类型的组件，所以 inputRef 不会绑定 MyInput 组件，只是作为参数传递到 MyInput 组件中，然后在 MyInpt 指定它绑定 input 元素 */}
+      <Input ref={inputRef} />
+    </div>
+  )
+}
+```
+
 ### useMemo  
 
 useMemo 是 React Hooks 中用于性能优化的 Hook，它通过缓存计算结果来避免组件在每次渲染时都进行昂贵的计算。
