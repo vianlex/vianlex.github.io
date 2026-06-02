@@ -436,11 +436,22 @@ function Welcome2({name}) {
     return <div>{name} age is {age}</div>
 }
 
-// 父级组件，使用子组件
+// 子组件改成属性值，父组件也受影响
+function Welcome3({user, setUser}) {
+  // 子组件改变父组件传递的值，父组件也会同步改变
+  setUser(...user, age: 20)
+  return <div>{user.name} age is {user.age}</div>
+}
+
+// 父级组件传子组件，属性无法改变
 <Welcome1 name="Hello World" age="20"/>
 
 let user = {name: "Hello World", age: 20}
 <Welcome2 name={user.name} age={user.age}/>
+
+// 父级组件传子组件，通过 useState 的方式
+let [user, setUser] = useState({name: "Hello", age:18})
+<Welcome3 user={user} setUser={setUser}/>
 
 ```
 
