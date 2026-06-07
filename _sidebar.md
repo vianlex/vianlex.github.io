@@ -105,6 +105,9 @@
   - [Go 导入包说明](/Golang/Go导入包说明.md)
   - [Go 依赖管理](/Golang/Go依赖管理.md)
 
+- **Python 知识点**
+  - [Python学习笔记](/Python/Python学习笔记.md)
+
 - **Development 工具**
   - [Mise 版本管理](/Tools/Mise版本管理工具.md)
 
