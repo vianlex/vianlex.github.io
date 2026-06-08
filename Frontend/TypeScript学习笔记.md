@@ -522,7 +522,19 @@ const p: Person = {
 
 ### 字符串字面量类型
 
+示例1： 
+
 ```ts 
+// 定义 num 变量只能固定值 12
+let num: 12 = 12 
+
+// 定义 value 变量只能取固定值 hello 
+let value: "hello" = "hello"
+```
+
+示例2：
+
+```ts
 // 定义 method 变量的值，只能是 “GET” 或者 “POST”
 let method : "GET" | "POST" = "GET"
 // 能编译通过
@@ -547,6 +559,19 @@ let enable: isEnabled = true
 // 无法编译通过
 enable = false
 ```
+
+### 对象字面量类型
+
+```ts
+// 定义对象中的 name 属性只能取固定值 "start" 和 "closed"
+type TimingEvent = { name: "start"; userStarted: boolean } | { name: "closed"; duration: number };
+// 能编译通过
+let t1: TimingEvent = {name: "start", userStarted: false }
+
+// 定义 value 变量的 name 和 age 属性都只能取固定值
+let value: {name: "Hello", age: 20} = {name: "Hello", age: 20}
+```
+
 
 
 ## 可空类型
