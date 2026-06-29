@@ -24,9 +24,96 @@ b = a # a 和 b 都引用了相同的对象
 
 ### 变量的作用域
 
-```py
+在 Python 中有四种不同级别的作用域：
+- 局部作用域（Local Scope）：在函数内定义的变量
+- 嵌套作用域（Enclosing Scope）：在外层函数中定义的变量
+- 全局作用域（Global Scope）：在模块层次中定义的变量
+- 内置作用域（Built-in Scope）：Python预定义的变量名
 
+以上四种作用域构成了 Python 的 LEGB 规则：Local -> Enclosing -> Global -> Built-in。Python按照这个作用域的顺序查找变量。
+
+#### 局部作用域（Local Scope）
+
+局部作用域是在函数内部定义的变量，只在函数内部可见，函数执行结束后就会被销毁。
+
+```py
+def hello():
+    x = 20
+    print(f"hello count = {x}")
 ```
+
+#### 全局作用域（Global Scope）
+
+全局作用域是在模块（即.py文件）中最外层定义、函数外部定义的变量，在整个模块（文件）的任意位置可见。
+
+```py
+x = 20
+def hello_global():
+    print(f"hello count = {x}")
+```
+
+#### 嵌套作用域（Enclosing）
+
+内层函数访问外层函数的局部变量，仅多层嵌套函数存在。
+
+```py
+def outer():
+    x = 20  # 外层嵌套变量
+    def inner():
+        print(x)  # 向内找不到，去外层 outer 找（E）
+    inner()
+
+outer()  # 输出 20
+```
+
+#### 内置作用域（Built-in）
+
+Python 解释器自带，所有模块（文件） / 函数，不需要引入，就能都能直接使用如：print, sum, max, int, str, list 等。
+
+```py
+# len 属于内置作用域
+print(len([1,2]))
+```
+
+#### 关键字：global /nonlocal（修改上层变量）
+
+##### global 关键字
+
+对于全局变量，在函数内只读全局变量没问题，但是如果直接在函数内部修改全局变量，会被识别为新局部变量，报错。我们需要
+
+```py
+n = 10
+def func1():
+    # 可读
+    print(n)
+    # 未使用 global 关键字声明，直接修改会报错
+    n = 20 
+func1()
+
+def func2():
+    global n
+    # global 声明后才能修改全局变量，否则会报错 
+    n = 20
+    print(n)
+
+func2()
+```
+
+##### nonlocal 关键字
+
+```py
+def outer():
+    val = 10
+    def inner():
+        # 声明为 nonlocal 变量，才能修改
+        nonlocal val
+        val = 99
+    inner()
+    print(val)  # 99
+
+outer()
+```
+
 
 ## 基础数据类型
 
