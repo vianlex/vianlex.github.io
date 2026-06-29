@@ -114,6 +114,25 @@ def outer():
 outer()
 ```
 
+#### 注意在 if/for/while 无独立作用域
+
+在 if/for/while 语句块中它们不会创建局部作用域，它们内部定义的变量外部也可访问。只有 def / class / lambda 会生成独立作用域。
+
+```py
+if True:
+    m = 5
+
+# 正常输出 5
+print(m) 
+
+for i in range(3):
+    pass
+# 正常输出 2
+print(i)  
+```
+
+
+
 
 ## 基础数据类型
 
