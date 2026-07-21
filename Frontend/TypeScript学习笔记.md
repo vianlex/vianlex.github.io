@@ -357,12 +357,12 @@ interface FixKeyIndex {
 interface AddFunc {
   (a: number, b: number): number;
 }
-
-function add: AddFunc = function(a: number, b: number): number {
+// 用函数类型标注变量
+let add: AddFunc = function(a: number, b: number): number {
   return a + b 
 }
 
-// 重载函数接口
+// 重载
 interface OverloadFunc {
   (value: string): string;
   (value: number): number;
@@ -642,4 +642,49 @@ type Callback = (code: number, msg: string) => boolean;
 type NumOrStr = number | string 
 
 type User = {name: string} & {age: number}
+```
+
+## 函数类型 vs 函数签名
+
+函数类型是一类专门用来表示 “函数” 的类型语法，本质就是用箭头语法 (参数): 返回值 书写的类型，函数签名是函数类型的一种表现形式。
+
+简单关系：所有函数签名都属于函数类型，但函数类型不只是签名，还能标注变量。
+
+### 函数类型
+
+在 TypeScript 中，函数类型可以通过以下方式定义：
+
+```ts
+// 标准函数类型语法：(参数) => 返回类型
+type CalcFunc = (a: number, b: number) => number;
+
+// 用函数类型标注变量
+const add: CalcFunc = (x, y) => x + y;
+```
+
+#### 函数签名
+
+```ts
+interface AddFunc {
+  // 定义函数的签名，注意这里的返回类型声明必须使用 : 符号
+  (a: number, b: number): number; 
+  // 定义函数一个 hello 属性
+  hello: string;
+}
+
+
+// 有属性的函数，必须要先声明一个 any 或普通函数，然后断言为 AddFunc，不然无法编译通过
+const add = ((a: number, b: number) => a + b) as AddFunc;
+// 挂载函数属性
+add.hello = "Hello World";
+
+
+// 第二种方式
+const add: AddFunc = Object.assign(
+  function(a: number, b: number) {
+    return a + b;
+  },
+  { hello: "Hello" }
+);
+
 ```
