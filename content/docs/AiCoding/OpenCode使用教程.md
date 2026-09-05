@@ -117,42 +117,89 @@ OpenCode 内置两个 agent，`Tab` 键切换：
 - **多 agent 并行**：可在同一项目上让多个 agent 并行干活
 - **分享会话**：任何会话都能生成可分享链接
 
-## 三、会话交互
+## 三、输入前缀
 
-### TUI 与快捷键
+TUI 输入框里输入的第一个字符，决定走哪条通道。OpenCode 只有 **3 个真前缀**——比 Claude Code/Pi 都克制。
+
+| 前缀 | 触发什么 | 一句话说明 |
+|------|---------|-----------|
+| `/` | **斜杠命令** | 调用内置命令或自定义命令（输入 `/` 弹菜单） |
+| `!` | **Shell 命令** | 直接跑 shell；输出加入对话上下文 |
+| `@` | **文件/目录引用** | `@src/auth.ts` 模糊搜索引用文件；也可 `@general` 调子 agent |
+| 无前缀 | **自然语言** | 普通任务指令 |
+
+> 和 Claude Code 的 `! !! @ # &` 6 个前缀、Pi 的 `! !! @ /` 4 个前缀相比，OpenCode 故意只留 3 个：**够用就行**。Shell 输出没有「仅本人看」的 `!!` 变体，也没有 `#` 写记忆、`&` 后台这种扩展机制——这些都需要到 `/` 命令里找（如 `/init` 写 `AGENTS.md`、`/share` 外部分享）。
+
+### Shell 模式（`!`）
+
+`!` 开头的行直接当 shell 跑，输出自动进对话：
+
+```text
+! ls -la
+! npm test
+! git status
+```
+
+退出方式：按 `Esc` 或清空输入。OpenCode 的 shell 模式没有「只看自己」的子变体——任何 shell 输出 AI 都会看到。
+
+### 文件引用（`@`）
+
+```text
+@src/auth.ts
+@packages/api/
+@general 找出所有 REST 端点       # 子 agent
+```
+
+`@` 后接文件名触发模糊搜索补全，匹配的文件内容自动注入上下文。`@` 后接 agent 名（如内置的 `@general`）可调用子 agent。
+
+## 四、会话命令
+
+输入 `/` 触发。下面是常用命令的子集——完整列表见 [官方 TUI 文档](https://opencode.ai/docs/tui/)。
+
+| 命令 | 作用 | 快捷键 |
+|------|------|--------|
+| `/init` | 分析当前项目并生成 `AGENTS.md` | `ctrl+x i` |
+| `/connect` | 配置 provider（首次或切换） | — |
+| `/models` | 列出可用模型并切换 | `ctrl+x m` |
+| `/themes` | 列出主题 | `ctrl+x t` |
+| `/new` | 开始新会话（别名 `/clear`） | `ctrl+x n` |
+| `/sessions` | 列出并切换会话（`/resume`、`/continue`） | `ctrl+x l` |
+| `/share` | 生成分享链接 | `ctrl+x s` |
+| `/unshare` | 取消分享 | — |
+| `/compact` | 压缩上下文（别名 `/summarize`） | `ctrl+x c` |
+| `/undo` | 撤销上条消息及文件变更（需 Git） | `ctrl+x u` |
+| `/redo` | 重做已撤销的（需 Git） | `ctrl+x r` |
+| `/editor` | 打开外部编辑器写消息（依赖 `$EDITOR`） | `ctrl+x e` |
+| `/export` | 导出对话为 Markdown 并打开 | `ctrl+x x` |
+| `/details` | 切换工具执行详情显示 | `ctrl+x d` |
+| `/thinking` | 切换模型思考过程显示 | — |
+| `/help` | 显示帮助对话框 | `ctrl+x h` |
+| `/exit` | 退出 OpenCode（`/quit`、`/q`） | `ctrl+x q` |
+
+> 很多命令都有 `ctrl+x <字母>` 形式的快捷键（leader 键机制）。`ctrl+x` 后 2 秒内必须按下第二键（`leader_timeout: 2000`，可在 `tui.json` 调）。整套快捷键都能在 `tui.json` 里改。
+
+## 五、TUI 与快捷键
 
 **编辑与导航：**
 
 | 快捷键 | 作用 |
 |------|------|
-| `Enter` | 发送消息 |
-| `Shift+Enter` | 换行 |
+| `Enter` | 发送消息（部分情况需按两次） |
+| `Shift+Enter` / `Ctrl+Enter` / `Ctrl+J` | 换行不发送 |
 | `Ctrl+C` | 清空编辑器（再按退出） |
 | `Esc` | 中止输出流 |
-| `Tab` | 切换 build / plan agent |
-| `@文件名` | 引用文件（自动展开内容为上下文） |
+| `Tab` | 切换 agent（build ↔ plan ↔ ...） |
+| `Shift+Tab` | 反向切换 agent |
+| `Ctrl+P` | 打开命令面板（按名字过滤） |
 
 **控制与显示：**
 
 | 快捷键 | 作用 |
 |------|------|
-| `/` | 会话命令（见下节表格） |
-| `Ctrl+P` | 命令面板 |
-| 直接拖拽图片进终端 | 图片作为输入发给 AI |
+| `ctrl+x` | leader 键，按住 2 秒内跟一字母触发命令快捷键 |
+| 拖拽图片到终端 | 图片作为输入发给 AI |
 
-> OpenCode 支持直接在 TUI 里拖图片——拖一张截图进终端窗口，OpenCode 自动识别并把它加进当前 prompt。
-
-### 会话命令（输入 `/` 触发）
-
-| 命令 | 作用 |
-|------|------|
-| `/init` | 分析当前项目并生成 `AGENTS.md` |
-| `/connect` | 配置 provider（首次或切换） |
-| `/model` | 切换模型 |
-| `/share` | 生成当前会话的可分享链接 |
-| `/compact` | 压缩上下文 |
-| `/clear` | 清空当前会话 |
-| `/exit` | 退出 OpenCode |
+> OpenCode 支持直接在 TUI 里拖图片——拖一张截图进终端窗口，OpenCode 自动识别并把它加进当前 prompt，不需要任何前缀。
 
 ### 提问、加功能、改 bug
 
@@ -186,7 +233,7 @@ OpenCode 能扫任何图片：拖一张设计稿进终端，配一句说明：
 > 用这张图作参考，重做这个屏的样式
 {icon="fa-solid fa-keyboard"}
 
-## 四、会话管理
+## 六、会话管理
 
 会话默认存在 `~/.local/share/opencode/`（SQLite 持久化），支持分享链接与继续上次会话。
 
@@ -211,7 +258,7 @@ OpenCode 支持**多 agent 并行**：在同一项目里可以让多个 OpenCode
 
 底部状态栏实时显示 token/缓存命中率/成本/当前 agent。
 
-## 五、实战：开发一个公告系统
+## 七、实战：开发一个公告系统
 
 用 OpenCode 从零开发一个 Node.js（Express）公告系统，每步给出你该说的话。先选 plan 模式做整体规划。
 
@@ -297,7 +344,7 @@ opencode upgrade
 opencode upgrade v0.1.48   # 升级到指定版本
 ```
 
-## 六、扩展与生态
+## 八、扩展与生态
 
 | 层 | 作用 |
 |---|---|
