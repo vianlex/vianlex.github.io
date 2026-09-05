@@ -1,6 +1,6 @@
 // 站点级样式覆盖（OINK 主题在 _main.scss 末尾 @import '../styles_project'）
-// 首页卡片：整卡可点击，隐藏右下角箭头图标
 
+// ===== 首页卡片：整卡可点击，隐藏右下角箭头图标 =====
 .td-landing-card {
   position: relative;
 
@@ -31,4 +31,133 @@
     outline: 2px solid var(--td-copper);
     outline-offset: 3px;
   }
+}
+
+// ===== 首页卡片网格美化 =====
+
+// 1. 卡片图标区：渐变底 + 渐变图标色
+.td-landing-card__media {
+  border: none;
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--td-blue) 15%, transparent),
+    color-mix(in srgb, var(--td-copper) 12%, transparent)
+  );
+  transition: transform 200ms ease, box-shadow 200ms ease;
+
+  i {
+    // fallback 色，渐变不生效时兜底
+    color: var(--td-blue);
+    background: linear-gradient(135deg, var(--td-blue), var(--td-copper));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    transition: transform 200ms ease;
+  }
+}
+
+// 2. 卡片 hover：图标区上浮 + 图标放大 + 柔和投影
+.td-landing-card:hover {
+  .td-landing-card__media {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 22px color-mix(in srgb, var(--td-blue) 20%, transparent);
+  }
+
+  .td-landing-card__media i {
+    transform: scale(1.12);
+  }
+}
+
+// 3. 分组标题：左侧渐变装饰条
+.td-landing-cards-section .td-landing-section__head h2 {
+  position: relative;
+  padding-inline-start: 16px;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset-inline-start: 0;
+    inset-block-start: 50%;
+    transform: translateY(-50%);
+    width: 4px;
+    height: 1.1em;
+    border-radius: 999px;
+    background: linear-gradient(180deg, var(--td-blue), var(--td-copper));
+  }
+}
+
+// ===== 首页紧凑化 =====
+
+// Hero 区压缩：降最小高度，收标题/描述/按钮间距
+.td-landing-hero {
+  min-height: 300px;
+
+  &__title {
+    margin-bottom: 14px;
+    font-size: clamp(2.1rem, 4.2vw, 3.4rem);
+  }
+
+  &__lead {
+    margin-bottom: 8px;
+    font-size: clamp(0.98rem, 1.25vw, 1.06rem);
+  }
+
+  &__eyebrow {
+    margin-bottom: 14px;
+  }
+
+  &__actions {
+    margin: 18px 0 18px;
+  }
+
+  &--center {
+    .td-landing-hero__copy {
+      > .td-landing-hero__actions { order: 1; margin-top: 18px; }
+      > .td-landing-hero__note { order: 2; margin-top: 12px; }
+    }
+  }
+}
+
+// 分组区块上下留白压缩
+.td-landing-section {
+  padding: clamp(36px, 4.5vw, 60px) 0;
+}
+
+// 分组标题下间距压缩 + 标题字号略降
+.td-landing-section__head {
+  margin-bottom: clamp(22px, 3vw, 34px);
+
+  h2 {
+    font-size: clamp(1.55rem, 2.8vw, 2.1rem);
+  }
+
+  > p:last-child {
+    margin-top: 10px;
+  }
+}
+
+// 卡片内边距与内部元素间距微收
+.td-landing-card {
+  padding: clamp(18px, 2.4vw, 24px);
+
+  h3 {
+    margin-bottom: 8px;
+    font-size: 1.1rem;
+  }
+}
+
+.td-landing-card__media {
+  width: 42px;
+  height: 42px;
+  margin-bottom: 14px;
+  font-size: 1.15rem;
+}
+
+.td-landing-card__description {
+  font-size: 0.86rem;
+}
+
+// 网格间距微调（略增 gap，列更均衡）
+.td-landing-card-grid {
+  gap: 14px;
 }
