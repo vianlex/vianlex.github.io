@@ -1,6 +1,6 @@
 ---
-title: "Sentinel学习笔记.md"
-linkTitle: "Sentinel学习笔记.md"
+title: "Sentinel 学习笔记"
+linkTitle: "Sentinel 学习笔记"
 weight: 110
 ---
 ## Sentinel 核心概念
