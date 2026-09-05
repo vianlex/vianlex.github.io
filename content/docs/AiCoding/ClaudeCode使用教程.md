@@ -101,7 +101,66 @@ tail -200 app.log | claude -p "有异常就告诉我"   # 管道输入
 }
 ```
 
-## 四、会话命令
+## 四、输入前缀
+
+输入框不是纯聊天框，开头的不同字符会切换不同的「执行通道」。这是最容易被忽略、但每天都在用的核心机制。
+
+| 前缀 | 触发什么 | 一句话说明 |
+|------|---------|-----------|
+| `/` | **斜杠命令** | 调用内置命令或自定义 Skill（输入 `/` 弹出菜单） |
+| `!` | **Shell 模式** | 直接在终端跑 shell 命令；结果注入对话上下文 |
+| `!!` | **Shell 模式（仅本人看）** | 同 `!`，但输出**不进上下文**——只给你看，省 token |
+| `@` | **文件/目录引用** | `@src/auth.ts` 精准点名文件/目录进上下文（带自动补全） |
+| `#` | **记忆注入** | 快速往 `CLAUDE.md` 写一条规则，跨会话保留 |
+| `&` | **后台/云端执行** | 把任务扔到后台或云端跑，不阻塞当前对话 |
+| 无前缀 | **自然语言** | 普通任务指令 |
+
+### Shell 模式（`!` / `!!`）
+
+`!` 在前会让这一行直接走 shell 而不经过 Claude：
+
+```text
+! git status      # Claude 也能看到结果
+!! git status     # 只有你自己看，Claude 不知道
+! npm test
+```
+
+退出 Shell 模式：按 `Esc`、`Backspace`，或在空提示上按 `Ctrl+U`。`!!` 适合跑「仅给自己看」的输出（密集日志、含密钥的诊断信息），省 token 又不污染上下文。
+
+### 文件引用（`@`）
+
+```text
+@src/auth.ts                 # 单文件
+@src/auth.ts @tests/auth.ts  # 多文件
+@src/                        # 整目录
+```
+
+`@` 触发文件路径自动补全（按 `Tab`）。文件内容会被直接注入对话上下文，省 Claude 自己用 `Read` 工具查找的开销。
+
+> 子 agent 也能 `@`：如 `@explorer 找出所有 REST 端点`。
+
+### 记忆注入（`#`）
+
+```text
+# 用 pnpm 不用 npm
+# 测试必须覆盖错误路径
+# 项目用 Lombok
+```
+
+这一行会立刻写入项目级 `CLAUDE.md`，**跨会话长期生效**。查看/编辑完整记忆用 `/memory`。`#` 让「项目规则」从「每次会话重申」变成「一次性沉淀」。
+
+### 后台执行（`&`）
+
+```text
+& 启动开发服务器后告诉我端口
+& 跑整套集成测试
+```
+
+任务在后台或云端跑，不阻塞当前对话，关掉终端也能在 `claude.ai/code` 看进度。
+
+> 多行输入：用 `\ + Enter`、`Shift+Enter`（iTerm2/WezTerm/Ghostty/Kitty/Windows Terminal）、`Option+Enter`（macOS）、`Ctrl+J`（通用）。
+
+## 五、会话命令
 
 输入 `/` 触发。下面是常用命令的子集——完整列表（约 100 条内置命令）见 [官方命令参考](https://code.claude.com/docs/en/commands)。
 
@@ -170,7 +229,7 @@ tail -200 app.log | claude -p "有异常就告诉我"   # 管道输入
 | `/release-notes` | 浏览 changelog |
 | `/fewer-permission-prompts` | 扫描已批准历史，提议出最小允许列表（别名 `/less-permission-prompts`） |
 
-## 五、快捷键
+## 六、快捷键
 
 | 快捷键 | 说明 |
 |--------|------|
@@ -192,7 +251,7 @@ tail -200 app.log | claude -p "有异常就告诉我"   # 管道输入
 | `↑` / `↓` | 浏览历史输入 |
 | `@文件名` | 引用文件/目录为上下文 |
 
-## 六、CLAUDE.md 与 Auto Memory
+## 七、CLAUDE.md 与 Auto Memory
 
 `CLAUDE.md` 是项目级记忆。每次会话自动加载。多级叠加：`./CLAUDE.md`（子目录）→ 项目根 → `~/.claude/CLAUDE.md`（用户级）。
 
@@ -211,7 +270,7 @@ tail -200 app.log | claude -p "有异常就告诉我"   # 管道输入
 
 **Auto Memory** 会自动在工作过程中沉淀构建命令、调试经验等，跨会话保留。需要查看或编辑时用 `/memory`。
 
-## 七、进阶：Skills / MCP / 子代理
+## 八、进阶：Skills / MCP / 子代理
 
 | 层 | 作用 |
 |----|------|
@@ -222,7 +281,7 @@ tail -200 app.log | claude -p "有异常就告诉我"   # 管道输入
 | **Plugins** | `/plugin` 装载插件扩展（v2.1.83 起支持从 `.zip` 或 URL 加载） |
 | **Worktree 隔离** | `--worktree` 把修改隔离到独立 git worktree，适合并行安全地做改动 |
 
-## 八、实战：用 grill-with-docs 开发公告系统
+## 九、实战：用 grill-with-docs 开发公告系统
 
 下面演示如何用 **grill-with-docs** 这个 skill，从「模糊想法」到「清晰可落地的设计」再到「代码」。grill-with-docs 会在写代码前对你「拷问式访谈」，把术语写进 `CONTEXT.md`、把难逆转的决策写成 `docs/adr/`（架构决策记录）。
 
