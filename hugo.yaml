@@ -17,7 +17,7 @@ languages:
     title: Vianlex's Wiki
     hasCJKLanguage: true
     params:
-      description: Vianlex 个人技术专题知识库 · 113 篇文档 · 28 个专题
+      description: Vianlex 个人技术专题知识库 · 125 篇文档 · 29 个专题
     menus:
       main:
         - identifier: docs

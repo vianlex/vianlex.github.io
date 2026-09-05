@@ -130,6 +130,10 @@ sections:
           desc: OpenClaw、Openfang、智能体配置
           icon: fa-solid fa-robot
           url: docs/OpenClaw/
+        - title: AI 编码
+          desc: Claude Code 与 Pi Agent 学习教程
+          icon: fa-solid fa-laptop-code
+          url: docs/AiCoding/
         - title: 开发工具
           desc: Mise 版本管理工具
           icon: fa-solid fa-toolbox
