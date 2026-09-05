@@ -57,11 +57,11 @@ Type 接口的类 UML 图如下，它有 4 个子接口 GenericArrayType，Param
 
 ![Type 类 UML 图](/images/Type-UML.png)
 
-- Class 类，表示 raw types（原始类）和基础类型，指的是普通类、枚举、接口、注解、数组、基本类型（int，double），等等不是泛型的类型；
+- Class 类，表示 raw types（原始类）和基础类型，指的是普通类、枚举、接口、注解、非泛型数组（如 `String[]`、`int[]`）、基本类型（int、double）等非泛型类型；
 - GenericArrayType 表示的泛型数组类型，如 T[] 等等；
-- ParameterizedType 表示的是泛型类型，指的是 `List<T>`，`Map<K,V>` 等泛型类型;
+- ParameterizedType 表示的是泛型类型，指的是 `List<T>`，`Map<K,V>` 等泛型类型；
 - TypeVariable 表示的是泛型类型变量，如 `List<T>` 中的泛型变量 T；
-- WildcardType 通配符泛型也叫做泛型表达式类型，如 `List<? extends Number>`。
+- WildcardType 表示通配符类型（wildcard types），如 `List<? extends Number>` 中的 `? extends Number`。
 
 测试说明例子，如下：
 
@@ -117,6 +117,18 @@ public void test02() {
 }
 ```
 
+> 上例中 `TypeTest<T>` 类的定义如下，其字段分别对应注释里列出的输出结果：
+
+```java
+public class TypeTest<T> {
+    Map<String, Object> map;
+    List<String> list;
+    List<? extends Number> numberList;
+    Class<?> clazz;
+    T[] array;
+}
+```
+
 ## 获取泛型类型的实际类型
 
 泛型的本质是参数化类型，想要获取泛型参数化类型的实际类型，只有通过反射成员变量、继承、构造函数等方式获取 Type 对象强转 ParameterizedType 类型对象，或者直接通过反射获取 ParameterizedType 的方式，才能获取到泛型类型变量的实际类型。因为只有 ParameterizedType 对象的 `getActualTypeArguments` 方法能够访问泛型的实际变量类型。
@@ -163,7 +175,7 @@ public class HelloWorld {
     public void test(){
         try {
 
-            Method helloMethod = TypeTest.class.getDeclaredMethod("hello", List.class);
+            Method helloMethod = HelloWorld.class.getDeclaredMethod("hello", List.class);
             System.out.println(helloMethod.getName());
             // 获取 Type 对象，然后强转 ParameterizedType 对象，因为只有 ParameterizedType 类型对象，才能获取泛型变量的实际类型。
             Type genericReturnType = helloMethod.getGenericReturnType();
@@ -196,11 +208,8 @@ public class HelloWorld {
 ```java
 public class Hello<T> {
     public static void main(String[] args) {
-        Hello<String> hello = new Hello<String>();
-        // 直接通过 class 对象只能获取超类或者接口的 Type，所以想要获取 Hello 类的泛型变量实际类型，必须通过其子类方能获取，相当于包了一层，如下 World 类
-        Type genericSuperclass1 = hello.getClass().getGenericSuperclass();
-        Type[] genericInterfaces = hello.getClass().getGenericInterfaces();
-
+        // 直接通过 Hello 实例的 Class 对象，只能拿到父类 Object（raw），拿不到 <String> 实际类型；
+        // 想要获取 Hello 类的泛型变量实际类型，必须通过其子类方能获取，相当于包一层，如下 World 类。
         World world = new World();
         // 获取 type 类型对象，然后强转 ParameterizedType
         Type genericSuperclass = world.getClass().getGenericSuperclass();
@@ -211,7 +220,7 @@ public class Hello<T> {
     }
 }
 
-public class World extends Hello<String> {
+class World extends Hello<String> {
 
 }
 
