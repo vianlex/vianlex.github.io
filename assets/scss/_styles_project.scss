@@ -1,0 +1,34 @@
+// 站点级样式覆盖（OINK 主题在 _main.scss 末尾 @import '../styles_project'）
+// 首页卡片：整卡可点击，隐藏右下角箭头图标
+
+.td-landing-card {
+  position: relative;
+
+  > .td-landing-card-link {
+    // 去掉箭头链接占用的底部留白
+    margin-top: 0;
+    padding-top: 0;
+
+    // 隐藏箭头图标（仅保留 visually-hidden 的可访问名称）
+    i {
+      display: none;
+    }
+
+    // stretched link：锚点用绝对定位覆盖整张卡片
+    &::after {
+      position: absolute;
+      content: '';
+      inset: 0;
+    }
+
+    &:focus-visible {
+      outline: none;
+    }
+  }
+
+  // 键盘焦点环跟随整张卡片
+  &:has(> .td-landing-card-link:focus-visible) {
+    outline: 2px solid var(--td-copper);
+    outline-offset: 3px;
+  }
+}
