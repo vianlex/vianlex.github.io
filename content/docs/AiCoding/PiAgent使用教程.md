@@ -73,7 +73,9 @@ pi --model sonnet:high "解决这个复杂问题"   # 带 thinking level
 
 > 记法：`!` 我看、模型也看；`!!` 只有我看。
 
-此外还支持**截图反馈**：Windows 按 `Alt+V`、macOS 按 `Ctrl+V` 粘贴图片，配合文字描述需求。
+此外还支持**截图反馈**：先用系统截图工具截好图（如 Windows `Win+Shift+S`），再回 Pi 里粘贴，图片会作为消息附件发给 AI，配合一句文字（如「帮我看看这个报错」）让 AI 看图理解问题。快捷键：Windows 按 `Alt+V`、macOS/Linux 按 `Ctrl+V` 粘贴剪贴板图片。
+
+> 注意：Windows Terminal 默认把 `Ctrl+V` 绑成「粘贴文本」会抢键，所以 Windows 上推荐用 `Alt+V`；macOS 在 Finder 里对图片按 `Cmd+C` 复制的是文件路径而非图片内容，需先用预览工具打开图片再复制，或直接把文件拖进终端。
 
 ### 会话命令（输入 `/` 触发）
 
@@ -107,7 +109,7 @@ Pi 干活时你不用干等，随时可以插话。两种插话方式，对应�
 > 当前修复和测试全部完成后，再更新 docs/troubleshooting.md
 {icon="fa-solid fa-keyboard"}
 
-**一句话区分**：
+**一句话区分**（都在会话未结束、Pi 正在运行时发送输入指令）：
 
 | 场景 | 用哪种 |
 |------|--------|
