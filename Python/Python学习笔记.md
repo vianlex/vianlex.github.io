@@ -45,7 +45,8 @@ ls.insert(0, 5)
 ### 元组（不可变）
 
 ```python
-
+# 初始化
+t1 
 
 ```
 
@@ -201,4 +202,14 @@ for i in range(3):
 print(i)  
 ```
 
-## 类型标注
+## 类型注解
+
+```python
+# 格式：变量名: 类型 = 值
+a: int = 10
+b: str = "hello"
+c: float = 3.14
+d: bool = True
+e: list = [1, 2, 3]
+f: dict = {"name": "tom"}
+```
