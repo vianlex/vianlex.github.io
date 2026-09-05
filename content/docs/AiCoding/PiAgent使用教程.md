@@ -70,7 +70,7 @@ pi --model sonnet:high "解决这个复杂问题"   # 带 thinking level
 
 ### 默认工具
 
-`read` / `write` / `edit` / `bash` 四件套，需要更多能力靠扩展。
+`read` / `write` / `edit` / `bash` 四件套，没有 MCP、Sub-Agent、Plan Mode、Build In Todo 等等能力，需要更多能力靠安装扩展来实现。
 
 ## 三、会话交互
 
