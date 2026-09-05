@@ -102,8 +102,8 @@ pi --model sonnet:high "解决这个复杂问题"   # 带 thinking level
 |------|------|
 | `/model` | 切换模型 |
 | `/new` `/resume` | 新建/恢复会话 |
-| `/tree` | 会话树（按两次 `Esc` 打开） |
-| `/fork` | 从当前节点开新会话 |
+| `/tree` | 会话树（就地导航，回到任意历史节点） |
+| `/fork` | 从某条用户消息派生新会话（保留原分支） |
 | `/compact` | 手动压缩上下文 |
 | `/session` | 查看 token/成本 |
 | `/quit` | 退出 |
@@ -140,13 +140,60 @@ Pi 干活时你不用干等，随时可以插话。两种插话方式，对应�
 
 > Windows Terminal 默认把 `Alt+Enter` 绑成全屏快捷键，需先在终端设置里解除/重映射，或用 `/hotkeys` 核对当前绑定。
 
-## 四、会话树：Pi 的独门设计
+### TUI 与快捷键
 
-会话以 JSONL 存于 `~/.pi/agent/sessions/`，天然分支树。
+**编辑与导航常用快捷键：**
 
-- `/tree` 浏览全部历史节点，跳转到任意节点继续
-- `/fork` 从历史节点开新分支（比如「方案 A 跑不通，回到上一步试方案 B」）
-- `/compact` 长会话逼近上下文上限时压缩
+| 快捷键 | 作用 |
+|------|------|
+| `Enter` | 发送消息 |
+| `Shift+Enter` | 换行（`Ctrl+Enter` 于 WSL） |
+| `Ctrl+W` | 向后删除一个单词 |
+| `Ctrl+U` | 删除到行首 |
+| `Ctrl+K` | 删除到行尾 |
+| `Ctrl+A` / `Home` | 行首 |
+| `Ctrl+E` / `End` | 行尾 |
+| `↑` | 空行时浏览历史 |
+| `Esc` | 取消补全 / 中止输出流 |
+| `Ctrl+C` | 清空编辑器（再次按下退出） |
+| `Ctrl+G` | 调用外部编辑器（`$VISUAL`/`$EDITOR`） |
+
+**模型与显示切换：**
+
+| 快捷键 | 作用 |
+|------|------|
+| `Ctrl+P` | 循环模型（受 `--models` 约束） |
+| `Ctrl+O` | 展开 / 收起工具输出 |
+| `Ctrl+T` | 切换思考块（thinking）可见性 |
+| `Shift+Tab` | 循环思考级别 |
+
+## 四、会话管理
+
+会话默认以 JSONL 树状结构保存在 `~/.pi/agent/sessions/`（按工作目录组织）。
+
+**启动时的会话选项：**
+
+```bash
+pi -c                        # --continue：继续最近会话
+pi -r                        # --resume：浏览历史会话并选择
+pi --session <id>            # 使用指定会话文件或 ID（支持部分 UUID）
+pi --fork <id>               # 从指定会话 fork 出新会话
+pi --name "重构登录"          # -n：启动时命名会话
+pi --session-dir ./sessions  # 自定义会话存储目录
+```
+
+**交互模式中的分支与导出：**
+
+| 命令 | 作用 |
+|------|------|
+| `/tree` | 在会话树中就地导航，回到任意历史节点继续 |
+| `/fork` | 从某条用户消息派生新会话文件（保留原分支） |
+| `/clone` | 复制当前分支为新会话 |
+| `/export my-session.html` | 导出为 HTML |
+| `/import session.jsonl` | 从 JSONL 导入恢复 |
+| `/share` | 上传为私有 GitHub gist 并生成可分享链接 |
+
+压缩是有损的，但完整历史保留在 JSONL 中，可用 `/tree` 随时回顾。
 
 底部状态栏实时显示 token/缓存命中率/成本。
 
@@ -201,7 +248,7 @@ Pi 执行 `node app.js`，写 curl 命令验证并报告结果。发现问题直
 > 先按状态字段实现，跑通后我 fork 回去试软删除方案
 {icon="fa-solid fa-keyboard"}
 
-跑通后按 `Esc Esc` 打开 `/tree`，跳回实现前的节点 `/fork`，让 Pi 用软删除方案重做，对比两种实现。
+跑通后输入 `/tree` 打开会话树，跳回实现前的节点 `/fork`，让 Pi 用软删除方案重做，对比两种实现。
 
 ### 第 6 步：脚本化批量操作
 
