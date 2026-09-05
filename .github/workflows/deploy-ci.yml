@@ -1,51 +1,74 @@
-name: deply-doc-ci
+name: Deploy to GitHub Pages
 
-# 触发条件关闭
-# on:
-#   push:
-#     branches:
-#       - main
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: github-pages
+  cancel-in-progress: false
 
 env:
-  GIT_USER: vianlex
-  GIT_EMAIL: zhouykwork@outlook.com
-  DEPLOY_REPO: vianlex/vianlex.github.io
-  DEPLOY_BRANCH: main
+  HUGO_VERSION: 0.165.0
+  GOWORK: off
+  HUGO_MODULE_WORKSPACE: off
+  HUGO_CACHEDIR: ${{ github.workspace }}/.hugo_cache
 
 jobs:
   build:
-    name: Build on node ${{ matrix.node_version }} and ${{ matrix.os }}
+    name: Build Pages artifact
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        os: [ubuntu-latest]
-        node_version: [12.x]
     steps:
-      - name: Checkout deploy repo
-        uses: actions/checkout@v2
+      - name: Check out source
+        uses: actions/checkout@v7
         with:
-          repository: ${{ env.DEPLOY_REPO }}
-          ref: ${{ env.DEPLOY_BRANCH }}
-      - name: Use Node.js ${{ matrix.node_version }}
-        uses: actions/setup-node@v1
+          fetch-depth: 0
+
+      - name: Set up Go
+        uses: actions/setup-go@v7
         with:
-          node-version: ${{ matrix.node_version }}
-      - name: Configuration environment
-        env:
-          HEXO_DEPLOY_PRI: ${{secrets.HEXO_DEPLOY_PRI}}
+          go-version-file: go.mod
+          cache-dependency-path: go.sum
+
+      - name: Configure GitHub Pages
+        id: pages
+        uses: actions/configure-pages@v6
+
+      - name: Install Hugo Extended
         run: |
-          sudo timedatectl set-timezone "Asia/Shanghai"
-          mkdir -p ~/.ssh/
-          echo "$HEXO_DEPLOY_PRI" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan github.com > ~/.ssh/known_hosts
-          git config --global user.name $GIT_USER
-          git config --global user.email $GIT_EMAIL
-      #- name: Install dependencies
-      #  run: |
-      #    npm install hexo-cli -g
-      #    npm install
-      - name: docs deploy
+          curl --fail --location --silent --show-error \
+            --output "${RUNNER_TEMP}/hugo.deb" \
+            "https://github.com/gohugoio/hugo/releases/download/v${HUGO_VERSION}/hugo_extended_${HUGO_VERSION}_linux-amd64.deb"
+          sudo dpkg -i "${RUNNER_TEMP}/hugo.deb"
+
+      - name: Download OINK
+        run: go mod download github.com/pgsty/oink
+
+      - name: Build
         run: |
-          hexo clean
-          hexo d
+          hugo --cleanDestinationDir --gc --minify --environment production \
+            --printPathWarnings --panicOnWarning \
+            --baseURL "${{ steps.pages.outputs.base_url }}/"
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: public
+
+  deploy:
+    name: Deploy
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Publish
+        id: deployment
+        uses: actions/deploy-pages@v5

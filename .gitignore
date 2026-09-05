@@ -2,9 +2,16 @@
 Thumbs.db
 db.json
 *.log
-node_modules/
+
+# OINK / Hugo 构建产物
 public/
+resources/
+.hugo_cache/
+.hugo_build.lock
+
+# Node.js（旧 VitePress 残留，若仍在）
+node_modules/
+
+# 部署密钥
 .deploy*/
-_multiconfig.yml
-package-lock.json
 *-deploy-key*

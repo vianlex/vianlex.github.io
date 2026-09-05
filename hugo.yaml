@@ -1,0 +1,68 @@
+# Vianlex Wiki — OINK site configuration
+# 单语言（简体中文）技术知识库
+
+title: Vianlex's Wiki
+baseURL: https://vianlex.github.io/
+defaultContentLanguage: zh
+enableGitInfo: true
+enableRobotsTXT: true
+enableEmoji: true
+timeZone: Asia/Shanghai
+
+languages:
+  zh:
+    label: 简体中文
+    locale: zh-CN
+    weight: 1
+    title: Vianlex's Wiki
+    hasCJKLanguage: true
+    params:
+      description: Vianlex 个人技术专题知识库 · 113 篇文档 · 28 个专题
+    menus:
+      main:
+        - identifier: docs
+          name: 文档
+          pageRef: /docs
+          weight: 10
+
+# OINK's Markdown components depend on these three Goldmark settings.
+markup:
+  goldmark:
+    renderer:
+      unsafe: true
+    parser:
+      attribute:
+        block: true
+      wrapStandAloneImageWithinParagraph: false
+  highlight:
+    noClasses: false
+
+outputs:
+  home: [HTML, RSS, markdown, LLMS]
+  page: [HTML, markdown]
+  section: [HTML, RSS, print, markdown]
+
+params:
+  offline_search: true
+  copyright:
+    authors: Vianlex
+    from_year: 2026
+  footer_center_info: ''
+  ui:
+    dark_mode: true
+    section_index: cards
+    blog_index: cards
+    sidebar_menu_foldable: true
+    sidebar_icon_policy: groups
+    backlinks: true
+    typography: system
+
+  github_repo: https://github.com/vianlex/vianlex.github.io
+  github_branch: main
+
+module:
+  imports:
+    - path: github.com/pgsty/oink
+  hugoVersion:
+    extended: true
+    min: 0.160.1

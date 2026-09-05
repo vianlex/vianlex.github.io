@@ -1,0 +1,153 @@
+sections:
+  - hero
+  - type: cards
+    data:
+      title: 后端开发
+      columns: 4
+      items:
+        - title: Java 基础
+          desc: JDK 核心机制、字节码、类加载、SPI、字节码增强等底层知识
+          icon: fa-solid fa-mug-hot
+          url: docs/Java/
+        - title: Java 设计模式
+          desc: 六大设计原则与常用设计模式实战
+          icon: fa-solid fa-puzzle-piece
+          url: docs/JavaDesign/
+        - title: Spring 全家桶
+          desc: Spring Boot 注解、路径模式与踩坑记录
+          icon: fa-solid fa-leaf
+          url: docs/Spring/
+        - title: Maven 构建
+          desc: 依赖管理、插件配置与常见问题
+          icon: fa-solid fa-box
+          url: docs/Maven/
+        - title: Golang
+          desc: Go 语言包管理与导入机制
+          icon: fa-solid fa-gears
+          url: docs/Golang/
+        - title: Python
+          desc: Python 学习笔记
+          icon: fa-brands fa-python
+          url: docs/Python/
+        - title: Groovy
+          desc: Groovy 脚本语言基础
+          icon: fa-solid fa-wand-magic-sparkles
+          url: docs/Groovy/
+  - type: cards
+    data:
+      title: 前端开发
+      columns: 2
+      items:
+        - title: JavaScript / TypeScript
+          desc: JS 核心、原型链、闭包、异步、虚拟 DOM、React、TS
+          icon: fa-solid fa-code
+          url: docs/Frontend/
+        - title: 移动端 / Hybrid
+          desc: Capacitor、Cordova 移动端方案
+          icon: fa-solid fa-mobile-screen
+          url: docs/Android/
+  - type: cards
+    data:
+      title: 中间件 & 微服务
+      columns: 4
+      items:
+        - title: 微服务组件
+          desc: Gateway / Nacos / OpenFeign / Sentinel / SkyWalking / Seata / Spring Security / Kafka / RocketMQ / ES
+          icon: fa-solid fa-satellite-dish
+          url: docs/Middleware/
+        - title: MySQL
+          desc: 字符串函数与开窗函数
+          icon: fa-solid fa-database
+          url: docs/Mysql/
+        - title: Redis
+          desc: 缓存穿透、击穿、雪崩
+          icon: fa-solid fa-bolt
+          url: docs/Redis/
+        - title: MongoDB
+          desc: 文档型数据库基础
+          icon: fa-solid fa-leaf
+          url: docs/Database/
+        - title: 规则引擎
+          desc: Drools 规则引擎
+          icon: fa-solid fa-scale-balanced
+          url: docs/RuleEngine/
+        - title: Jemeter 压测
+          desc: 性能与接口压测入门
+          icon: fa-solid fa-flask
+          url: docs/Jemeter/
+  - type: cards
+    data:
+      title: 容器 & 云原生
+      columns: 3
+      items:
+        - title: Docker
+          desc: Docker、Dockerfile、Compose、Swarm 全栈
+          icon: fa-brands fa-docker
+          url: docs/Docker/
+        - title: Kubernetes
+          desc: K8s 入门与 kubeadm 部署实战
+          icon: fa-solid fa-cubes
+          url: docs/Kubernetes/
+        - title: Nginx / Tengine
+          desc: Nginx 模块、location、rewrite、Tengine
+          icon: fa-solid fa-server
+          url: docs/Nginx/
+  - type: cards
+    data:
+      title: 运维 & 系统
+      columns: 4
+      items:
+        - title: Linux
+          desc: 常用命令、权限、SSH、iptables、tmux 等
+          icon: fa-brands fa-linux
+          url: docs/Linux/
+        - title: Shell 脚本
+          desc: Shell / Awk / Sed 实战
+          icon: fa-solid fa-terminal
+          url: docs/Shell/
+        - title: Windows
+          desc: PowerShell、Cmd、OpenSSH、WSL
+          icon: fa-brands fa-windows
+          url: docs/Window/
+        - title: Apache POI
+          desc: Excel 行高与换行处理
+          icon: fa-solid fa-table
+          url: docs/Apache-POI/
+        - title: PowerDesigner
+          desc: 建模工具使用与逆向导入
+          icon: fa-solid fa-diagram-project
+          url: docs/PowerDesigner/
+        - title: XML 处理
+          desc: Dom4j 与 XPath
+          icon: fa-solid fa-file-code
+          url: docs/Xml/
+  - type: cards
+    data:
+      title: 工具 & 协作
+      columns: 4
+      items:
+        - title: OpenClaw / AI
+          desc: OpenClaw、Openfang、智能体配置
+          icon: fa-solid fa-robot
+          url: docs/OpenClaw/
+        - title: 开发工具
+          desc: Mise 版本管理工具
+          icon: fa-solid fa-toolbox
+          url: docs/Tools/
+        - title: Git
+          desc: Git 学习笔记与快捷操作
+          icon: fa-brands fa-git-alt
+          url: docs/Git/
+        - title: 计算机网络
+          desc: 域名、网络设备、软件名称
+          icon: fa-solid fa-network-wired
+          url: docs/Computer/
+
+hero:
+  align: center
+  eyebrow: 好记性，不如烂笔头
+  title_lines:
+    - words: [{ text: "Vianlex's Wiki" }]
+  lead: 个人技术专题知识库，沉淀后端、前端、中间件、运维等方向的实战笔记。
+  actions:
+    - { label: 进入文档, url: docs/, icon: fa-solid fa-book, style: primary }
