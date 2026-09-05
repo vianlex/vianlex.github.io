@@ -56,16 +56,20 @@
   }
 }
 
-// 2. 卡片 hover：图标区上浮 + 图标放大 + 柔和投影
-.td-landing-card:hover {
-  .td-landing-card__media {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 22px color-mix(in srgb, var(--td-blue) 20%, transparent);
-  }
+// 2. 卡片 hover：对齐案例页的克制风格（边框色混合 + 轻阴影，去掉浮起）
+.td-landing-card {
+  transition: border-color 160ms ease, box-shadow 160ms ease;
 
-  .td-landing-card__media i {
-    transform: scale(1.12);
+  &:hover {
+    border-color: color-mix(in srgb, var(--td-blue) 40%, var(--td-line));
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+    transform: none;
   }
+}
+
+// hover 时仅图标轻微放大作为反馈（不再整卡浮起）
+.td-landing-card:hover .td-landing-card__media i {
+  transform: scale(1.08);
 }
 
 // 3. 分组标题：左侧渐变装饰条
@@ -157,7 +161,7 @@
   font-size: 0.86rem;
 }
 
-// 网格间距微调（略增 gap，列更均衡）
+// 网格间距：对齐案例页 1rem 节奏
 .td-landing-card-grid {
-  gap: 14px;
+  gap: 1rem;
 }
