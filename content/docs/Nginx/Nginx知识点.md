@@ -3,7 +3,6 @@ title: "Nginx 知识点"
 linkTitle: "Nginx 知识点"
 weight: 20
 ---
-
 ## root 和 alias 的区别
 
 Nginx 中 root 是路径拼接，alias 是路径替换，二者决定请求 URI 如何映射到磁盘文件路径。
@@ -16,15 +15,14 @@ Nginx 中 root 是路径拼接，alias 是路径替换，二者决定请求 URI 
 | 正则匹配     | 无需捕获组                                | 必须包含捕获组且 alias 引用（官方要求）|
 | 典型场景     | URI 与目录结构一致                        | 需将 URI 映射到不同目录                                |
 
-
 ### 简单示例
 
 1. root 示例
 
-```bash 
-location /img/ { 
+```bash
+location /img/ {
     # 映射真实路径为：root 路径 + 完整请求 URL
-    root /data/dist; 
+    root /data/dist;
 }
 ```
 
@@ -32,15 +30,14 @@ location /img/ {
 
 2. alias 示例
 
-```bash 
+```bash
 location /img/ {
     # 映射真实路径为：alias 路径 + 去掉匹配前缀的 URL
-    alias /data/dist/images; 
+    alias /data/dist/images;
 }
 ```
 
 请求 /img/top.gif → 映射到 /data/dist/images/top.gif。
-
 
 3. location 正则匹配时，alias 必须引用正则捕获组，root 无此限制
 

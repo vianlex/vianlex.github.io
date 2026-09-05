@@ -3,7 +3,6 @@ title: "PowerShell 使用常见问题"
 linkTitle: "PowerShell 使用常见问题"
 weight: 30
 ---
-
 ## PowerShell 乱码问题
 
 1、解决方案（临时生效，重启失效）
@@ -26,7 +25,7 @@ weight: 30
 $PROFILE
 
 # 2. 如果配置文件不存在，则创建配置文件
-New-Item -Type File -Path $PROFILE -Force 
+New-Item -Type File -Path $PROFILE -Force
 
 # 3. 通过 notepad 记事本打开配置文件
 notepad $PROFILE

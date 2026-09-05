@@ -3,8 +3,7 @@ title: "Elasticsearch 基础概念笔记"
 linkTitle: "Elasticsearch 基础概念笔记"
 weight: 10
 ---
-
-## 安装 Elasticsearch 
+## 安装 Elasticsearch
 
 ```yml
 services:
@@ -56,7 +55,7 @@ networks:
 
 下载地址：`https://github.com/medcl/elasticsearch-analysis-ik` 或者 `https://release.infinilabs.com/analysis-ik/stable/`
 
-离线安装方式：将插件解压到 `elasticsearch` 安装目录中的 `plugins` 目录下（注意将插件的文件夹名称改成 ik），然后重启 `elasticsearch` 服务即可。  
+离线安装方式：将插件解压到 `elasticsearch` 安装目录中的 `plugins` 目录下（注意将插件的文件夹名称改成 ik），然后重启 `elasticsearch` 服务即可。
 
 `ik` 分词器支持三种分词规则： standard、 ik_smart、 ik_max_word（一般采用这种方式）
 
@@ -66,7 +65,6 @@ networks:
 POST http://127.0.0.1:9200/_analyze
 { "analyzer": "ik_smart", "text": "中华人民共和国" }
 ```
-
 
 ## Elasticsearch 基本概念
 
@@ -81,9 +79,9 @@ POST http://127.0.0.1:9200/_analyze
 倒排索引表的映射结构如下：
 
 ```txt
-关键词 | 文档ID 
+关键词 | 文档ID
 中国   | 100, 101
-你好   | 100 
+你好   | 100
 Java   | 102, 105
 ```
 
@@ -92,7 +90,6 @@ Java   | 102, 105
 - 索引（Index）: 相当于 MySql 中的表
 - 映射（Mapping）：相当于 MySql 表中的字段
 - 文档（Document）：相当于 MySqll 表中的记录
-
 
 ### 索引
 
@@ -104,19 +101,16 @@ Java   | 102, 105
 - setings：索引设置，设置分片和副本的数量等。
 - mapping：映射，定义了索引|中包含哪些字段，以及字段的类型、长度、分词器等。
 
-
 #### 索引设置（settings）
 
 1. 分片数量（`number_of_shards`），表示将索引拆分成多少个主分片（只负责写和修改操作），作用是实现索引的负载均衡和数据分布。
 2. 副本数量（`number_of_replicas`），设置每个分片有多少个副本数量（副本分片只负责读操作），作用是提高索引的可用性和容错能力。
-
 
 #### 索引映射
 
 字段属性（`properties`）定义索引中文档的字段及其类型。常用字段类型包括：`text，keyword，integer, float, date `等。简单例子如下：
 
 **注意**：只有 text 类型是支持分词和指定分词器的，如果字符串不想要分词可以设置为 keyword 类型。
-
 
 ```json
 "properties" :{
@@ -126,7 +120,7 @@ Java   | 102, 105
         "search_analyzer": "ik_max_word", // 指定查询条件的分词器
         "index": false, // 表示不需要该字段作为查询条件，即不会生成倒排索引
     },
-    // 倒排索引关联分词和不分词的 materialName 
+    // 倒排索引关联分词和不分词的 materialName
     "materialName": {
         "type": "text",
         "analyzer": "ik_max_word", // 指定分词器
@@ -210,9 +204,9 @@ DELETE http://127.0.0.1:9200/order_index
 
 ```bash
 PUT /order_index/_settings
-{ 
+{
     "index":{
-        "number_of_replicas":2 
+        "number_of_replicas":2
     }
 }
 ```
@@ -231,10 +225,9 @@ DELETE /order_index
 # 将 order2_index 索引的别名设置为 order_index
 PUT /order2_index/_alias/order_index
 # 通过 order_index 别名查询 order2_index 索引
-GET /order2_index 
-GET /order_index 
+GET /order2_index
+GET /order_index
 ```
-
 
 #### 索引别名
 
@@ -309,7 +302,7 @@ POST /_aliases
     },
     {
       "add": {
-        "index": "orders_current", 
+        "index": "orders_current",
         "alias": "orders_latest"
       }
     },
@@ -386,7 +379,7 @@ POST /_aliases
 
 #### 文档数据结构
 
-```
+```json
 {
   "_index": "users",   // 文档所属的索引
   "_id": "1",          // 文档的唯一 ID
@@ -443,7 +436,6 @@ POST /user_index/_bulk
 {"name": "小红", "birthday":"2026-01-16", "interest": ["跳舞", "画画"]}
 ```
 
-
 3、文档查询（支持两种查询方式，一种是 URL Query，另一种是 DSL Query）
 
 ```bash
@@ -451,7 +443,7 @@ POST /user_index/_bulk
 GET /order_index/_doc/_search?q=orderNumber:123121312&from=0&size=10
 
 # 基于 DSL Query 查询
-GET /order_index/_search 
+GET /order_index/_search
 {
     "query":{
         "match" :{
@@ -461,13 +453,11 @@ GET /order_index/_search
 }
 ```
 
-
 #### 文档的关联关系
 
 1、嵌套对象（Nested Object）
 
 优点是嵌套对象将文档存储在一起，能提高读取性能，缺点是更新子文档，需要更新整个文档，同时查询的效率也相对较慢，适用场景是对少量子文档偶尔更新和查询频繁的情况。如商品和商品属性的关联关系就比较适合适用嵌套对象。
-
 
 2、Join 父子文档类型
 
@@ -477,15 +467,13 @@ GET /order_index/_search
 
 宽表适用于一对多或者多对多的关联关系。以空间换取时间，宽表的优点是速度快。缺点则是索引更新或删除数据时，应用程序不得不处理宽表的余数据，并且冗余字段会造成存储空间的浪费。适用一些业务报表查询的场景，将几个业务表冗余在一起。
 
-
 4、业务端关联
 
 多个索引通过分开多次请求来完成。业务端关联适用于数据量少的多表关联业务场景。数据量少时，用户体验好；而数据量多时，两次查询耗时肯定会比较长，反而影响用户体验。
 
-
 #### 文档设计实践
 
-1. 一个文档避免适用大量的字段，默认最大字段数是1000， 可以设置 index.mapping.total_fields.limit 限定最大字段数。
+1. 一个文档避免适用大量的字段，默认最大字段数是 1000， 可以设置 index.mapping.total_fields.limit 限定最大字段数。
     - 过多的字段不容易维护
     - 删除和修改文档需要重建 Index 比较耗时。
     - 尽量不要将 Dynamic 动态新增字段的值设置为 strict，这样新增字段不会被索引，并且文档写入失败。
@@ -498,6 +486,4 @@ GET /order_index/_search
     ```
 3. 字段的值避免使用 null 空值，最好设置一个默认值。
 
-4. 为索引的 mapping 添加 meta 信息，方便进行版本管理，同时可以考虑将 mapping 文件使用 git 管理，方便我们进行回退。 
-
-
+4. 为索引的 mapping 添加 meta 信息，方便进行版本管理，同时可以考虑将 mapping 文件使用 git 管理，方便我们进行回退。

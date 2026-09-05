@@ -3,12 +3,10 @@ title: "函数对象 bind、call、apply 方法的用法"
 linkTitle: "函数对象 bind、call、apply 方法的用法"
 weight: 10
 ---
-
 函数对象的 call、apply、bind 方法，作用是改变函数执行时的上下文，简单来说就是改变函数运行时的 this 指向。这三个方法的区别如下：
 
-- bind 方法返回一个新的函数对象，并将新函数运行时 this 绑定到指定的对象（永久绑定），apply、call 方法的作用是立即执行当前函数并改变函数运行时 this 指向（临时改变）。 
-- 三个方法，都可以传递函数的参数，apply 是通过数组方式传递，bind 和 call 是通过参数列表方式传递，注意 bind 可以分多次传递。 
-
+- bind 方法返回一个新的函数对象，并将新函数运行时 this 绑定到指定的对象（永久绑定），apply、call 方法的作用是立即执行当前函数并改变函数运行时 this 指向（临时改变）。
+- 三个方法，都可以传递函数的参数，apply 是通过数组方式传递，bind 和 call 是通过参数列表方式传递，注意 bind 可以分多次传递。
 
 ## bind 用法
 
@@ -20,7 +18,7 @@ function func(){
 }
 
 /** func 未指定调用者，故 this 默认指向 window 故输出以下结果  */
-func() // 输出 this.a = 1 
+func() // 输出 this.a = 1
 
 var obj = {a: 2}
 /**
@@ -44,16 +42,16 @@ bindFunc1(5, 6)
 
 // 当指向全部参数时，则新函数不需要在传递参数，如果传递新的参数将会被丢弃
 bindFunc1 = func1.bind({a:2}, 2, 2)
-// 输出 this.a = 2, b = 2, c = c 
+// 输出 this.a = 2, b = 2, c = c
 bindFunc1()
-// 输出 this.a = 2, b = 2, c = c 
+// 输出 this.a = 2, b = 2, c = c
 bindFunc1(3,3)
 
 
 // 求最大值
 function max() {
     if(arguments.length == 0){
-        return 
+        return
     }
     let maxValue = arguments[0]
     for(index = 1;index < arguments.length;index++){
@@ -76,7 +74,7 @@ function func3(...arg){
     /**
      *  arguments 是所有非箭头函数中都有的局部变量，是一个数组，存放的是函数参数
      *  数组的下标，即参数的位置
-     * */ 
+     * */
     console.log("第一个参数的值：" + arguments[0])
     console.log(arg)
 }
@@ -147,7 +145,7 @@ func2.myBind({a: 30}, 20)
 
 
 ```
- 
+
 ## apply 的用法
 
 apply 方法改变函数运行时 this 的指向，并且传递参数时，必须是以数组的方式传递，如下例子：

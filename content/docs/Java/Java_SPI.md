@@ -3,7 +3,6 @@ title: "Java SPI 机制"
 linkTitle: "Java SPI 机制"
 weight: 30
 ---
-
 ## 简介
 
 SPI（Service Provider Interface），是 JDK 内置的一种服务提供发现机制，为接口寻找实现类的机制。通过这种机制可以实现插件化开发，能做到插件的热拔插。
@@ -12,16 +11,14 @@ SPI 能将服务接口和具体的服务实现分开解耦，应用层（客户�
 
 SPI 实际上是「基于接口的编程＋策略模式＋配置文件」组合实现基础接口编程，然后动态加载具体实现类的机制，即只有真正运行调用接口对象时，在去查找加载实现类和创建实例对象。
 
-
 ## SPI 规范约定
 
 要使用 Java SPI，需要遵循如下约定：
 
-1. 接口要使用的实现类，需要资源目录 META-INF/services 目录下创建一个以「接口全限定名」为命名的文件，内容为实现类的全限定名，指定多个实现需要回车换行; 
-2. 引入的接口实现类 jar 包，要放到应用程序的 classpath（JVM 能找到类的路径） 中; 
-3. 应用程序通过 java.util. ServiceLoder 动态装载实现类，它通过扫描 META-INF/services 目录下的配置文件找到实现类的全限定名，把类加载到 JVM; 
+1. 接口要使用的实现类，需要资源目录 META-INF/services 目录下创建一个以「接口全限定名」为命名的文件，内容为实现类的全限定名，指定多个实现需要回车换行;
+2. 引入的接口实现类 jar 包，要放到应用程序的 classpath（JVM 能找到类的路径） 中;
+3. 应用程序通过 java.util. ServiceLoder 动态装载实现类，它通过扫描 META-INF/services 目录下的配置文件找到实现类的全限定名，把类加载到 JVM;
 4. SPI 的实现类必须携带一个不带参数的构造方法。
-
 
 ## 简单示例-1
 
@@ -65,7 +62,7 @@ com.spi.service.impl.TaobaoSearchServiceImpl
 
 4. 创建服务客户端测试类
 
-```java 
+```java
 package com.spi;
 import java.util.Iterator;
 import java.util.ServiceLoader;
@@ -76,14 +73,14 @@ public class TestJavaSPI {
         /** ServiceLoader 会将 META-INF/services/com.spi.service.SearchService 中的指定要的实现类加载到 JVM 中。
          * 通过 SPI 机制可以做到编码代码完全基于接口编程，在编码阶段不需要引入依赖以及 import 接口的实现类，
          * 而是在 JVM 运行过程中调用该接口时， ServiceLoader 才根据 /META-IFNO/service 目录的配置，去 classpath 查找和动态加载要使用的实现类。
-         * 实现类可以写在当前工程源码中，也可以作为依赖 jar 引入，按实际情况来。 
+         * 实现类可以写在当前工程源码中，也可以作为依赖 jar 引入，按实际情况来。
         **/
 		ServiceLoader<SearchService> services = ServiceLoader.load(SearchService.class);
         // 通过迭代的方式获取已经加载到 JVM 的实现类
 		Iterator<SearchService> iterator = services.iterator();
 		while (iterator.hasNext()) {
             /** 当调用 next 方式，会通过 class.forName 的方式去实例化 SearchService 的实现类
-             * 注意 SearchService 的实现类必须要有无参的构造方法，才能实例化，不然会报错，因为 class.forName 
+             * 注意 SearchService 的实现类必须要有无参的构造方法，才能实例化，不然会报错，因为 class.forName
              * 调用的是无参数构造方法实例化对象的
             **/
 			SearchService search = iterator.next();
@@ -163,7 +160,7 @@ com.github.vianlex.proxy.impl.JdkProxyFactory
 com.github.vianlex.proxy.impl.CglibProxyFactory
 ```
 
-ProxyFactory 接口的具体实现类（实现类编码阶段引入全部依赖的jar，打包给其他应用使用时，可以按需引入依赖的jar），如下
+ProxyFactory 接口的具体实现类（实现类编码阶段引入全部依赖的 jar，打包给其他应用使用时，可以按需引入依赖的 jar），如下
 
 ```java
 
@@ -238,7 +235,6 @@ public class JdkProxyFactory extends ProxyFactory {
 
 ```
 
-
 ## SPI 的优缺点
 
 优点：
@@ -250,8 +246,6 @@ public class JdkProxyFactory extends ProxyFactory {
 - 颗粒度不够细，不能按需加载需要的实现类，只能遍历所有实现类，才能找到我们需要的实现类。如果你并不想用某些实现类，它也被加载并实例化了，这就造成了浪费。
 - 获取某个实现类的方式不够灵活，只能通过 Iterator 形式获取，不能根据某个参数来获取对应的实现类。
 - 多个并发多线程使用 ServiceLoader 类的实例是不安全的。
-
-
 
 ## ServiceLoader 加载实现类的原理
 

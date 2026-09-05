@@ -3,7 +3,6 @@ title: "Window OpenSSH 服务安装"
 linkTitle: "Window OpenSSH 服务安装"
 weight: 20
 ---
-
 ## OpenSSH 安装和启动服务
 
 ### 安装方式一
@@ -25,7 +24,7 @@ weight: 20
 OpenSSH 服务的工作目录，默认是：`C:\ProgramData\ssh`
 OpenSSH 服务的配置文件是：`C:\ProgramData\ssh\sshd_config`，端口等等其他配置，需要修改时，直接修改该文件，然后运行命令 `Restart-Service sshd` 重启 sshd 服务即可。
 
-注意：在 sshd_config 指定了密钥登录时是，客户端的公钥是默认保存在 `C:\ProgramData\ssh\administrators_authorized_keys` 文件中，不是 ~/.ssh/authorized_keys 文件中，如果想保存到用户目录下需要注释掉以下配置。   
+注意：在 sshd_config 指定了密钥登录时是，客户端的公钥是默认保存在 `C:\ProgramData\ssh\administrators_authorized_keys` 文件中，不是 ~/.ssh/authorized_keys 文件中，如果想保存到用户目录下需要注释掉以下配置。
 
 ```bash
 # 使用用户目录中 authorized_keys 的文件需要注释 sshd_config 文件中以下配置
@@ -44,7 +43,6 @@ PubkeyAcceptedAlgorithms +ssh-rsa
 # 允许 ssh-rsa 作为主机密钥算法 (如果服务器本身使用的是 rsa 密钥)
 HostKeyAlgorithms +ssh-rsa
 ```
-
 
 ## OpenSSH 服务常用命令
 
@@ -74,14 +72,13 @@ OpenSSH 服务的防火墙入站规则，安装 OpenSSH 服务的时候，已经
 1. 通过以下命令行配置 inbound rule(入站规则)
 
 ```bash
-# -Name 指定入站规则的名称为：OpenSSH Server 
+# -Name 指定入站规则的名称为：OpenSSH Server
 # -Enabled 表示启动
 # -Direction 防火墙的拦截方向，表示入站规则
 New-NetFirewallRule -Name sshd -DisplayName "OpenSSH Server" -Enabled True -Direction Inbound -Protocol TCP -Action Allow -LocalPort 22
 ```
 
 2. 入站配置好后，需要运行命令 `Restart-Service sshd` 重启服务
-
 
 ## 常见问题
 

@@ -3,7 +3,6 @@ title: "ANT 和 MVC 路径模式笔记"
 linkTitle: "ANT 和 MVC 路径模式笔记"
 weight: 10
 ---
-
 ANT 路径模式和 MVC 路径模式是 Spring 框架中用于匹配 URL 路径的两种模式，它们有不同的语法和用途，主要用于配置 Spring Security 和 Spring MVC 中的请求映射。
 
 ## ANT 路径模式
@@ -38,7 +37,6 @@ public class UrlPatternTest {
 }
 
 ```
-
 
 ## MVC 路径匹配模式
 

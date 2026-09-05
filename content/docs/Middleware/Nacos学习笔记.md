@@ -3,7 +3,6 @@ title: "Nacos 学习笔记"
 linkTitle: "Nacos 学习笔记"
 weight: 70
 ---
-
 ## namespace 命名空间
 
 命名空间（Namespace）是 Nacos 中实现资源隔离的核心机制，在 Nacos 中分三个层面隔离，如下：
@@ -22,7 +21,6 @@ weight: 70
     ├── 权限控制可基于命名空间划分
     └── 不同团队管理各自的命名空间
 ```
-
 
 ## SpringBoot 使用配置
 
@@ -54,21 +52,18 @@ SpringBoot 启动读取 Nacos 配置时，遵循以下两种路径。
 
 通过以上的命名规范有助于 `SpringBoot` 自动识别并加载对应环境的配置。
 
-
 1. 当没有显式指定 data-id 时，进入自动推导流程：
 
    - 读取三个关键配置：
    - spring.application.name (如：user-service)
    - spring.profiles.active (如：dev)
    - file-extension (如：yaml)
-  
+
 2. 按照从具体到通用的原则生成候选列表
 
 ##### 推导模式下，Nacos 客户端会按以下顺序尝试查找（以 user-service、dev 环境、yaml 格式为例）
 
-
 推导模式下，Nacos 客户端会按以下顺序尝试查找（以 user-service、dev 环境、yaml 格式为例）：
-
 
 | 优先级        | DataId 模板                           | 实际示例                | 说明                                 |
 | ------------- | ------------------------------------- | ----------------------- | ------------------------------------ |
@@ -78,13 +73,11 @@ SpringBoot 启动读取 Nacos 配置时，遵循以下两种路径。
 | **4**         | `application-${profile}.${extension}` | `application-dev.yaml`  | 应用名默认为`application` 的环境配置 |
 | **5（最低）** | `application.${extension}`            | `application.yaml`      | 默认全局配置                         |
 
-
 查找规则：
 
 - 按优先级从高到低依次尝试
 - 找到第一个存在的配置即停止查找
 - 配置合并：如果找到了 user-service-dev.yaml，系统仍然会合并 user-service.yaml 的配置（如果存在），环境特定配置优先级更高
-
 
 ### 配置加载与合并流程
 
@@ -125,5 +118,3 @@ SpringBoot 启动读取 Nacos 配置时，遵循以下两种路径。
   ├─→ 建立Nacos配置监听
   └─→ 完成配置加载
 ```
-
-

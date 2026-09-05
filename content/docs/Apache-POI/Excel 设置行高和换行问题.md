@@ -3,7 +3,6 @@ title: "Excel 设置行高和换行问题"
 linkTitle: "Excel 设置行高和换行问题"
 weight: 10
 ---
-
 ## Excel 单元格设置强制换行，使用符号 \r\n 可以强制换行
 
 ```java
@@ -24,7 +23,7 @@ sheet.setDefaultColumnWidth(20);
 // 强制实现换行 data
 StringBuilder sbData = new StringBuilder(data)
 int length = sbData.length();
-int rowHeightLine = 1; 
+int rowHeightLine = 1;
 for(int i = width - 1; i < length; i = i + width + 1 ) {
     System.out.println("换行符位置：" + i);
     sbData.insert(i, "\r\n");
@@ -34,7 +33,6 @@ row.setHeight(row.getHeight() * rowHeightLine)
 cell.setCellValue(sbData.toString());
 
 ```
-
 
 ## 参考链接
 https://stackoverflow.com/questions/19145628/auto-size-height-for-rows-in-apache-poi#

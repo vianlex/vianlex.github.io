@@ -3,7 +3,6 @@ title: "Sentinel学习笔记.md"
 linkTitle: "Sentinel学习笔记.md"
 weight: 110
 ---
-
 ## Sentinel 核心概念
 
 - 资源：资源可以是任何东西，服务，服务里的方法，甚至是一段代码。
@@ -14,7 +13,6 @@ weight: 110
 使用 Sentinel 主要为了提高系统运行期间的稳定性和可用性。
 
 在微服务环境下，服务之间存在复杂的调用关系，单个服务的故障或过载可能会迅速影响到整个系统，导致服务雪前效应，Sentinel 的流控组件可以限制进入系统的流量，防止系统因超出处理能力而前溃，Sentinel 的降级组件则在服务不可用或响应过慢时，提供降级逻辑，如返回备用数据或执行降级操作，以保证核心业务的正常运行。
-
 
 ## @SentinelResource 注解使用
 
@@ -40,7 +38,6 @@ weight: 110
 </dependency>
 ```
 
-
 第二步配置和编写测试
 
 ```java
@@ -56,7 +53,7 @@ public class SentinelAspectConfiguration {
 
 // 测试类
 @RestController
-public class HelloController { 
+public class HelloController {
 
 /**
      * 注解方式，注意要将 SentinelResourceAspect 注入容器中
@@ -113,13 +110,11 @@ public class HelloController {
 
 ```
 
-
 ## Sentinel 规则动态更新原理
 
 Sentinel 动态更新规则是通过推送的方式实现，即在控制台修改规则后 Sentinel 会将规则推送到服务应用中，如下图。
 
-![Sentinel 规则动态更新原理图](/images/Sentinel规则动态更新原理图.png)
-
+![Sentinel 规则动态更新原理图](/images/Sentinel 规则动态更新原理图.png)
 
 ## 微服务整合 Sentinel
 
@@ -139,20 +134,19 @@ spring:
   cloud:
     sentinel:
       # 启用限流，默认通过 AbstractSentinelInterceptor 拦截器，去拦截 SpringMVC 请求进行限流
-      # Restemplate 和 OpenFeign 使用 Sentinel 需要添加额外的对应配置 
+      # Restemplate 和 OpenFeign 使用 Sentinel 需要添加额外的对应配置
       enabled: true
-      transport: 
+      transport:
         # 添加sentineI的控制台地址
         dashboard: 127.0.0.1:8888
         # 指定微服务应用与 Sentinel 控制台交互的端口，微服务应用会起一个 HttpServer 占用该端口，等待 Sentinel 推送更新的规则
-        # 通过 127.0.0.1:8719/api 可以看到本地 Sentinel 客户端有哪些 API 
+        # 通过 127.0.0.1:8719/api 可以看到本地 Sentinel 客户端有哪些 API
         port: 8719
 ```
 
 ### 限流统一异常管理
 
 Sentinel 通过  AbstractSentinelInterceptor 拦截器的 preHandle 方法拦截请求，执行 `SphU.entry` 资源保护方法来实现限流的，如果 `SphU.entry` 方法抛出限流异常 `BlockException`，拦截器会捕获该限流异常，并调用 `handleBlockException` 方法获取 `BlockExceptionHandler` 实例对异常进行处理，故我们可以通过自定义实现 BlockExceptionHandler 接口统一处理 `BlockException` 来达到限流统一异常管理。
-
 
 ```java
 @Component
@@ -182,7 +176,7 @@ public class CustomBlockExceptionHandler implements BlockExceptionHandler {
                 applicationName, resource, request.getMethod(), request.getRequestURI(), e.getClass().getSimpleName());
     }
 
-   private Map<Object, Object> buildErrorResult(BlockException e, HttpServletRequest request) { 
+   private Map<Object, Object> buildErrorResult(BlockException e, HttpServletRequest request) {
 Map<Object, Object> result = new HashMap<>();
         if (e instanceof FlowException) {
             result.put("code", 429);
@@ -204,13 +198,11 @@ Map<Object, Object> result = new HashMap<>();
         } else {
             result.put("code", 429);
             result.put("message", "系统限流");
-        }                              
+        }
    }
 }
 
 ```
-
-
 
 ### 通过 Sentinel 对外暴露的 Endpoint 查看流控规则
 
@@ -237,8 +229,6 @@ management:
 
 第三步访问地址 `htpp://微服务地址端口/actuator/sentinel` 即可查看 Sentinel 配置的流控规则信息
 
-
-
 ## 流控效果
 
 1、快速失败（直接拒绝）
@@ -261,7 +251,7 @@ management:
       // === Warm Up 过程模拟 ===
       // 初始阈值: 33 QPS
       // 预热时间: 600 秒
-      // 每秒增长: 0.112 QPS 
+      // 每秒增长: 0.112 QPS
       // 第  0秒: 33.0 QPS （开始访问 100 个请求 67 个拒绝，33 个通过）
       // 第 60秒: 39.7 QPS （60s 后 100 个请求 60.3 个拒绝，39.7 个通过）
       // 第300秒: 66.7 QPS
@@ -275,7 +265,6 @@ management:
 -  让请求按先后次序排队执行，QPS 阀值设置 10，则排队间隔时间为 1000ms / 10  = 100ms，如果`上一个请求的通过时间 + 请求间隔 - 当前请求到达时间 > 设置的超时时间` 则拒绝请求。 注意匀速排队设置的 QPS 不能大于 1000。
 -  适用场景：突发流量削峰填谷，保证处理速率稳定（如第三方 API 调用有频率限制）
 
-
 ## Sentinel 的规则持久化问题
 
 Sentinel 控制台，默
@@ -285,8 +274,7 @@ Sentinel 控制台，默
 1. 当微服务启动时，微服务本地的 Sentinel 客户端，会向 Sentinel 控制台注册客户端信息，并推送本地流控规则到 Sentinel 控制台内存中，默认情况下，微服务本地内存中是没有流控规则，故微服务重新启动会导致 Sentinel 中的流控规则丢失。
 2. 当 Sentinel 控制台中，修改流控规则时，Sentinel 控制台会通过微服务中的 Sentinel 客户端更新规则接口，将更改后的规则信息推送微服务本地内存中。
 3. 微服务正常运行，Sentinel 控制台重启后规则也会丢失（也是缓存在内存中），当微服务访问接口时，才会将微服务本地内存中的规则，推送到 Sentinel 控制台中。
-4. Sentinel 控制台更新规则后，最终是通过微服务中的 ModifyRulesCommandHandler 实现类去更新微服务本地内存规则的，期间会判断是否有实现有写数据源 WritableDataSource 实现类，官方默认是没有实现的，想要持久化，我们通过实现改接口来达到目的。  
-
+4. Sentinel 控制台更新规则后，最终是通过微服务中的 ModifyRulesCommandHandler 实现类去更新微服务本地内存规则的，期间会判断是否有实现有写数据源 WritableDataSource 实现类，官方默认是没有实现的，想要持久化，我们通过实现改接口来达到目的。
 
 ### 自定义 pull 模式持久化规则
 
@@ -296,11 +284,6 @@ Sentinel 控制台，默
 
 拉模式的优点：实现简单，无任何依赖，缺点：不能保证实时一致性问题。
 
-
 ## 自定义 push 模式持久化规则
 
 1. Sentinel 控制台将规则送到 Nacos 等配置中心，微服务监听配置中心的规则，当规则发生改变后，将规则更新到微服务本地内存中。
-
-
-
-

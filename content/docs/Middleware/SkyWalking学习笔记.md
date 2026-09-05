@@ -3,8 +3,7 @@ title: "SkyWalking 学习笔记"
 linkTitle: "SkyWalking 学习笔记"
 weight: 130
 ---
-
-## 安装 SkyWalking 服务 
+## 安装 SkyWalking 服务
 
 测试环境直接使用 h2 数据库即可，如下：
 
@@ -94,8 +93,6 @@ java -javaagent:/path/to/skywalking-agent.jar \
 
 **注意**如果是监控 SpringClod Gateway 网关，Agent 默认是不支持的，我们需要将 `D:\skywalking-agent\optional-plugins\apm-spring-cloud-gateway-4.x-plugin-9.5.0.jar` 文件拷贝到 `D:\skywalking-agent\plugins` 下。同理如果需要监控 `Nacos 客户端`，我们也要复制对应的 jar 插件。
 
-
-
 ## SkyWalking 集成日志框架
 
 ### 引入依赖包
@@ -119,8 +116,7 @@ java -javaagent:/path/to/skywalking-agent.jar \
 
 引入日志依赖包后，我们可以在 `logback-spring.xml` 日志配置文件中通过 `%tid` 打印 Trace 链路的 ID。作用是，我们在 Skywalking UI 查看接口调用 Trace 链路时，可以根据 Trace ID 查找应用服务器上与调用链路相关的日志信息。
 
-
-### 将服务日志上传到 Skywalking 
+### 将服务日志上传到 Skywalking
 
 将微服务的日志信息上传到 Skywalking 中，需要以下配置，这样我们就可以在 Skywalking UI 中查看链路调用对应的日志。
 
@@ -142,4 +138,3 @@ java -javaagent:/path/to/skywalking-agent.jar \
 ```
 
 ### 自定义日志追踪
-

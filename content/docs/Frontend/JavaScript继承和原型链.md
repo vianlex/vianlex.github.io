@@ -3,7 +3,6 @@ title: "JavaScript 继承和原型链"
 linkTitle: "JavaScript 继承和原型链"
 weight: 60
 ---
-
 JavaScript 对象继承是通过原型链的方式实现的，每一个对象都有一个私有原型属性，除了 null 之外。原型属性也是对象也有自己的一个原型属性，层层往上直到原型属性为 null 继承才终止，因为 null 没有原型属性。
 
 在 ECMAScript 标准规范中，用 `someObject.[[Prototype]]` 符号标识 `someObject` 的原型，但是现代浏览器不并支持 ES 标准规范属性  `someObject.[[Prototype]]`  方式访问对象原型，而是通过非标准的 `someObject.__proto__` 属性访问器来实现，即在浏览器只能使用 `someObject.__proto__` 属性访问器或者使用 ` Object.getPrototypeOf(someObject) ` 和 ` Object.setPrototypeOf(someObject) `  函数，修改查看对象的原型属性。
@@ -70,7 +69,6 @@ console.log(nn.hello)
 
 ```
 
-
 ## 构造函数
 
 在 JavaScript 中，能用 new 关键字来调用的函数，称为构造函数（构造函数首字母一般建议使用大写）。
@@ -85,7 +83,6 @@ console.log(nn.hello)
 - 执行构造函数中的代码（通常是用于初始化新对象的属性）
 - 返回初始化创建好的新对象
 
-
 ```JavaScript
 // 普通函数
 function func() {}
@@ -93,7 +90,7 @@ function func() {}
 var obj = new func()
 
 // 输出 'object' 表示 f1 是一个对象
-typeof obj 
+typeof obj
 // 输出 true 表示 obj 是 func 类型的实例对象
 obj instanceof func
 
@@ -105,19 +102,19 @@ obj instanceof func
 
 ```javaScript
 
-// 字面量对象，隐式构造函数为 Object 
+// 字面量对象，隐式构造函数为 Object
 var obj = {"name" : "Object"}
 // 输出 true 说明 obj 对象是由 Object 构造函数创建的实例对象，并且 obj 的原型属性指向 Object 构造函数的 prototype 属性
 console.log(obj.__proto__ == Object.prototype)
 
 
-// 字面量函数对象，隐式构造函数为 Function 
+// 字面量函数对象，隐式构造函数为 Function
 function func() {
   console.log("Hello World Func")
 }
-// 输出 true，说明 func 对象是 Function 构造函数创建的实例对象，并且 func 对象的原型指向 Function 对象的 prototype  
+// 输出 true，说明 func 对象是 Function 构造函数创建的实例对象，并且 func 对象的原型指向 Function 对象的 prototype
 console.log(func.__proto__ == Function.prototype)
-// 输出 true，说明 Function.prototype 函数对象的构造函数是 Object 
+// 输出 true，说明 Function.prototype 函数对象的构造函数是 Object
 console.log(Function.prototype.__proto__ == Object.prototype)
 /** 获取 Function.prototype 对象的 constructor 属性，如果 Function.prototype 当前对象没有 constructor 属性，则继续查找它的原型以及原型的原型属性是否有该属性  */
 console.log(Function.prototype.constructor  == Object.constructor)  // 输出 true
@@ -147,23 +144,22 @@ console.log(obj2.__proto__.constructor == func) // 输出 true
 
 从上面的例子可以看出，函数在 JavaScript 也是一种引用数据类型，类似其他语言的类。像 JavaScript 的内置对象 Function , Object，Number 本质上也都是构造函数。
 
-
 ## 原型链说明
 
 Object 构造函数 prototype 属性的 [[prototype]](原型属性) 指向 null，Object 构造函数本身的原型属性指向的是 Function.prototype
 
 ```javaScript
 
-// 输出 null，故说明 Object.prototype 对象的 [[prototype]] 属性即 __proto__ 属性指向的是 null 
+// 输出 null，故说明 Object.prototype 对象的 [[prototype]] 属性即 __proto__ 属性指向的是 null
 console.log(Object.prototype.__proto__)
 
 // 普通字面量对象，也是隐式调用 Object 构造函数创建的
 var obj = {'Hello' : 'World'}
-// 输出 true 表示 obj 对象是隐式调用 Object 构造函数创建的对象 
+// 输出 true 表示 obj 对象是隐式调用 Object 构造函数创建的对象
 console.log(obj.__proto__.constructor == Object)
 
 // 输出 null, 可以看出 obj 对象的原型指向 Object.prototype 对象,  Object.prototype 对象的原型指向 null
-// 故通过 Object 构造函数创建的实例对象原型继承链为: obj -> Object.prototype -> null 
+// 故通过 Object 构造函数创建的实例对象原型继承链为: obj -> Object.prototype -> null
 console.log(obj.__proto__.__proto__)
 
 /** 由以下输出可看出 Object 构造函数是 Function 构造函数的实例对象，即 Object 对象的原型对象指向的 Function 构造函数的 prototype 属性，
@@ -192,7 +188,7 @@ console.log(func.__proto__.constructor == Function )
 console.log(Function.prototype.__proto__.constructor == Object)
 /** 输出 true，可以看出 func 对象是由 Function 构造函数创建的实例对象，
   则 func 的原型继承链为：func 的原型指向 Function.prototype， Function.prototype 的原型指向 Object.prototype，
-  Object.prototype 的原型指向 null，即 func -> Function.prototype -> Object.prototype -> null 
+  Object.prototype 的原型指向 null，即 func -> Function.prototype -> Object.prototype -> null
 **/
 console.log(func.__proto__ == Function.prototype )
 // 输出 null
@@ -202,7 +198,7 @@ console.log(func.__proto__.__proto__.__proto__)
   ff -> func.prototype -> Object.prototype -> null
  **/
 var ff = new func()
-// 输出 true，func.prototype 对象的构造函数为 Object，故它的原型指向的 Object.prototype 
+// 输出 true，func.prototype 对象的构造函数为 Object，故它的原型指向的 Object.prototype
 console.log(func.prototype.__proto__.constructor == Object)
 
 ```
@@ -210,7 +206,6 @@ console.log(func.prototype.__proto__.constructor == Object)
 ## [[prototype]] 和 __proto__ 区别
 
 [[prototype]] 和 __proto__ 标识符表示的都是对象的原型属性，[[prototype]] 是 ECMAScript 标准规范中定义的原型标识，__proto__ 是现代浏览器实现的访问对象原型属性的访问器。注意函数中的 prototype 属性不是函数的原型属性。
-
 
 ## 参考文档
 1. https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Inheritance_and_the_prototype_chain

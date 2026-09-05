@@ -3,7 +3,6 @@ title: "SSH 密码登录和密钥配置说明"
 linkTitle: "SSH 密码登录和密钥配置说明"
 weight: 40
 ---
-
 ## 账号密码登录
 
 ```bash
@@ -33,7 +32,7 @@ ssh-keygen -t rsa -C "vianlex@email.com" -f ~/.ssh/vianlex_rsa
 -t 指定密钥类型，一般类型有 dsa和 rsa 默认是 rsa 类型，可以省略。
 -C 设置注释，一般填写的都是自己的邮箱
 -f 指定密钥文件存储文件名
--P 密钥的密码，一般都是不指定密码的，-P '' 指定密码为空字符时，运行命令可以少敲两个回车 
+-P 密钥的密码，一般都是不指定密码的，-P '' 指定密码为空字符时，运行命令可以少敲两个回车
 -b 指定密钥的位数，可以设置值如 1024 或 4069，未研究位数的作用
 
 ```
@@ -50,13 +49,13 @@ ssh-copy-id -i ~/.ssh/id_rsp.pub  username@host -p 22
 
 ```
 
-第二种方式，将公钥 id_rsa.pub 文件内容追加到远程服务器 ~/.ssh/authorized_keys 文件中，如果 .ssh 目录和 authorized_keys 文件不存在则需要创建后，再把 id_rsa.pub 内容复制到 authorized_keys 中。 
+第二种方式，将公钥 id_rsa.pub 文件内容追加到远程服务器 ~/.ssh/authorized_keys 文件中，如果 .ssh 目录和 authorized_keys 文件不存在则需要创建后，再把 id_rsa.pub 内容复制到 authorized_keys 中。
 
 ```bash
 
 # 上传 id_rsa.pub 文件到远程服务，可以使用 sftp 工具上传，也可以使用 scp 上传，或者其他方式上传，例子使用 scp 命令上传
 
-scp ~/.ssh/id_rsa.pub username@host:/home/username   
+scp ~/.ssh/id_rsa.pub username@host:/home/username
 
 # 密码登录远程服务将刚才上传的公钥内容追加到 authorizeys 文件中，注意要使用 >> 追加，使用 > 会覆盖 authorized_keys 文件中的其他公钥
 
@@ -120,7 +119,6 @@ User username
 
 阿里云 ECS 实例控制台->网络与安全->密钥对管理，支持创建密钥对或者导入我们已创建好的公钥，然后自动应用到 ECS 实例服务器中。
 
-
 ## 服务器查看 ssh 的登录日志
 
 ```bash
@@ -128,6 +126,3 @@ User username
 tail -f -n 200  /var/log/secure
 
 ```
-
-
-

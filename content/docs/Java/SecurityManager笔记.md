@@ -3,7 +3,6 @@ title: "SecurityManager 笔记"
 linkTitle: "SecurityManager 笔记"
 weight: 70
 ---
-
 ## 简介
 
 Java SecurityManager 安全管理器，配合安全策略文件使用，能够控制代码对敏感或关键资源的访问，例如文件系统，网络服务，系统属性访问等，加强代码的安全性。注意读取程序类路径中的文件是不需要进行显式授权，默认已有读取执行删除的权限。
@@ -26,7 +25,7 @@ public class SecurityManagerTest {
             // 开启安全管理器，安全管理器默认的安全策略配置文件是 JAVA_HOME/jre/lib/security/java.policy
 	    	System.setSecurityManager(manager);
 	    }
-	    
+
 	    try {
 	    	// 检查是否有访问属性权限，没有的话，抛出异常
 	    	manager.checkPropertyAccess("java.home");
@@ -34,7 +33,7 @@ public class SecurityManagerTest {
 	    }catch (SecurityException e) {
 	    	System.out.println("没有读取 java.home 属性的权限");
 		}
-	    	
+
 		try (FileReader fileReader = new FileReader(new File("D:\\test-security.txt"));
 				BufferedReader reader = new BufferedReader(fileReader)) {
 
@@ -100,7 +99,7 @@ System.setProperty("java.security.policy","D:/testFile.policy");
 1. 在默认的安全策略文件中添加
 
 ```
-grant { 
+grant {
     // 在 grant 语句处添加如下权限，表示所有资源的可以访问，一般不建议这么做
     permission java.security.AllPermission;
     // 或者添加单独的文件访问权限
@@ -110,7 +109,7 @@ grant {
 2. 在项目的资源根路径下下新建一个安全策略配置文件，文件名 testFile.policy，内容如下：
 
 ```
-grant { 
+grant {
     permission java.io.FilePermission "D:\\test-security.txt", "read";
 }
 ```
@@ -136,7 +135,7 @@ public class SecurityManagerTest {
 	    }catch (SecurityException e) {
 	    	System.out.println("没有读取 java.home 属性的权限");
 		}
-	    	
+
 		try (FileReader fileReader = new FileReader(new File("D:\\test-security.txt"));
 				BufferedReader reader = new BufferedReader(fileReader)) {
 
@@ -152,7 +151,6 @@ public class SecurityManagerTest {
 }
 ```
 
-
 ## 安全管理策略文件
 
 以下是安全策略文件的简单语法说明，具体详细说明可以查看[官方文档](https://docs.oracle.com/javase/8/docs/technotes/guides/security/PolicyFiles.html)
@@ -164,9 +162,9 @@ public class SecurityManagerTest {
 keystore "http://foo.example.com/blah/.keystore";
 
 // 授权条目，其中 signedBy、principal、codeBase 语句都是可选的，它们是与的关系。
-grant signedBy "signer_names", codeBase "URL", principal principal_class_name "principal_name", 
+grant signedBy "signer_names", codeBase "URL", principal principal_class_name "principal_name",
     principal principal_class_name "principal_name" {
-    
+
       // 通过 signedBy 指定签名人
       permission permission_class_name "target_name", "action", signedBy "signer_names";;
       permission permission_class_name "target_name", "action";
@@ -203,7 +201,7 @@ jarsigner -verbose -keystore [私钥存放路径] -signedjar [签名后文件存
 jarsigner -verbose -keystore /xx/path/keystore -signedjar ./signed-xxx.jar ./xxx.jar signer_names
 
 ```
-codeBase 用于指定运行 URL 目录下的代码，才能赋予配置的 permission 权限。注意如果 URL 以 / 结尾的匹配指定目录下的所有类文件（ 非 JAR 文件 ），以  /*  结尾的匹配该目录下的所有文件（类文件和 JAR 文件），以 /- 结尾的匹配该目录下的所有文件（类文件和 JAR 文件）及该目录下子目录中的所有文件，直接以目录名结尾的等同于 / 结尾的。 
+codeBase 用于指定运行 URL 目录下的代码，才能赋予配置的 permission 权限。注意如果 URL 以 / 结尾的匹配指定目录下的所有类文件（ 非 JAR 文件 ），以  /*  结尾的匹配该目录下的所有文件（类文件和 JAR 文件），以 /- 结尾的匹配该目录下的所有文件（类文件和 JAR 文件）及该目录下子目录中的所有文件，直接以目录名结尾的等同于 / 结尾的。
 
 principal 表示针对证书或者主体认证的 class_name/principal_name 对，授予资源的读取权限。
 
@@ -217,16 +215,16 @@ grant codeBase "file:${{java.ext.dirs}}/*" {
 };
 
 // 表示该 URL 目录中的代码执行时，能获取所有资源的权限
-grant codeBase "file:C:/Users/xxpath/learn-test/target/classes" { 
+grant codeBase "file:C:/Users/xxpath/learn-test/target/classes" {
     permission java.security.AllPermission;
 };
 
 grant {
-   
+
     // java.security.AllPermission  所有权限的集合
     permission java.security.AllPermission;  // 表示开发所有权限
 
-    // java.util.PropertyPermission 系统/环境属性权限 
+    // java.util.PropertyPermission 系统/环境属性权限
     permission java.util.PropertyPermission "java.home", "read";
     permission java.util.PropertyPermission "java.version", "read";
     permission java.util.PropertyPermission "java.vendor", "read";
@@ -237,7 +235,6 @@ grant {
 };
 
 ```
-
 
 ## 参考链接
 1. https://docs.oracle.com/javase/8/docs/technotes/guides/security/permissions.html

@@ -3,7 +3,6 @@ title: "OpenClaw 安装笔记"
 linkTitle: "OpenClaw 安装笔记"
 weight: 30
 ---
-
 ## 手动安装
 
 ### 前置条件
@@ -23,7 +22,7 @@ npm install -g openclaw@latest
 ```bash
 # 初始化 openclaw，不安装网关后台进程服务和网关开机自启
 # 后续通过 openclaw gateway install 命令再安装，或者不需要后台进程服务，直接前台运行启动即可（命令：openclaw gateway）
-openclaw onboard 
+openclaw onboard
 # 初始化 openclaw 和安装网关的后台进程服务和开启自动运行网关 (推荐)
 openclaw onboard --install-daemon
 ```
@@ -98,7 +97,7 @@ openclaw gateway status
 ```bash
 # 查看当前有哪些通道
 openclaw channels list
-# 添加通道，并指定通道属于哪个 agent 
+# 添加通道，并指定通道属于哪个 agent
 openclaw channels add --type feishu --agent taizi
 ```
 
@@ -108,12 +107,12 @@ openclaw channels add --type feishu --agent taizi
 
 ```bash
 # 运行命令，然后选择安装飞书飞书插件
-openclaw channels add 
+openclaw channels add
 # 1. 安装成功后，输入密钥信息
 # 2. 链接模式（Feishu connection mode）选择 WebSocket 模式
 # 3. 指定飞书域名 Which Feishu domain? 国内选择 feishu.cn
 # 4. 群组聊天策略，Allowlist（只有群组指定人能跟飞书机器人聊天） 和 Open（表示群组中所有人都可以和飞书机器人聊天）
-# 5. requireMention 是否需要 @机器人，才会做回复，为 false, 只要发送消息到群里，不需要@机器人，就会自动回复。 
+# 5. requireMention 是否需要 @机器人，才会做回复，为 false, 只要发送消息到群里，不需要@机器人，就会自动回复。
 
 # 安装好后，重启网关
 openclaw gateway restart
@@ -122,7 +121,7 @@ openclaw gateway restart
 2、查看 `~/.openclaw/openclaw.json` 配置文件，检查飞书密钥信息是否已配置成功，如果没有手动添加以下配置
 
 ```js
-// 如果配置格式不对，我们可以通过 openclaw doctor --fix 修复 openclaw 
+// 如果配置格式不对，我们可以通过 openclaw doctor --fix 修复 openclaw
 // 配置完后，要重启网关 openclaw gateway restart
 channels: {
     feishu: {
@@ -139,12 +138,10 @@ channels: {
   },
 ```
 
-
 3、飞书应用事件配置
 
 - 订阅方式选择：长链接（前面飞书插件的配置是 WebSocket）
 - 订阅事件：添加接收消息事件
-
 
 4、在飞书聊天界面，搜索对应的飞书应用，然后打开并 @机器人，随便输入一个内容
 
@@ -157,9 +154,9 @@ Ask the bot owner to approve with:
 openclaw pairing approve feishu RWXWA2JW
 ```
 
-5、查看通道详情 
+5、查看通道详情
 
-```bash 
+```bash
 # 查看通道详情
 openclaw channels status --probe
 
@@ -167,14 +164,11 @@ openclaw channels status --probe
 openclaw pairing list --channel feishu
 ```
 
-
-
 ## GateWay 网关问题
 
-### 问题1
+### 问题 1
 
 出现 `Gateway service check failed: Error: systemctl is-enabled unavailable: Command failed: systemctl --user is-enabled openclaw-gateway.service` 问题和`Error: systemctl is-enabled unavailable: Command failed: systemctl --user is-enabled openclaw-gateway.service` 问题的解决方式如下：
-
 
 ```bash
 # 1. 确认用户级 systemd 是否正常运行
@@ -212,13 +206,13 @@ systemctl --user start openclaw-gateway.service
 journalctl --user -u openclaw-gateway.service -n 20 --no-pager
 ```
 
-### 问题2
+### 问题 2
 
 打开 `http://127.0.0.1:18789/`, 如果你看到 `unauthorized`，运行命令 `openclaw dashboard` 然后复制带有 `token` 的链接重新打开即可。
 
 注意：该 token 可以在 ~/.openclaw/openclaw.json 的文件中查看到, 路径为 `gateway.auth.token`。
 
-### 问题3
+### 问题 3
 
 网关启动失败，通过 `journalctl --user -u openclaw-gateway.service -n 200 --no-pager` 命令查看日志，提示 `Gateway start blocked: set gateway.mode=local (current: unset) or pass --allow-unconfigured.` 问题，解决方式如下：
 
@@ -229,13 +223,6 @@ gateway.mode = "local"
 # 方式2，启动网关时，跳过检查
 openclaw gateway start --allow-unconfigured
 ```
-
-
-
-
-
-
-
 
 ## 官方文档
 

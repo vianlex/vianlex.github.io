@@ -3,17 +3,16 @@ title: "dnf 软件包管理工具"
 linkTitle: "dnf 软件包管理工具"
 weight: 50
 ---
-
 ## 1. dnf 简介
-dnf 致力于改善 yum 的瓶颈，即性能、内存占用、依赖解决、速度和许多其他方面。DNF使用RPM、libsolv和hawkey库进行包管理。
- 
-## 2. 安装 dnf 
+dnf 致力于改善 yum 的瓶颈，即性能、内存占用、依赖解决、速度和许多其他方面。DNF 使用 RPM、libsolv 和 hawkey 库进行包管理。
+
+## 2. 安装 dnf
 
 ```bash
-# 先 epel-release 仓库，因为默认的软件库中没有 dnf 
+# 先 epel-release 仓库，因为默认的软件库中没有 dnf
 yum install epel-release  -y
-# 安装 dnf 
-yum install dnf 
+# 安装 dnf
+yum install dnf
 ```
 ## 3. dnf 查看软件库
 
@@ -22,16 +21,16 @@ yum install dnf
 dnf repolist
 
 # 查看所有软件库
-dnf repolist all 
+dnf repolist all
 ```
 ## 4. dnf 查看软件包
 
 ```bash
 # 查看所有可用和已经安装的软件包
-dnf list 
+dnf list
 
 #  查看已经安装的软件包
-dnf list installed 
+dnf list installed
 
 # 查看所有可用的软件包
 dnf list available
@@ -43,15 +42,15 @@ dnf list available
 
 ```bash
 # 搜索软件包, 如查找 docker 软件包
-dnf search docker-ce 
+dnf search docker-ce
 # 子软件包
-dnf 
+dnf
 ```
 ## 6. dnf 查看软件包详情
 
 查看软件包详情使用命令`dnf info 软件包名`，如：
 
-```bash 
+```bash
 # 如查看 docker 软件包详情
 dnf info docker-ce
 
@@ -64,8 +63,8 @@ dnf config-manager --add-repo=https://mirrors.aliyun.com/docker-ce/linux/centos/
 ```
 ## 8. dnf 安装软件
 
-常用可选参数 
- - -y 安装时，遇到确认默认全部选择 yes  
+常用可选参数
+ - -y 安装时，遇到确认默认全部选择 yes
  - -q 不显示安装过程
  - -v, --verbose 详细显示安装过程
  - --nobest 不尝试将软件升级到最高的版本，不指定时默认是 --best 会尝试安装最高版本
@@ -79,14 +78,14 @@ dnf config-manager --add-repo=https://mirrors.aliyun.com/docker-ce/linux/centos/
 dnf install docker-ce -y --nobest
 
 # 重新安装软件包
-dnf reinstall docker-ce 
+dnf reinstall docker-ce
 
 ```
 ## 9. 升级软件
 
 ```bash
 # 升级所有软件到最新的版本
-dnf update  或者  dnf upgrade 
+dnf update  或者  dnf upgrade
 # 升级所有软件到最新的稳定版本
 dnf distro-sync
 # 升级指定的软件包，如升级 docker
@@ -116,14 +115,14 @@ dnf clean all
 
 ```bash
 # 查看运行过的历史命令
-dnf history 
+dnf history
 ```
 
 ## 13. dnf module 命令
 
 ```
 # 查看所有可用的软件包
-dnf module list 
+dnf module list
 
 # 查看指定可用的软件包版本
 dnf module list 软件名

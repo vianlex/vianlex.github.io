@@ -3,7 +3,6 @@ title: "Docker 安装笔记"
 linkTitle: "Docker 安装笔记"
 weight: 40
 ---
-
 ## 使用 YUM 命令安装
 
 1. 安装 docker 依赖软件
@@ -13,16 +12,16 @@ yum install -y yum-utils device-mapper-persistent-data lvm2
 ```
 2. 添加 docker 软件源
 
-```bash 
+```bash
 # 查看是否 docker 软件源文件, 不存在，则用 wget 下载
-ls -il /etc/yum.repos.d/docker-ce.repo 
+ls -il /etc/yum.repos.d/docker-ce.repo
 # 下载 docker 软件源文件，并保存到 /etc/yum.repos.d/docker-ce.repo
 wget https://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo -O /etc/yum.repos.d/docker-ce.repo
 ```
-3. 安装 docker 
+3. 安装 docker
 
 ```
-# 查看可安装的版本 
+# 查看可安装的版本
 yum --showduplicates list docker-ce
 # 安装指定的版本
 yum -y install docker-ce-19.03.13-3.el8
@@ -41,7 +40,7 @@ docker --version
 
 ## CentOS8 使用 dnf 安装最新版
 
-1. 安装 Docker 存储驱动的依赖包，使用的 dnf 命令，centos8 开始使用dnf替代yum管理软件
+1. 安装 Docker 存储驱动的依赖包，使用的 dnf 命令，centos8 开始使用 dnf 替代 yum 管理软件
 
 ```
 dnf install -y device-mapper-persistent-data lvm2
@@ -65,15 +64,15 @@ dnf install -y docker-ce --nobest
 
 ```bash
 #重新加载配置文件
-systemctl daemon-reload   
+systemctl daemon-reload
 #运行Docker守护进程
-systemctl start docker     
+systemctl start docker
 #停止Docker守护进程
-systemctl stop docker      
+systemctl stop docker
 #重启Docker守护进程
-systemctl restart docker  
-#设置Docker开机自启动 
-systemctl enable docker   
+systemctl restart docker
+#设置Docker开机自启动
+systemctl enable docker
 ```
 
 ## 手动离线安装
@@ -92,10 +91,10 @@ tar -xvf docker-19.03.10.tgz
 
 ```
 mv docker /usr/bin/
-``` 
+```
 4. 创建 docker.service 文件，并将文件复制到目录 `/etc/systemd/system/` 中，并添加可执行权限 `chmod +x  /etc/systemd/system/docker.service`，目的是使用 systemd 管理和控制 docker ，以守护进程的方式运行，方便设置开机自启。docker.service 的文件内容，如下：
 
-```
+```ini
 [Unit]
 Description=Docker Application Container Engine
 Documentation=https://docs.docker.com
@@ -144,7 +143,7 @@ KillMode=process
 [Install]
 WantedBy=multi-user.target
 ```
-5. 设置开机自启和启动 docker 
+5. 设置开机自启和启动 docker
 
 ```
 systemctl enable docker && systemctl start docker

@@ -3,26 +3,24 @@ title: "this 对象说明"
 linkTitle: "this 对象说明"
 weight: 20
 ---
-
 ### 执行上下文（execution context）
 
 执行上下文（execution context）是 JavaScript 程序运行时创建的执行栈，可以理解为代码运行时都是执行上下文中执行的。
 执行上下文分为以下三种：
 
-1. 全局执行上下文（Global execution context） 
+1. 全局执行上下文（Global execution context）
 
     非函数内部的代码执行都在全局上下文中运行，this 指向的是全局作用域的顶端对象（浏览器端是 Window，node 中是 global），
     JS 是单线程程序的，所以一个程序都只有一个全局执行上下文。
 
 2. 函数执行上下文（Function execution context）
-    
+
     当函数被调用时，会创建一个新的执行上下文即函数执行上下文，函数运行时 this 指向的是调用函数的对象，如果调用函数
     的对象是全局对象，则为 window 对象或者 undefined（严格模式下） 。
 
-3. Eval 函数执行上下文（Eval exection context）  
+3. Eval 函数执行上下文（Eval exection context）
 
     使用 eval 函数执行代码时，它也会创建一个新的执行上下文。
-
 
 ### 执行栈（execution context stack）
 
@@ -30,7 +28,6 @@ weight: 20
 
 Js 是单线程程序，当 Js 引擎执行脚本代码时，会创建一个全局执行上下文并压入当前的执行栈中，遇到函数时会创建函数执行上下文栈并压入执行栈顶，
 并执行该函数，当该函数执行完时会从栈顶弹出，直到所有代码执行完后，Js 引擎才将当前栈中的全局执行上下文移除。
-
 
 ### 全局执行上下文
 
@@ -43,7 +40,7 @@ console.log(this)
 
 // var 关键字声明定义的变量，默认会绑定的到全局作用域的 window 对象中
 var greet01 = 'Hello World'
-// let, const 关键字声明定义的变量，默认不会绑定到全局作用域（Global）中，会绑定到 Local 或者 Script 作用域中，具体看执行环境。 
+// let, const 关键字声明定义的变量，默认不会绑定到全局作用域（Global）中，会绑定到 Local 或者 Script 作用域中，具体看执行环境。
 let greet02 = 'Hello World'
 
 // 输出  'Hello World' 字符串
@@ -52,7 +49,7 @@ console.log(this.greet01)
 console.log(this.greet02)
 
 // 验证上面的列子，可以通过 debugger 的方式查看变量绑定在哪个作用域（Scope）中
-debugger 
+debugger
 
 // 在 node 环境中，输出 global 对象
 console.log(this)
@@ -61,7 +58,7 @@ console.log(this)
 
 ### 函数执行上下文
 
-#### 普通函数中的 this 
+#### 普通函数中的 this
 
 普通函数中的 this 值，在函数被调用时才确定（运行时绑定），指向的是调用函数的对象，但是在严格模式和非严格模式之间会有一些差异，
 即当函数调用对象为 window 时，在严格模式下 this 的值是 undefined。
@@ -114,8 +111,7 @@ hello()
 
 ```
 
-
-#### 构造函数中的 this 
+#### 构造函数中的 this
 
 构造函数中的 this 值，指向的是构建函数创建出来的对象。
 
@@ -153,9 +149,7 @@ helloObj.func2()
 
 ```
 
-
-
-#### 箭头函数中的 this 
+#### 箭头函数中的 this
 
 箭头函数 this 的值指向闭合词法上下文的值，即箭头函数的 this 始终指向箭头函数定义时所在的对象（非运行时绑定）。
 
@@ -164,7 +158,7 @@ helloObj.func2()
 var greet = 'Hello World'
 
 let func1 = () => {
-        console.log(this) 
+        console.log(this)
         console.log(this.greet)
     }
 
@@ -172,7 +166,6 @@ let func1 = () => {
 func1()
 
 ```
-
 
 ```js
 
@@ -209,22 +202,15 @@ helloObj.func2()
 helloObj.func3()
 
 // 指定函数的调用对象为 helloObj, 故输出 helloObj 对象和 'Hello Obj' 字符串
-helloObj.func4() 
+helloObj.func4()
 
 var func = helloObj.func4
-/** 函数未指定调用对象, 默认的调用对象为 window 对象,   
+/** 函数未指定调用对象, 默认的调用对象为 window 对象,
     则 func 函数是在 window 对象下声明定义的, 故输出 window 对象和 'Hello World' 字符串 */
 func()
 
 
 ```
-
-
-
-
-
-
-
 
 ### 参考链接
 1. https://tc39.es/ecma262/#sec-execution-contexts

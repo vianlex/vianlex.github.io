@@ -3,7 +3,6 @@ title: "PowerShell 基础知识点"
 linkTitle: "PowerShell 基础知识点"
 weight: 40
 ---
-
 ## PowerShell 的核心概念
 
 ### Cmdlet：最小命令单元
@@ -39,10 +38,10 @@ PowerShell 中的管道（Pipeline）与 Linux/Unix Shell（如 Bash）的管道
 # 4. 管道 | 将过滤后的对象传递给 Select-Object
 # 5. Select-Object 提取特定的属性生成新对象
 # $_ 代表管道中当前正在处理的对象
-Get-Process | 
-    Where-Object { $_.WorkingSet64 -gt 100MB } | 
+Get-Process |
+    Where-Object { $_.WorkingSet64 -gt 100MB } |
     Select-Object Name, WorkingSet64
-    
+
 # 查看对象有哪些属性
 Get-Process | Get-Member
 ```
@@ -59,13 +58,13 @@ PowerShell 的 Provider（提供程序） 和 PSDrive（PowerShell 驱动器）�
 常见的 PSProvider 类型：
 
 | Provider 提供程序 | 作用 | 抽象资源驱动 PSDrive | 描述说明 |
-| :--- | :--- | :--- | :--- | 
-| FileSystem	| 操作文件 / 目录 | 	C:、D:、E: 等 | 将 FileSystem 程序，抽象成驱动器，让我们可以通过操作驱动器的方式，操作 FileSystem 程序类 |
-| Environment	| 操作环境变量	  |   Env:         | 将 Environment 程序，抽象成驱动器，让我们可以通过操作驱动器的方式，操作 Environment 程序类|
-| Registry    | 操作 Windows 注册表| HKLM:（本地机器）、HKCU:（当前用户）| 查看注册表中的 \SOFTWARE\Microsoft\Windows 信息 Get-ChildItem HKLM:\SOFTWARE\Microsoft\Windows | 
-| Variable	  | 操作 PowerShell 变量	| Variable: |  查看环境变量中的 Path 变量，Get-Item Env:\PATH |
-| Alias	      | 操作 PowerShell 别名	|  Alias:  |  通过操作目录的方式：Get-Item Alias:\dir 查看 dir 是哪个命令的别名|
-| Certificate	| 操作证书存储	|    Cert: | 通过操作目录的方式，访问 Certificate 程序属性：Get-ChildItem Cert:\LocalMachine\My 查看本地机器证书 |
+| :--- | :--- | :--- | :--- |
+| FileSystem | 操作文件 / 目录 |  C:、D:、E: 等 | 将 FileSystem 程序，抽象成驱动器，让我们可以通过操作驱动器的方式，操作 FileSystem 程序类 |
+| Environment | 操作环境变量   |   Env:         | 将 Environment 程序，抽象成驱动器，让我们可以通过操作驱动器的方式，操作 Environment 程序类|
+| Registry    | 操作 Windows 注册表| HKLM:（本地机器）、HKCU:（当前用户）| 查看注册表中的 \SOFTWARE\Microsoft\Windows 信息 Get-ChildItem HKLM:\SOFTWARE\Microsoft\Windows |
+| Variable   | 操作 PowerShell 变量 | Variable: |  查看环境变量中的 Path 变量，Get-Item Env:\PATH |
+| Alias       | 操作 PowerShell 别名 |  Alias:  |  通过操作目录的方式：Get-Item Alias:\dir 查看 dir 是哪个命令的别名|
+| Certificate | 操作证书存储 |    Cert: | 通过操作目录的方式，访问 Certificate 程序属性：Get-ChildItem Cert:\LocalMachine\My 查看本地机器证书 |
 
 #### PSDrive 抽象驱动器基础命令
 
@@ -89,7 +88,7 @@ New-PSDrive -Name desk -PSProvider FileSystem -Root "$([Environment]::GetFolderP
 
 ```bash
 # 查看所有驱动器
-Get-PSDrive 
+Get-PSDrive
 
 # 查看文件系统类型的抽象驱动器
 Get-PSDrive -PSProvider FileSystem
@@ -97,7 +96,7 @@ Get-PSDrive -PSProvider FileSystem
 
 3. 删除自定义抽象驱动器
 
-```bash 
+```bash
 Remove-PSDrive -Name dev
 ```
 
@@ -122,7 +121,7 @@ New-PSDrive -Name desk -PSProvider FileSystem -Root "$([Environment]::GetFolderP
 cd Env:
 
 # 通过 dir 列出当前 Env: 目录下的所有环境变量
-dir 
+dir
 # 或者 Get-ChildItem 列出当前 Env: 目录下的所有环境变量
 
 # 以文件驱动器的方式查看，环境变量 Path 的值

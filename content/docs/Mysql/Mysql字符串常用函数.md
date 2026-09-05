@@ -3,12 +3,11 @@ title: "Mysql 字符串常用函数"
 linkTitle: "Mysql 字符串常用函数"
 weight: 10
 ---
-
 - SUBSTRING_INDEX(str, delimiter, index)  使用指定分割符(delimiter)，将字符串(str)分割成数组，并返回指定索引(index)的数组值
 
 ```sql
 1. 使用 ll 将字符串分割成数组，并返回数组第一个元素
-SELECT SUBSTRING_INDEX("Hello","ll",1) 
+SELECT SUBSTRING_INDEX("Hello","ll",1)
 2. 根据逗号将字符串分割数组，并返回数组的最后一个值
 SELECT SUBSTRING_INDEX("A,B,C,D",",",-1)
 ```
@@ -43,7 +42,7 @@ SELECT LEFT("HELLO", 2)
 # 返回 LO
 SELECT RIGHT("HELLO", 2)
 ```
-- TRIM([{both | leading | trailing} [remstr] form] str) 将字符串 str去除 remstr 所指定的前缀或后缀，返回结果字符串。如果没有指定标识符both、leading，或trailing，则默认采用 both，即将前后缀都删除。remstr 其实是个可选参数，如果没有指定它，则删除的是空格
+- TRIM([{both | leading | trailing} [remstr] form] str) 将字符串 str 去除 remstr 所指定的前缀或后缀，返回结果字符串。如果没有指定标识符 both、leading，或 trailing，则默认采用 both，即将前后缀都删除。remstr 其实是个可选参数，如果没有指定它，则删除的是空格
 
 ```sql
 # 去掉字符串前后的空格，注意部分：制表符号空白是去不掉的

@@ -3,7 +3,6 @@ title: "Linux 用户文件权限"
 linkTitle: "Linux 用户文件权限"
 weight: 20
 ---
-
 ## 用户和用户组
 
 ### 用户管理
@@ -61,8 +60,8 @@ sudo userdel -r username                 # 删除用户及家目录
 
 ```bash
 
-# 从当前用户切换到 sysadmin 用户 
-su sysadmin 
+# 从当前用户切换到 sysadmin 用户
+su sysadmin
 
 ```
 
@@ -76,7 +75,7 @@ su sysadmin
 
 用户组配置文件 `/etc/group` 每一行的内容格式为：` groupname:password:GID:userlist`，内容示例如下：
 
-```bash 
+```bash
 
 docker:x:991:sysadmin
 developers:x:1002:alice,charlie
@@ -92,7 +91,7 @@ Linux 系统部分默认组说明：
 
 #### 创建和管理用户组
 
-```bash 
+```bash
 
 # 创建组
 sudo groupadd groupname
@@ -121,7 +120,7 @@ sudo groupdel groupname
 
 通过 `ls -l ` 命令查看文件，命令输出结果格式为：-rwxr-xr-- 1 user group size date filename
 
-```text 
+```text
 
 类型和权限   链接数 所有者 所属组  大小  修改时间        文件名
 drwxrwxrwx    2    alice  dev    4096  Jan 01 10:00  project
@@ -172,7 +171,7 @@ chmod -R 755 directory/
 - x (execute): 执行权限
 - -：无权限
 
-```bash 
+```bash
 
 # 添加权限
 chmod u+x script.sh      # 给所有者添加执行权限
@@ -195,7 +194,7 @@ chmod o-rx directory/    # 移除其他人的读和执行权限
 
 #### 修改所有者和所属组 (chown, chgrp)
 
-```bash 
+```bash
 
 # 修改所有者和所属组
 sudo chown username:groupname file
@@ -223,7 +222,7 @@ chown --reference=source_file target_file
 - 文件执行时，以文件所有者的权限运行
 - 显示为 s 代替 x：rwsr-xr-x
 
-```bash 
+```bash
 
 chmod u+s file      # 设置SUID
 chmod 4755 file     # 数字方式
@@ -234,7 +233,7 @@ ls -l /usr/bin/passwd  # 查看 passwd 命令的 SUID
 ```
 
 2. SGID(Set Group ID)权限
-   
+
 - 对于文件：执行时以文件所属组的权限运行
 - 对于目录：在该目录中创建的新文件继承目录的所属组
 - 显示为 s 代替 x：rwxr-sr-x

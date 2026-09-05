@@ -3,7 +3,6 @@ title: "ElasticSearch 语法查询学习笔记"
 linkTitle: "ElasticSearch 语法查询学习笔记"
 weight: 20
 ---
-
 ## DSL 查询条件
 
 ```json
@@ -63,7 +62,6 @@ weight: 20
   }
 ```
 
-
 ## 测试数据
 
 ```bash
@@ -104,7 +102,6 @@ PUT /order_index/_bulk
 
 ```
 
-
 ## match_all 全索引匹配
 
 match_all 查询，表示匹配查询所有文档，默认返回 10 条数据
@@ -144,13 +141,13 @@ GET /order_index/_search
 {
   "query": {
     "term": {
-      /** 
+      /**
        * 如 text 类型的字段设置子字段 keyword，那么可以使用该 keyword 子字段来精准匹配查询
        * 注意匹配的还是倒排索引表，remark.keyword 和 remark 是两个不同的索引字段
        * remark.keywrod 索引是 keyword 类型，在倒排索引表中，只有一条倒排索引记录
        * remark 索引是 text 类型，在倒排索引表中，都多条分词的倒排索引记录，但是没有全词的倒排索引。
        */
-      "remark.keyword": "配送" 
+      "remark.keyword": "配送"
     }
   }
 }
@@ -165,7 +162,7 @@ GET /order_index/_search
     // terms 表示使用 in 的方式，不分词精准匹配倒排索引表
     "terms": {
       // 精准匹配倒排索引表中的“加急”和“配送”索引
-      "remark": ["加急", "配送"] 
+      "remark": ["加急", "配送"]
     }
   }
 }
@@ -218,7 +215,6 @@ ES 中常见时间表达式
 - now-1y 表示从当前时间减去一年的时间
 - now+1h 表示从当前时间加上一个小时的时间
 
-
 ```json
 GET /order_index/_search
 {
@@ -229,7 +225,6 @@ GET /order_index/_search
     }
 }
 ```
-
 
 ## exists 是否存在查询
 
@@ -247,7 +242,6 @@ GET /order_index/_search
 }
 ```
 
-
 ## ids 精准查询
 
 根据文档 ids 查询文档
@@ -263,7 +257,6 @@ GET /order_index/_search
     }
 }
 ```
-
 
 ## prefix 精准前缀匹配
 
@@ -304,14 +297,13 @@ GET /order_index/_search
 wildcard 精准通配符匹配，表示匹配条件值，不经过分词，直接就匹配倒排索引表。
 wildcard 支持 * 和 ? 通配符号，* 表示模糊匹配一个或者多个字符，? 表示模糊匹配一个字符
 
-
 ```json
 GET /order_index/_search
 {
   "query": {
     "wildcard": {
       // 不经过分词，直接模糊匹配 remark 在倒排索引表中索引记录
-      "remark": "?送" 
+      "remark": "?送"
     }
   }
 }
@@ -355,7 +347,6 @@ GET /order_index/_search
 
 ```
 
-
 ## term_set 精准多条件值匹配
 
 ```json
@@ -368,7 +359,7 @@ GET /order_index/_search
                 "terms":["加急","配送"],
                 // 表示必须精准匹配 terms 中两个 remark 的倒排索引
                 "minimum_should_match": 2
-            } 
+            }
         }
     }
 }
@@ -385,13 +376,12 @@ GET /order_index/_search
                     // 动态计算匹配数量
                     "source": "doc['quantity'].value * 0.5"
                 }
-            } 
+            }
         }
     }
 }
 
 ```
-
 
 ## match 分词匹配查询
 
@@ -401,7 +391,6 @@ match 查询流程分为三步
 1. 分词：使用分词器处理查询字符串，将字符串拆分成一个一个单独的分词，如单词，短语，特定字符。
 2. 匹配计算：
 3. 结果返回：
-
 
 1、match 分词查询，不带参数查询的例子如下：
 
@@ -431,16 +420,15 @@ GET /order_index/_search
                 // 默认是 or，表示多个分词匹配倒排索引的逻辑关系
                 "operator": "and" ,
                 // 表示要匹配多少个分词，如 75%、2，注意：不能和 operator=and 同时使用会有冲突问题，可以 operator=or 使用
-                // "minimum_should_match": 2, 
+                // "minimum_should_match": 2,
                 // 表示模糊性匹配查询 AUTO 为 0，表示不模糊匹配
-                "fuzziness": "AUTO",  
+                "fuzziness": "AUTO",
                 "analyzer": "ik_max_word"  // 使用IK分词器（中文）
            }
         }
     }
 }
 ```
-
 
 ## mutil_match 一值匹配多字段分词查询
 
@@ -459,8 +447,6 @@ GET /order_index/_search
 }
 ```
 
-
-
 ## match_phrase 短语匹配查询
 
 match_phrase 短语匹配查询，表示查询的字符串分词后按 and 的方式查询，并且要顺序控制。
@@ -478,7 +464,7 @@ GET /orders/_search
     "match_phrase": {
       // 查询条件 "加急配送" 通过 ik_max_word 分词后为 [加急，配送]
       // remark 倒排索引中，必须存在 [加急，配送] 分词才能查询成功，并且在倒排索引中是 position 连续的分词，如果非连续的可以通过 slop 指定间隔
-      "remark": "加急配送" 
+      "remark": "加急配送"
       //"remark":"加急请" // ik_max_word 分词后为[加急，请]，匹配不到结果，
     }
   }
@@ -498,16 +484,14 @@ GET /orders/_search
     "match_phrase": {
       // 查询条件 "加急配送" 通过 ik_max_word 分词后为 [加急，配送]
       // ik_max_word 分词后为[加急，请]，查询条件的分词，在 remark 倒排索引中非连续的，需要通过 slop 指定间隔
-      "remark":"加急请", 
+      "remark":"加急请",
       "slop": 1 // 不指定间隔，查询不到数据
     }
   }
 }
 ```
 
-
 ## query_string 分词与或非表达式查询
-
 
 1、单个字段查询的例子
 
@@ -546,16 +530,14 @@ GET /order_index/_search
 1. 搜索上下文（query context）：使用搜索上下文时，ES 会计算每个文档和查询条件的相关度得分，计算公式比较复杂，会消耗性能。
 2. 过滤上下文（filter context）：使用过滤上下文时，ES 只会判断搜索条件和文档数据是否匹配，不会计算相关度得分，并且会缓存结果，提升查询速度。
 
-bool 组合查询支持4种组合类型查询如下：
+bool 组合查询支持 4 种组合类型查询如下：
 
 - must：可以包含多个查询条件，并且都满足才能成功检索文档，每次查询都会计算文档和搜索条件的相关度得分（计算得分会消耗性能）属于搜索上下文。
 - should：可以包含多个查询条件，不存在 must 和 filter 条件时，至少要满足其中一个查询条件，才能检索到文档，注意该查询也会计算文档和搜索条件的相关度得分，属于搜索上下文。
 - filter：可以包含多个过滤条件，并且每个过滤条件都满足后才能检索到文档， 每个过滤条件不计算相关度得分，结果在一定条件下会被缓存，属于过滤上下文。
 - must_not：可以包含多个过滤条件，每个过滤条件都不满足得文档带能被检索到，不计算相关度得分，结果在一定条件下会被缓存，属于过滤上下文。
-  
+
 **注意**：对于精确匹配建议通过 filter 来实现组合查询，因为精准查询可以使用常量分数，而不需要根据相关度计算分数。
-
-
 
 1、must 组合查询例子如下：
 
@@ -701,8 +683,7 @@ GET /order_index/_search
 
 地理位置查询的字段必须是 geo_point 或者 geo_shape 类型。
 
-
-1、测试数据 
+1、测试数据
 
 ```json
 // 创建索引
@@ -821,7 +802,6 @@ GET /locations/_search
 }
 ```
 
-
 ## 聚合查询
 
 ### max 等聚合查询
@@ -886,9 +866,7 @@ GET /order_index/_search
 }
 ```
 
-
 ## 桶(分组)聚合查询
-
 
 1、按 terms(分组)统计数量的例子
 
@@ -966,7 +944,6 @@ GET /order_index/_search
 ## 管道聚合
 
 通过管道的方式，将上一个聚合操作的结果，传给下一个聚合操作。
-
 
 ```json
 GET /order_index/_search

@@ -3,7 +3,6 @@ title: "iptables 学习笔记"
 linkTitle: "iptables 学习笔记"
 weight: 70
 ---
-
 ## 1. iptables 简介
 
 iptables 是 Linux 防火墙软件，虽然已经被 nftables 取代了，但是仍然广泛的运用着。iptables 防火墙的网络地址转换、数据包修改，以及过滤功能，是由 Linux 内核中的 netfilter 模块实现的，iptables 通过命令行去定义服务器流量的进出规则，然后由 netfilter 模块去执行。
@@ -16,7 +15,7 @@ iptables 是 Linux 防火墙软件，虽然已经被 nftables 取代了，但是
 - nat 表：用于数据包的转发，可以控制的链路节点有 PREROUTING、INPUT、OUTPUT 和 POSTROUTING;
 - filter 表：控制数据包是否允许进出及转发，可以控制的链路有 INPUT、FORWARD 和 OUTPUT。
 
-**总上所述，iptable 中常说的4表5链，指的就是 raw、mangle、nat、filter 和 PREROUTING、INPUT、OUTPUT、FORWARD、POSTROUTING。**
+**总上所述，iptable 中常说的 4 表 5 链，指的就是 raw、mangle、nat、filter 和 PREROUTING、INPUT、OUTPUT、FORWARD、POSTROUTING。**
 
 ![iptables-过滤转发流程](/images/iptables-过滤转发流程.png)
 
@@ -48,12 +47,10 @@ iptables -t <table> <command> <chain> <match-parameter> -j <target> <target-para
 - [!]-d,--destination 与 -s 相反，用于指定匹配数据包访问的目标 IP 地址, 指定多个 IP 需要用逗号隔开，或者指定一个网段如 192.10.0.0/16
 - [!]--sport 指定匹配数据包的来源端口，如果要指定多个端口，可以使用冒号隔开，如 --sport 22:25, 注意如果 :22 等同于 0:22 , 25: 等同于 25:65535
 - [!]--dport 指定匹配数据包访问的目标端口
-- -c, --set-counters 用于初始化规则的 PKTS(数据包)和 bytes (字节)计数器，如：`-c 0 0` 将经过规则的数据包和字节计数器置为0
+- -c, --set-counters 用于初始化规则的 PKTS(数据包)和 bytes (字节)计数器，如：`-c 0 0` 将经过规则的数据包和字节计数器置为 0
 - --icmp-type 指定 icmp 类型，常用的可选值 8 或 echo-request 表示 ping 请求、0 或 echo-reply 表示 ping 应答
 - -j,--jump [target] 跳转到指定的动作或者用户定义链
 - -g,--goto [chain] 跳转到指定的链
-
-
 
 #### 2.3.1 扩展的匹配参数模块
 
@@ -67,10 +64,10 @@ iptables -t filter -A INPUT -m iprange --src-range 192.168.1.1-192.168.2.5 -j DR
 ```
 2. string 模块，用于匹配报文中是否包含对应的字符串，扩展的参数如下：
 - --string 指定要匹配的内容
-- –algo 可选参数，指定使用什么算法去匹配，如 bm  
+- –algo 可选参数，指定使用什么算法去匹配，如 bm
 
 ```
-iptables -t filter -A INPUT -m string --algo bm --string "abcs" -j DROP 
+iptables -t filter -A INPUT -m string --algo bm --string "abcs" -j DROP
 ```
 3. time 扩展模块，根据时间段区匹配报文，扩展的参数如下：
 - –timestart 指定时间范围的开始时间，注意不可取反
@@ -106,10 +103,10 @@ ptables -I INPUT -p tcp --dports 22,25,26 -j REJECT
 - ACCEPT：允许数据包通过。
 - DROP：直接丢弃数据包，不给任何回应信息，客户端会提示超时。
 - REJECT：拒绝数据包通过，会响应一个拒绝的信息，可选参数如下：
-    - --reject-with 参数用户设定回复的报文，可选值有 icmp host unreachable(无法访问)、icmp-port-unreachable、icmp-proto-unreachable、icmp-net-prohibited(禁止)、icmp-host-prohibited，如果是 TCP 还可以设置 tcp-reset 要求对方关闭链接 
+    - --reject-with 参数用户设定回复的报文，可选值有 icmp host unreachable(无法访问)、icmp-port-unreachable、icmp-proto-unreachable、icmp-net-prohibited(禁止)、icmp-host-prohibited，如果是 TCP 还可以设置 tcp-reset 要求对方关闭链接
 - SNAT：源地址转换，解决内网用户用同一个公网地址上网的问题，使用 SNAT 时不需要配置 NDAT，iptables 会自动维护 NAT 表，并将响应报文的目标地址转换回来，可选参数如下：
     - --to-source 用于设置源地址转换后的值
-- MASQUERADE：是 SNAT 的一种特殊形式，MASQUERADE 会自动将源 ip 动态转换到  -o 指定网卡的ip
+- MASQUERADE：是 SNAT 的一种特殊形式，MASQUERADE 会自动将源 ip 动态转换到  -o 指定网卡的 ip
 - DNAT：目标地址转换，可选的参数如下：
     - --to-destination 用于设置目的地址转换后的值
 - REDIRECT：在本机做端口映射，可选参数如下：
@@ -129,7 +126,7 @@ $ iptables -P INPUT DROP # 默认不允许访问
 $ iptables -P FORWARD DROP # 默认不允许转发
 $ iptables -P OUTPUT ACCEPT # 默认可以出去
 
-# 指定特定的网段才能连接主机的 ssh 
+# 指定特定的网段才能连接主机的 ssh
 iptables -A INPUT -s 100.128.0.0/16 -p tcp --dport 22 -j ACCEPT
 
 # 拒绝访问 80 端口，并提示无法访问
@@ -139,7 +136,7 @@ iptables -A INPUT -p tcp --dport 80 -j REJECT --reject-with icmp-host-unreachabl
 iptables -A INPUT -p icmp --icmp-type echo-request -j REJECT
 iptables -A OUTPUT -p icmp --icmp-type echo-request -j DROP
 
-# 应用使用内网 ip 去访问主机，利用 iptables 将内网 ip 转成外网的 ip 
+# 应用使用内网 ip 去访问主机，利用 iptables 将内网 ip 转成外网的 ip
 iptables -t nat -A OUTPUT -d 192.168.0.88 -j DNAT --to-destination 116.205.143.251
 
 # 内网主机使用一个公网地址上网转发上网
@@ -154,9 +151,8 @@ iptables -t nat -I POSTROUTING -s 172.16.0.0/16 -o eht0 -j MASQUERADE
 
 ```bash
 # 定义 filter 表 OUTPUT 链的默认策略是允许访问，如果 OUTPUT 所有的规则都不匹配，就会执行默认的策略
-ipatables -t filter -P OUTPUT ACCPT 
+ipatables -t filter -P OUTPUT ACCPT
 ```
-
 
 ## 3. 自定义链
 
@@ -174,8 +170,8 @@ iptables -t filter SSH-FIREWALL
 
 ```bash
 # 默认 INPUT 链中的规则匹配时跳转到自定义链 SSH-FIREWALL , 然后匹配 SSH-FIREWALL 链中的规则
-iptables -t filter INPUT -p tcp -dport 22 -j SSH-FIREWALL 
-``` 
+iptables -t filter INPUT -p tcp -dport 22 -j SSH-FIREWALL
+```
 3. 在自定义链 SSH-FIREWALL 中定义规则
 
 ```bash
@@ -197,7 +193,7 @@ iptables -t [raw|mangle|nat|filter] -E <旧的自定义链名> <新的自定义�
 删除自定链时，必须要先删除自定义链中的规则和删除默认链中关联的自定义链，删除自定义链的命令如下：
 
 ```bash
-iptables -t [raw|mangle|nat|filter] -X <自定义链名> 
+iptables -t [raw|mangle|nat|filter] -X <自定义链名>
 ```
 
 ## 4. 查看规则
@@ -213,10 +209,10 @@ iptables -t [raw|mangle|nat|filter] -X <自定义链名>
 
 ```
 # 查看 filter 表的所有规则
-iptables -t filter -nL 
+iptables -t filter -nL
 
 # 查看 nat 表 OUTPUT 链的规则
-iptables -t nat -L OUTPUT 
+iptables -t nat -L OUTPUT
 
 # 查看 nat 表的所有规则，并打印行号
 iptables -t nat -nL --line-numbers
@@ -230,12 +226,12 @@ iptables -t nat -nL --line-numbers
 - opt 表示规则对应的选项。
 - in 表示数据包由哪个接口(网卡)流入，定义规则的时候，可以设置。
 - out 表示数据包由哪个接口(网卡)流出，定义规则的时候，可以设置。
-- source 表示规则对应的源头地址，可以是一个IP，也可以是一个网段。
+- source 表示规则对应的源头地址，可以是一个 IP，也可以是一个网段。
 - destination 表示规则对应的目标地址，可以是一个 IP，也可以是一个网段。
-当然，我们也可以只查看某个链的规则，并且不让IP进行反解，这样更清晰一些，比如 iptables -nvL INPUT
+当然，我们也可以只查看某个链的规则，并且不让 IP 进行反解，这样更清晰一些，比如 iptables -nvL INPUT
 - line-numbers 显示规则在对应表中的行号，删除的时候，指定行号去删除。
 - policy 表示当前链的默认策略，表示所有规则都没有匹配时，默认指定的动作。
-- packets 表示当前链（上例为INPUT链）默认策略匹配到的包的数量，0 packets表示默认策略匹配到0个包。
+- packets 表示当前链（上例为 INPUT 链）默认策略匹配到的包的数量，0 packets 表示默认策略匹配到 0 个包。
 - bytes 表示当前链默认策略匹配到的所有包的大小总和。
 
 ## 5. 将所有链中的数据包和字节计数器清零
@@ -246,11 +242,11 @@ iptables -t [table] [-Z | --zero ] [chain]
 ```
 ## 6. 删除规则
 
-删除整个表的规则命令 ` iptables -t <table>  -F ` 
+删除整个表的规则命令 ` iptables -t <table>  -F `
 
-```bash 
+```bash
 # 删除整个 filter 表的规则，不用 -t 指定表就默认时操作 filter 表
-iptables -F 
+iptables -F
 
 # 删除 nat 表的整个规则
 iptables -t nat -F
@@ -261,7 +257,7 @@ iptables -t nat -F
 # 查看规则的 chain 和 line-number
 iptables -t filter -nL
 # 删除规则
-iptables -t filter -D INPUT 5  
+iptables -t filter -D INPUT 5
 
 ```
 

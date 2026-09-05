@@ -3,11 +3,9 @@ title: "JavaScript 闭包"
 linkTitle: "JavaScript 闭包"
 weight: 80
 ---
-
 ## 闭包的理解
 
 闭包是由函数以及声明该函数的词法环境组合而成，当内层函数引用了外层函数作用域下的变量，并且内层函数在全局环境下可访问，就形成了一个闭（Closure）作用域。即外部函数执行结束（或者内部函数不在外部函数的局部作用域内执行）时，外部函数内部定义的变量还能被内部函数引用，没有被回收。
-
 
 ## 闭包使用场景
 
@@ -21,7 +19,7 @@ weight: 80
 var num = 10
 function func01() {
     // 局部变量
-    var num = 20 
+    var num = 20
     // func2 是内部函数，属于局部变量
     function func02() {
         console.log(num)
@@ -63,7 +61,6 @@ f1()
 
 ```
 
-
 ### 闭包保护变量（私有变量）
 
 ```JavaScript
@@ -94,8 +91,6 @@ obj.getAge()
 obj.getAge()
 
 ```
-
-
 
 ## 参考链接
 1. https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Closures

@@ -3,10 +3,9 @@ title: "WSL 离线安装 Ubuntu"
 linkTitle: "WSL 离线安装 Ubuntu"
 weight: 50
 ---
-
 ## 前置条件
 
-**官方参考地址**：https://learn.microsoft.com/zh-cn/windows/wsl/install-manual 
+**官方参考地址**：https://learn.microsoft.com/zh-cn/windows/wsl/install-manual
 
 1、虚拟化要求
 
@@ -23,19 +22,17 @@ dism.exe /online /enable-feature /featurename:VirtualMachinePlatform /all /nores
 
 3、更新内核（已安装过，则忽略）
 
-方式1：运行命令 `wsl --update`
+方式 1：运行命令 `wsl --update`
 
-方式2：通过地址：https://learn.microsoft.com/zh-cn/windows/wsl/install-manual  找到 wsl 更新包，下载安装即可。
+方式 2：通过地址：https://learn.microsoft.com/zh-cn/windows/wsl/install-manual  找到 wsl 更新包，下载安装即可。
 
-方式3：从 Githud 地址：https://github.com/microsoft/WSL/releases 下载完整 wsl 安装，双击安装即可。
+方式 3：从 Githud 地址：https://github.com/microsoft/WSL/releases 下载完整 wsl 安装，双击安装即可。
 
 注意：如果系统已经存在 WSL setting 应用，则说明已经安装过内核了，不需要再安装。
-
 
 ## 镜像下载地址
 
 Ubuntu Releases 站点：https://releases.ubuntu.com/noble/
-
 
 ## 导入安装镜像
 
@@ -49,7 +46,7 @@ wsl --import Ubuntu-24.04 D:\WSL\Ubuntu2404 C:\Users\Amias\Downloads\ubuntu-2
 
 ## 启动系统和用户配置
 
-1、手动导入镜像后，通过以下命令进入系统 
+1、手动导入镜像后，通过以下命令进入系统
 
 ```bash
 # Ubuntu-24.04 是我们导入时，指定的系统名称
@@ -57,7 +54,6 @@ wsl -d Ubuntu-24.04
 ```
 
 2、手动导入镜像，我们进入系统时，默认是以 root 账号登录的，出于安全考虑，我们可以创建一个普通用户，创建普通用户方式如下：
-
 
 ```bash
 # 创建名为 sysadmin 的用户，-m 表示强制创建用户目录（默认路劲为： /home/sysadmin） -d 指定 home 目录，-s 指定 shell
@@ -71,13 +67,13 @@ id sysadmin
 cat /etc/passwd | grep sysadmin
 
 # 设置用户的密码
-passwd sysadmin 
+passwd sysadmin
 # 设置用户 sysadmin 的密码为空白密码
 passwd -d sysadmin
 
 
 # 删除用户, -r 表示用户信息全部删除
-userdel -r sysadmin  
+userdel -r sysadmin
 
 ```
 
@@ -86,7 +82,7 @@ userdel -r sysadmin
 ```bash
 # 第一种方式：在 /etc/wsl.confi 文件中添加以下内容
 [user]
-default=sysadmin 
+default=sysadmin
 # 配置文件修改好后，需要通过以下关闭系统，然后重新进入
 wsl --terminate Ubuntu-24.04
 
@@ -105,21 +101,18 @@ wsl --distribution Ubuntu-24.04 --user root
 
 5、切换 root 用户，需要密码时，通过以下命令切换即可
 
-```bash 
-sudo -i 
+```bash
+sudo -i
 ```
-
 
 注意：让用户 sudo 不需要密码
 
 ```bash
 # 打开 /etc/sudoers 文件
-visudo 
+visudo
 # 在文件中添加，表示用户指定 sudo 命令时，不需要输入密码
 sysadmin ALL=(ALL) NOPASSWD: ALL
 ```
-
-
 
 ## 导出备份和迁移系统
 
@@ -134,7 +127,7 @@ wsl --export Ubuntu-24.04 D:\Backup\ubuntu_Ubuntu24.04.bak.tar
 
 如果我们不想要系统了，或者
 
-```bash 
+```bash
 # 注意：会物理删除系统，及其所有文件和配置信息，并且办法再恢复！
 wsl --unregister Ubuntu-24.04
 ```
@@ -144,7 +137,6 @@ wsl --unregister Ubuntu-24.04
 在 WSL 系统中，会将 Windows 的磁盘分区，都挂载到 /mnt 中，如果我们在 WSL 系统中想访问 Windows 的 C 直接通过 /mnt/c 访问即可。
 
 在 Windows 系统中，如果我们想访问 WSL 系统的目录，直接资源管理地址栏中输入 `\\WSL$` 即可看到所有运行中的 Linux 目录。
-
 
 ## 网络代理
 
@@ -158,16 +150,14 @@ networkingMode=mirrored
 
 非 22H2 版本的 Window 系统，需要通过 NET 端口转发的方式才能实现代理。
 
-
 ## WSL 启动 bash 配置文件问题
 
 ### Shell 加载配置文件的规则
 
 WSL 中 bash 有两种核心启动模式，加载的文件完全不同：
 
-- 登录 shell（Login）：	`bash -l 命令或者 WSL 默认启动` shell 默认加载以下配置文件   `/etc/profile → ~/.bash_profile → ~/.bash_login → ~/.profile`
+- 登录 shell（Login）： `bash -l 命令或者 WSL 默认启动` shell 默认加载以下配置文件   `/etc/profile → ~/.bash_profile → ~/.bash_login → ~/.profile`
 - 交互 shell（Interactive）：`手动打开 bash 终端或者终端手动输 bash` 启动 shell 才会加载文件 `~/.bashrc`
-
 
 WSL 启动时默认是「登录 shell」，只会加载 ~/.profile（而非 .bashrc），只有手动打开交互 shell 终端才会加载 .bashrc。
 

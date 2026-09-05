@@ -3,7 +3,6 @@ title: "Python 学习笔记"
 linkTitle: "Python 学习笔记"
 weight: 10
 ---
-
 ## 基础类型
 
 |基础类型|说明|示例|类型判断|转换函数|
@@ -28,7 +27,7 @@ weight: 10
 |不可变|`int float bool str tuple frozenset`|修改值会生成新对象，原始对象不变|
 |可变|`list dict set`|原地修改对象，内存 id 不变|
 
-```python 
+```python
 hello = [1, 2,3]
 # 查看对象的内存 id
 print(id(hello))
@@ -36,7 +35,7 @@ print(id(hello))
 
 ### 列表（可变列表）
 
-```python 
+```python
 # 初始化列表
 ls = [1,2,3]
 # 往列表中添加元素
@@ -49,10 +48,9 @@ ls.insert(0, 5)
 
 ```python
 # 初始化
-t1 
+t1
 
 ```
-
 
 ### 类型转换示例
 
@@ -74,11 +72,9 @@ frozenset([1,2])        # frozenset({1,2})
 dict(name="张三", age=18)   # {'name': '张三', 'age': 18}
 ```
 
-
 ## 变量使用说明
 
 Python 中的变量不需要声明。每个变量在使用前都必须赋值，变量赋值以后该变量才会被创建。
-
 
 ### 变量的基本使用
 
@@ -102,9 +98,9 @@ b = a # a 和 b 都引用了相同的对象
 - 局部作用域（Local Scope）：在函数内定义的变量
 - 嵌套作用域（Enclosing Scope）：在外层函数中定义的变量
 - 全局作用域（Global Scope）：在模块层次中定义的变量
-- 内置作用域（Built-in Scope）：Python预定义的变量名
+- 内置作用域（Built-in Scope）：Python 预定义的变量名
 
-以上四种作用域构成了 Python 的 LEGB 规则：Local -> Enclosing -> Global -> Built-in。Python按照这个作用域的顺序查找变量。
+以上四种作用域构成了 Python 的 LEGB 规则：Local -> Enclosing -> Global -> Built-in。Python 按照这个作用域的顺序查找变量。
 
 #### 局部作用域（Local Scope）
 
@@ -118,7 +114,7 @@ def hello():
 
 #### 全局作用域（Global Scope）
 
-全局作用域是在模块（即.py文件）中最外层定义、函数外部定义的变量，在整个模块（文件）的任意位置可见。
+全局作用域是在模块（即.py 文件）中最外层定义、函数外部定义的变量，在整个模块（文件）的任意位置可见。
 
 ```py
 x = 20
@@ -161,12 +157,12 @@ def func1():
     # 可读
     print(n)
     # 未使用 global 关键字声明，直接修改会报错
-    n = 20 
+    n = 20
 func1()
 
 def func2():
     global n
-    # global 声明后才能修改全局变量，否则会报错 
+    # global 声明后才能修改全局变量，否则会报错
     n = 20
     print(n)
 
@@ -197,17 +193,17 @@ if True:
     m = 5
 
 # 正常输出 5
-print(m) 
+print(m)
 
 for i in range(3):
     pass
 # 正常输出 2
-print(i)  
+print(i)
 ```
 
 ## 类型注解
 
-### 基础写法 
+### 基础写法
 
 ```python
 # 格式：变量名: 类型 = 值

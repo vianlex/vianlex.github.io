@@ -3,17 +3,16 @@ title: "Dockerfile 使用说明"
 linkTitle: "Dockerfile 使用说明"
 weight: 70
 ---
-
 ## docker 构建忽略文件 .dockerignore，指定构建上下文中可以复制哪些文件, 文件格式如下
 
 ```
 # * 表示忽略全部文件
-* 
-# ! 表示可以排除哪些文件，不需要忽略 
+*
+# ! 表示可以排除哪些文件，不需要忽略
 !package.json
-!nuxt.config.js 
-!.nuxt 
-!static 
+!nuxt.config.js
+!.nuxt
+!static
 
 ```
 
@@ -27,4 +26,3 @@ COPY static /path/
 COPY . /path/
 
 ```
-

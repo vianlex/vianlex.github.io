@@ -3,7 +3,6 @@ title: "Maven 仓库类型知识点"
 linkTitle: "Maven 仓库类型知识点"
 weight: 10
 ---
-
 ## Maven 仓库类型
 
 Maven 的核心仓库类型有三种分别为：Hosted(宿主仓库)、Proxy(代理仓库)、Group(组仓库)。
@@ -26,7 +25,6 @@ maven-snapshots：存放开发快照版（Snapshot）
     - Disable redeploy：禁止覆盖（一般给 releases 用，保证版本不可变）
     - Read-only：只读，不能上传 / 修改
 
-
 ## Proxy（代理仓库）
 
 Proxy（代理仓库） 主要用来代理外部公共仓库，比如 Maven Central、阿里云 Maven、JCenter 等。
@@ -46,7 +44,7 @@ Proxy（代理仓库） 主要用来代理外部公共仓库，比如 Maven Cent
 
 ### Proxy 配置说明
 
-1. 登录进入 Nexus 
+1. 登录进入 Nexus
 2. 点击 setting → Repositories
 3. 选择 Proxy 仓库（默认为 maven-central），
 4. 找到 Remote Storage 配置项，添加 `https://maven.aliyun.com/repository/public/` 代理仓库保存即可。

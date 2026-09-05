@@ -3,11 +3,9 @@ title: "docopt 命令行接口描述语言"
 linkTitle: "docopt 命令行接口描述语言"
 weight: 60
 ---
-
 ## 介绍
 
 docopt 用于描述命令行接口的帮助信息，并且只要满足 docopt 结构化的约定描述，就是可以使用 docopt 去解析命令行，docotpt 的解析实现支持多种语言，可以 [docopt GitHub](https://github.com/docopt)仓库中查找。
-
 
 ```bash
 
@@ -27,14 +25,6 @@ Options:
   --drifting    Drifting mine.
 
 ```
-
-
-
-
-
-
-
-
 
 ## 参考文档
 

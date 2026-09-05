@@ -3,15 +3,14 @@ title: "Git 快捷操作技巧"
 linkTitle: "Git 快捷操作技巧"
 weight: 20
 ---
-
 1. ` git commit -am` 快速提交
-   
+
 ```bash
 
 git add .
 git commit -m "hello github"
 
-# 等价于 
+# 等价于
 
 git commit -am "hello git"
 
@@ -23,7 +22,7 @@ git commit -am "hello git"
 
 git config --global alias.ac "commit -am"
 
-git ac "hello alias"  
+git ac "hello alias"
 
 # 等价于
 
@@ -37,7 +36,7 @@ git commit -am "hello alias"
 
 git commit -m "Hello Wrold"
 
-# 比如提交的单词 Wrold 拼写错了，则可以利用以下命令重新修改提交信息 
+# 比如提交的单词 Wrold 拼写错了，则可以利用以下命令重新修改提交信息
 git commit --amend -m "Hello World"
 
 # 如果只是把新修改的文件合并到上一次提交里面，不想修改信息，则使用 --no-edit
@@ -49,7 +48,6 @@ git commit --amend --no-edit
 
 ```
 # 将当前分支恢复到到某个提交点
-git revert commit-id 
+git revert commit-id
 
 ```
-

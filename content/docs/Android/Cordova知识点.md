@@ -3,7 +3,6 @@ title: "Cordova 知识点"
 linkTitle: "Cordova 知识点"
 weight: 20
 ---
-
 ## 插件管理
 
 ### 插件管理命令
@@ -19,19 +18,18 @@ cordova plugin add cordova-plugin-inappbrowser
 cordova plugin rm cordova-plugin-inappbrowser
 
 # 查看插件列表
-cordova plugin ls 
+cordova plugin ls
 ```
-
 
 ## 构建运行命令
 
-```bash 
+```bash
 # 构建打包安装 app
 cordova build android
-cordova build ios 
+cordova build ios
 
 # 直接运行，必须先启动模拟器
-cordova run android 
+cordova run android
 
 
 ```

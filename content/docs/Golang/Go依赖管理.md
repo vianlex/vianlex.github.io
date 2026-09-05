@@ -3,7 +3,6 @@ title: "Go 依赖管理"
 linkTitle: "Go 依赖管理"
 weight: 10
 ---
-
 ## 第一章 演进历史
 
 ### 1.1 三代依赖管理方案
@@ -39,7 +38,7 @@ go env GOPATH
 
 ### 2.2 目录结构
 
-```
+```text
 $GOPATH/
 ├── src/          # 源代码（项目 + 依赖）
 │   ├── github.com/user/myproject/
@@ -74,7 +73,7 @@ Vendor 是将依赖代码直接复制到项目目录的方案。
 
 ### 3.2 目录结构
 
-```
+```text
 myproject/
 ├── main.go
 ├── vendor/
@@ -184,7 +183,7 @@ Go Modules 使用**最小版本选择（Minimum Version Selection）**算法：
 
 **语义化版本**
 
-```
+```text
 v1.9.1
  │ │ └── Patch：bug 修复，向后兼容
  │ └──── Minor：新功能，向后兼容
@@ -240,7 +239,7 @@ go env -w GOPRIVATE=*.mycompany.com
 
 ### 5.3 典型项目结构
 
-```
+```text
 myproject/
 ├── go.mod
 ├── go.sum

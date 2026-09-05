@@ -3,7 +3,6 @@ title: "Class 对象和 Tpye 对象知识笔记"
 linkTitle: "Class 对象和 Tpye 对象知识笔记"
 weight: 10
 ---
-
 ## 类对象
 
 1. 常见的类对象如下：
@@ -14,28 +13,28 @@ weight: 10
    - annotation：注解类@interface
    - primitive：基础（原始）数据类型
    - void 空类
-  
+
 2. 测试例子说明
 
 ```java
 @Test
 public void test() {
-    
+
     // 外部类类对象
     System.out.println(Object.class);
-    
+
     // 接口类对象
     System.out.println(List.class);
 
     // 数组类对象
     System.out.println(String[].class);
     System.out.println(int[][].class);
-    
+
     // 注解类对象
     System.out.println(Override.class);
     // void 类对象
     System.out.println(void.class);
-    
+
     // 类对象，比较
     int[] a = new int[10];
     int[] b = new int[20];
@@ -126,7 +125,7 @@ public class GenericTest {
     public static void main(String[] args) {
 
 		Map<String, Object> map = new HashMap<String, Object>();
-		// 直接通过 Map 对象的方式，只能获取 map 对象的声明的泛型变量，获取不是实际的泛型变量类型 
+		// 直接通过 Map 对象的方式，只能获取 map 对象的声明的泛型变量，获取不是实际的泛型变量类型
 		TypeVariable<? extends Class<? extends Map>>[] typeParameters = map.getClass().getTypeParameters();
 		for (TypeVariable<? extends Class<? extends Map>> typeParameter : typeParameters) {
 			// 会打印 Map<K, V> 中的 K 和 V
@@ -156,7 +155,7 @@ public class HelloWorld {
 
             Method helloMethod = TypeTest.class.getDeclaredMethod("hello", List.class);
             System.out.println(helloMethod.getName());
-            // 获取 Type 对象，然后强转 ParameterizedType 对象，因为只有 ParameterizedType 类型对象，才能获取泛型变量的实际类型。 
+            // 获取 Type 对象，然后强转 ParameterizedType 对象，因为只有 ParameterizedType 类型对象，才能获取泛型变量的实际类型。
             Type genericReturnType = helloMethod.getGenericReturnType();
             if (genericReturnType instanceof ParameterizedType) {
                 ParameterizedType pt =  (ParameterizedType)genericReturnType;
@@ -240,5 +239,3 @@ public class Hello {
 ```
 
 ## 常见的 TypeRefece 原理
-
-

@@ -3,7 +3,6 @@ title: "JavaScript 正则表达式笔记"
 linkTitle: "JavaScript 正则表达式笔记"
 weight: 50
 ---
-
 ## RegExp 对象
 
 1. 创建正则表达式的方式如下
@@ -24,7 +23,7 @@ weight: 50
     ```
 
 2. 正则表达式的修饰符说明
-    
+
 - g 表示执行全局匹配（查找所有匹配而不是在第一个匹配后停止）
 - i 表示执行不区分大小写的匹配
 - m 表示执行多行匹配（主要适用 ^ 开头匹配，表示匹配每一行的开头）
@@ -37,9 +36,9 @@ weight: 50
 
     // 匹配 text 字符串，匹配到第一个 is 后就会停止匹配
     let result1 = text.match(/is/)
-    // 全局匹配 text 字符串，加 g 修饰符的，匹配到第一 is 后还会继续往下匹配，会匹配返回所有的 is 
+    // 全局匹配 text 字符串，加 g 修饰符的，匹配到第一 is 后还会继续往下匹配，会匹配返回所有的 is
     let result2 =  text.match(/is/g)
-    // 匹配 text 字符串，匹配字符是否以 is 开头，匹配到则返回值，匹配不到则返回 null 
+    // 匹配 text 字符串，匹配字符是否以 is 开头，匹配到则返回值，匹配不到则返回 null
     text.match(/^is/)
     // 匹配 text 字符串，如果字符串有多行，则匹配字符串的每一行是否以 is 开头(注意不设置 g 全局匹配的，只要匹配到一个结果就返回，不会再继续匹配)
     text.match(/^is/mg)
@@ -68,11 +67,11 @@ weight: 50
     let re = /hello/ig
     re.exec("one hello, two Hello") // 第一次执行，返回第一个 hello 并且 re.lastIndex = 9
     re.exec("one hello, two Hello") // 第二次执行，从 lastIndex =9 的位置开始匹配，匹配到第二个 Hello 并返回，re.lastIndex 变 20
-    console.log(result + " : " + re.lastIndex)  
-    re.exec("one hello, two Hello") // 第三次执行，从 lastIndex = 20 的位置开始执行匹配，匹配不到 hello 会返回 null，没有匹配项 lastIndex 重置为 0 
-    console.log(result + " : " + re.lastIndex)  
+    console.log(result + " : " + re.lastIndex)
+    re.exec("one hello, two Hello") // 第三次执行，从 lastIndex = 20 的位置开始执行匹配，匹配不到 hello 会返回 null，没有匹配项 lastIndex 重置为 0
+    console.log(result + " : " + re.lastIndex)
     re.exec("one hello, two Hello") // 第四次执行，从 lastIndex = 0 的位置开始匹配，返回第一个 hello 并且 re.lastIndex = 9
-    console.log(result + " : " + re.lastIndex)  
+    console.log(result + " : " + re.lastIndex)
 
     // 测试正则表达式是否匹配，是返回 true 反之则返回 false
     /Hello/ig.test("this is first hello, this is second Hello.")
@@ -87,9 +86,9 @@ weight: 50
 - RegExp.rightContext 和 RegExp["$'"] 表示与正则表达式相匹配子字符串右侧的字符串
 - RegExp.lastMatch 和 RegExp['$&'] 表示与正则表达式相匹配的子字符串
 
-    ```JavaScript 
+    ```JavaScript
     // 同一个正则表达式执行多次支持 exec 或者 test 时，是以上一次匹配的结束位置，开始匹配。正则表达式通过 lastIndex 记录每次结束匹配的位置
-    let re = /ll/g  
+    let re = /ll/g
     console.log(re.lastIndex) // 正则表达式默认最后匹配的位置时 0，表示从头开始匹配
     let result = re.exec("hello") // 输出 ['ll', index: 2, input: 'hello', groups: undefined] 匹配结果数组对象中的 index 属性表示开始匹配的位置
     console.log(re.lastIndex) //  匹配到 o 字符时，匹配失败 ，此时 lastIndex 为 4
@@ -100,7 +99,7 @@ weight: 50
     // 通过 RegExp.$[1-9] 方式，获取与正则表达式相匹配的子字符串的元组子串
     let re = /(hello)/g
     let result = re.exec("one hello, two hello.")
-    console.log(RegExp.$1) 
+    console.log(RegExp.$1)
     console.log(RegExp.$2) // 输出空，是因为正则表达式 re 只有一个元组，所以只有 RegExp.$1 有值
 
     // String.repalce 方法引用 RegExp.$[1-9] 属性时，可以忽略掉 RegExp
@@ -109,11 +108,11 @@ weight: 50
     // 每次匹配到都会调用回调函数
     "one hello, two hello".replace(/hello/g, args => {
         console.log(args) // 输出 hello
-        // 回调函数方式不能省略 RegExp 
+        // 回调函数方式不能省略 RegExp
         return RegExp.$1 + " World"
     })
 
-    // RegExp.leftContext 和 RegExp.rightContext  
+    // RegExp.leftContext 和 RegExp.rightContext
     /hello/g.exec("this is a hello world")
     console.log(RegExp['$&']) // 输出：hello
     console.log(RegExp.leftContext ) // 输出：`this is a `
@@ -153,7 +152,7 @@ weight: 50
     text.search(/hello/i)
     // 忽略全局匹配，总是返回第一个相匹配子字符串的起始位置，并且只能正向匹配
     text.search(/hello/g)
-    
+
     ```
 
 ## 正则表达式匹配符
@@ -168,12 +167,12 @@ weight: 50
     | \d,\D | 匹配数字，非数字，等价于 [0-9]、[^0-9]
     | \w,\W | 匹配字符，非字符，等价于 [0-9a-zA-Z_]、[^0-9a-zA-Z_]
     | \s    | 匹配任何空白字符、等价于 [\f\n\r\t\v]。
-    | \S    | 匹配非任何空白字符，等价于 [^\f\n\r\t\v]。 
+    | \S    | 匹配非任何空白字符，等价于 [^\f\n\r\t\v]。
     | \r, \n, \t, \f, \v   | 匹配回车符，换行符，水平制表( tab 符)，分页符，垂直制表符
-    | \b, \B| 匹配单词边界，非单词边界，其中的单词指的是 \w+ 即 [0-9a-zA-Z_]+ 
+    | \b, \B| 匹配单词边界，非单词边界，其中的单词指的是 \w+ 即 [0-9a-zA-Z_]+
     | \cx   | 匹配由 x 指定的控制符，如 \cM 匹配一个回车符，注意 x 的值必须为 A-Z 或 a-z 之一。否则，将 c 视为一个原义的 'c' 字符。
     | [0-9] | 匹配 0-9 的一个数字。
-    | [abc] | 匹配 a、b 或 c 中的一个字母。 
+    | [abc] | 匹配 a、b 或 c 中的一个字母。
     | [a-z] | 匹配 a 到 z 中的一个字母。
     | [^abc]| 匹配除了 a、b 或 c 中的其他字母。
     | abcd|123456 | 匹配 abcd 或 123456。
@@ -206,14 +205,14 @@ weight: 50
      *  单词边界匹配的字符指 [0-9a-zA-Z_]，非字符指 [^0-9a-zA-Z_]
      * \b 匹配单词边界，表示匹配字符和非字符之间的间隙，即匹配左右字符类型不相同的间隙，即匹配 [0-9a-zA-Z_] 和 [^0-9a-zA-Z_] 字符之间的间隙
      * \B 匹配非单词边界，表示匹配字符和字符之间的间隙或者非字符和非字符之间的间隙，即匹配左右字符类型相同的间隙
-     */ 
+     */
     // 根据上面的规则 "Hello" 可以看成 "\bH\Be\Bl\Bl\Bo\b"
     "Hello".replace(/\b/g, "#") // 输出  #Hello#
     /**
      * "Hello-" 可以看成 "\bH\Be\Bl\B\l\Bo\b-\B"
      *  H 属于字符 [0-9a-zA-Z_]，它的前面属于非字符 [^0-9a-zA-Z_] ,字符和非字符的间隙是 \b 所以 H 字符的前面是 \b
-     *  H 和 e 都是字符 [0-9a-zA-Z_]，字符和字符之间的间隙是 \B 所以 H 和 e 的间隙是 \B 
-     *  o 和 - 其中 o 属于字符 [0-9a-zA-Z_]，而 - 属于非字符 [^0-9a-zA-Z_] 故他们的间隙是 \b 因为字符和非字符间隙是 \b 
+     *  H 和 e 都是字符 [0-9a-zA-Z_]，字符和字符之间的间隙是 \B 所以 H 和 e 的间隙是 \B
+     *  o 和 - 其中 o 属于字符 [0-9a-zA-Z_]，而 - 属于非字符 [^0-9a-zA-Z_] 故他们的间隙是 \b 因为字符和非字符间隙是 \b
      *  - 属于非字符，并且它的后面不是字符即为非字符，非字符和非字符之间的间隙是 \B
      */
     "Hello-".replace(/\b/g, '#') // 输出  #Hello#-
@@ -221,17 +220,16 @@ weight: 50
     // "HelloWorldHello-" 可看成 "\bH\Be\Bl\Bl\Bo\BW\Bo\Br\Bl\Bd\BH\Be\Bl\Bl\Bo\b-\B"
     "HelloWorldHello-".replace(/llo\b/,'#') // 输出 'HelloWorldHe#-'
     "HelloWorldHello-".replace(/llo\B/,'#') // 输出 'He#WorldHello-'
-    
-    ```
 
+    ```
 
 2. 量词匹配说明（量词默认都是贪婪匹配）
 
     | 匹配符   |  描述说明   |
     | --  | --    |
-    | ?  | 匹配 0 个或 1 个字符，匹配0个字符表示匹配空字符。
+    | ?  | 匹配 0 个或 1 个字符，匹配 0 个字符表示匹配空字符。
     | *  | 匹配零个或多个字符。
-    | +  | 匹配1个或多个字符。
+    | +  | 匹配 1 个或多个字符。
     | {n} | 匹配 n 个字符。
     | {n,} | 匹配 n 个以上的字符。
     | {m,n} | 最少 m 个，最多 n 个字符。
@@ -239,16 +237,16 @@ weight: 50
     ```JavaScript
 
     // 空字符，空字符的长度 ''.length = 0
-    let ec = ''  
+    let ec = ''
 
     // * 表示匹配 0 个或者多个字符，0个字符可以表示匹配空字符，故以下例子能匹配成功
-    'a'.replace(/b*/g,'-') // 输出 -a- 
+    'a'.replace(/b*/g,'-') // 输出 -a-
     'hello'.replace(/a*/g, '-') // 输出 -h-e-l-l-o-
 
     // 默认贪婪匹配
     "aabb".match(/a*/g) // 输出 ['aa', '', '', '']
     "$123aBC".match(/[0-9A-Za-z]*/g) // 输出：['', '123aBC', '']
-    
+
     // 通过添加 ? 符号限定非贪婪匹配，比如以下例子非贪婪匹配则限定匹配0个字符（空字符）
     "aabb".match(/a*?/g) // 输出 ['', '', '', '', '']
 
@@ -272,17 +270,16 @@ weight: 50
 3. 正则表达式的捕获组
 
     在正则表达式中可以使用括号 "()" 对正则表达式进行分组
-    
+
     | 匹配符 | 描述说明 |
-    |  --    | -- | 
-    | (abc) | 匹配 abc 并捕获（记录）结果，称为捕获组，abc 子表达式可以以组序号的方式引用如 /(hello)\1/ == /(hello)hello/ 
+    |  --    | -- |
+    | (abc) | 匹配 abc 并捕获（记录）结果，称为捕获组，abc 子表达式可以以组序号的方式引用如 /(hello)\1/ == /(hello)hello/
     | (?:abc) | 匹配 abc 但不捕获（记录）结果，称为非捕获组
     | `(?<name>abc)` | 通过尖括号 `<>` 的方式，命名捕获组的名称
     | (?=abc) | 正向查找，不记录捕获结果（非捕获组）
     | (?!=abc)| 非正向查找，也称反向查找，不记录捕获结果（非捕获组）
     | `(?<=abd)`| 向后查找，不记录捕获结果（非捕获组）
     | `(?<!abc)`| 非向后查找，不记录捕获结果（非捕获组）
-
 
     ````JavaScript
 
@@ -294,7 +291,7 @@ weight: 50
      * result[1] 表示第一分组捕获的结果
      * result[2] 表示第二个分组捕获的结果
      * result[4] 表示第三个分组捕获的结果
-     * result 的 index 属性表示开始匹配的位置，可以通过 re.lastIndex 获取最后匹配的位置 
+     * result 的 index 属性表示开始匹配的位置，可以通过 re.lastIndex 获取最后匹配的位置
      * result 的 input 属性表示正则表达式匹配的字符串
      * result 的 groups 属性表示的是捕获组名和捕获结果的 key-value, 没有命名捕获组，则值为 undefined
      */
@@ -305,14 +302,14 @@ weight: 50
 
     // -g 全局匹配只返回匹配接口，不会返回捕获组
     let re = /((he)(ll)o)/g
-    let result = "one hello, two hello".match(re) // 输出：[hello, hello] 
+    let result = "one hello, two hello".match(re) // 输出：[hello, hello]
 
     // () 表示捕获组和 (?:) 非捕获组，不记录匹配结果
-    "i am hello one".match(/(?:he)llo/) // 输出 ['hello', index: 5, input: 'i am hello one', groups: undefined] 
+    "i am hello one".match(/(?:he)llo/) // 输出 ['hello', index: 5, input: 'i am hello one', groups: undefined]
 
     // (?=abc) 表示正向匹配查找子表达式
     "i am hello two".match(/he(?=llo)/) // 输出  ['he', index: 5, input: 'i am hello two', groups: undefined]
-    "i am hello two".match(/(?=he)llo/) // 输出 null 
+    "i am hello two".match(/(?=he)llo/) // 输出 null
 
     // (?!=abc) 表示反向匹配查找子表达式，是 (?=) 的反向
     "i am hello two".match(/(?!=he)llo/) // 输出 ['llo', index: 7, input: 'i am hello two', groups: undefined]
@@ -325,10 +322,6 @@ weight: 50
     "i am hello two".match(/he(?<!llo)/) // 输出 ['he', index: 5, input: 'i am hello two', groups: undefined]
 
     ````
-
-
-
-
 
 ## 参考链接
 1、https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Guide/Regular_expressions/Character_classes

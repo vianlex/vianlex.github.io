@@ -3,14 +3,13 @@ title: "OpenClaw 多 Agent（智能体）配置"
 linkTitle: "OpenClaw 多 Agent（智能体）配置"
 weight: 20
 ---
-
 ## 简介
 
 OpenClaw 是一个多智能体协作框架，支持创建多个 Agent（智能体）组成研发团队，每个 Agent 拥有独立的角色定位和职责分工。本文档介绍如何配置多 Agent 协作环境。
 
 ## 目录结构
 
-```
+```text
 .openclaw/
 ├── openclaw.json          # 主配置文件
 ├── AGENTS.md              # Agent 注册清单

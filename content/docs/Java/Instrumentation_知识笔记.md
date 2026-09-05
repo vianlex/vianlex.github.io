@@ -3,7 +3,6 @@ title: "Instrumentation 知识笔记"
 linkTitle: "Instrumentation 知识笔记"
 weight: 20
 ---
-
 ## Instrumentation 介绍
 Instrumentation 是从 JDK5 开始提供的一个特性，可以使用 Instrumentation 构建一个独立于应用程序的代理程序(Agent)。使用 Instrumentation 可以让开发者无需对原有应用做任何修改，就可以监测和获取 JVM 运行时状态，以及可以通过 ASM 和 Javassist 字节码类型增强修改 JVM 中运行的类。
 
@@ -49,16 +48,16 @@ public class MyAgent {
 
 ```java
 public class MyClassTransformer implements ClassFileTransformer {
-    
+
     @Override
     public byte[] transform(ClassLoader loader, String className,
             Class<?> classBeingRedefined, ProtectionDomain protectionDomain,
             byte[] classfileBuffer) {
-        
+
         if (!"com/example/TargetClass".equals(className)) {
             return null;
         }
-        
+
         try {
             ClassReader cr = new ClassReader(classfileBuffer);
             ClassWriter cw = new ClassWriter(cr, ClassWriter.COMPUTE_MAXS);
@@ -77,7 +76,7 @@ public class MyClassTransformer implements ClassFileTransformer {
 
 在 JAR 包的 `META-INF/MANIFEST.MF` 中添加以下配置：
 
-```
+```yaml
 Premain-Class: com.example.MyAgent
 Agent-Class: com.example.MyAgent
 Can-Redefine-Classes: true

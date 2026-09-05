@@ -3,13 +3,12 @@ title: "Shell 脚本学习笔记"
 linkTitle: "Shell 脚本学习笔记"
 weight: 40
 ---
-
 ## 环境变量
 
 ```bash
 
 # 查看全部环境变量，使用以下命令
-printenv 或者 env 
+printenv 或者 env
 
 
 # 设置临时环境变量
@@ -31,7 +30,6 @@ echo $hello # 输出 hello:world:nihao
 
 ```
 
-
 ## 定义变量
 
 shell 中有四种变量类型，分别为：自定义变量、环境变量、位置参数变量、预定义变量
@@ -45,11 +43,11 @@ shell 中有四种变量类型，分别为：自定义变量、环境变量、�
 ```bash
 
 # 没有空格字符串，可以省略引号
-vName=Hello 
+vName=Hello
 
 #  单引号字符串中包含变量时，会当作原始字符
 echo '$vName' # 输出 $vName
-echo "$vName" # 输出 Hello 
+echo "$vName" # 输出 Hello
 
 # 字符串中包含空格，必须使用引号
 vName02="Hello World"
@@ -61,11 +59,11 @@ echo $vName $vName02
 vName03=$vName$vName02Golang
 echo $vName03 # 输出 Hello , 因为会默认把 vName02Golang 当前一个变量
 
-# 可以使用空格将字符串 Golang 和 vName02 变量名隔开，但是必须使用引号 
+# 可以使用空格将字符串 Golang 和 vName02 变量名隔开，但是必须使用引号
 vName03="$vName$vName02 Golang"
 
 # 也是可以使用，以下两种方式拼接，它们的结果时等价的
-vName04="$vName$vName02"Golang 
+vName04="$vName$vName02"Golang
 vName04=${vName}${vName02}Golang
 echo $vName04 // 输出 HelloHello WorldGolang
 
@@ -76,7 +74,7 @@ usernames=`ls /home`
 # 注意当 usernames 返回多个值时，会有空格，所以作为判断条件时，必须加上引号
 [ "$usernames" != "xx" ] && echo "Hello World"
 # 两种判断方式是等价的
-test "$usernames" != "xx" && echo "Hello World 
+test "$usernames" != "xx" && echo "Hello World
 "
 
 # set 命令会返回所有定义定义的变量和环境变量
@@ -124,14 +122,13 @@ echo $result #输出 100
 
 # 注意 + 不能有空格
 let result=$n1+$n2
-echo $result #输出 100 
+echo $result #输出 100
 
 ```
 
-
 ### 环境变量
 
-```shell 
+```shell
 
 # 设置环境变量
 export name=HelloWorld
@@ -144,14 +141,13 @@ unset name
 
 ```
 
-
 ### 位置参数变量
 
 位置参数主要作用是，运行脚本时，可以通过参数的位置来，获取脚本传递的参数。
 
 |位置参数变量 | 作用 |
 | -- | -- |
-| $n | n为数字，$代表命令本身，$1到$9代表第1-9个参数，10以上的参数需要用大括号包含，例如${10}  |
+| $n | n 为数字，$代表命令本身，$1 到$9 代表第 1-9 个参数，10 以上的参数需要用大括号包含，例如${10}  |
 | $* | 获取所有参数，把所有的参数看作一个整体，即一个字符串  |
 | $@ | 获取所有参数，返回的是一个参数列表  |
 | $# | 获取传递参数总个数  |
@@ -176,7 +172,7 @@ echo ------------
 运行测试脚本并传递参数
 
 ```shell
-sh test.sh 10 100 200 
+sh test.sh 10 100 200
 
 ```
 
@@ -201,19 +197,18 @@ test.sh
 
 |预定义变量 | 作用 |
 | -- | -- |
-| $? | 调用 $? 表示，获取前一条命令的运行结果，0 表示执行成功，非 0 表示执行失败 | 
-| $$ | 获取当前命令运行的进程号 | 
-| $1 | 获取后台运行的最后一个进程的进程号 | 
+| $? | 调用 $? 表示，获取前一条命令的运行结果，0 表示执行成功，非 0 表示执行失败 |
+| $$ | 获取当前命令运行的进程号 |
+| $1 | 获取后台运行的最后一个进程的进程号 |
 
 ```bash
 
 # 运行 ls -il 命令
-ls -il 
+ls -il
 # 输出 $? 前一条命令运行的结果
-echo $? 
+echo $?
 
 ```
-
 
 ## 条件判断类型
 
@@ -228,7 +223,7 @@ Shell 支持多个类型的条件判断，并且判断符号的两边都是必�
 [ hello == hello ] && echo "Hello World"
 [ hello != hello ] && echo "Hello World"
 
-# 第二种写法 
+# 第二种写法
 [[ hello == hello ]] && echo "Hello World"
 
 
@@ -252,26 +247,22 @@ test "Hello" ==  "HelloWorld" && echo "Hello test" # 没有输出
 | str1 == str2 或者 str1 = str2 | 判断字符串是否相等
 | str1 != str2 | 判断字符串是否不相等
 
-
 ### 整数类型的条件判断
 
 | 条件判断 | 描述说明 |
 |  --     |  --      |
-| num1 -eq num2 | 判断是否等于  
+| num1 -eq num2 | 判断是否等于
 | num1 -ne num2 | 判断是否不等于
 | num1 -gt num2 | 判断是否大于
 | num1 -lt num2 | 判断是否小于
 | num1 -ge num2 | 判断是否大于等于
 | num1 -le num2 | 判断是否小于等于
 
-
 ### 文件类型的条件判断
 
 | 条件判断 | 描述说明 |
 |  --     |  --      |
 |  -b 文件 | 判断文件是否存在
-
-
 
 ### 文件权限条件判断
 
@@ -281,15 +272,13 @@ test "Hello" ==  "HelloWorld" && echo "Hello test" # 没有输出
 | -w 文件 | 判断文件是否存在，并且是否有写权限
 | -x 文件 | 判断文件是否存在，并且是否有执行权限
 
-
 ### 文件比较条件判断
 
 | 条件判断 | 描述说明 |
 |  --     |  --      |
-| 文件1 -nt 文件2 | 判断文件1的更新修改时间是否大于文件2
-| 文件1 -ot 文件2 | 判断文件1的更新修改时间是否小于文件2
-| 文件1 -ef 文件2 | 判断两个文件 INode 是否相同，注意硬链接的 Inode 和源文件的 Inode 是相同的，该判断条件一般用于判断硬链接
-
+| 文件 1 -nt 文件 2 | 判断文件 1 的更新修改时间是否大于文件 2
+| 文件 1 -ot 文件 2 | 判断文件 1 的更新修改时间是否小于文件 2
+| 文件 1 -ef 文件 2 | 判断两个文件 INode 是否相同，注意硬链接的 Inode 和源文件的 Inode 是相同的，该判断条件一般用于判断硬链接
 
 ### 与或非条件判断
 
@@ -336,7 +325,6 @@ echo $v1 # 输出 Hello World
 echo $v2 # 输出空
 ```
 
-
 ## if 语句
 
 if 语句命令格式
@@ -357,7 +345,7 @@ fi
 # else 写法
 if [ 条件判断 ];then
 
-else 
+else
 
 fi
 
@@ -366,13 +354,11 @@ if [ 条件判断 ];then
 
 elif [ 条件判断 ];then
 
-else 
+else
 
 fi
 
 ```
-
-
 
 ## 参考文档：
 1. https://www.bookstack.cn/read/bash-tutorial/docs-archives-redirection.md

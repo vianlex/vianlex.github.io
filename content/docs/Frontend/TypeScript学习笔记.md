@@ -3,11 +3,9 @@ title: "TypeScript 学习笔记"
 linkTitle: "TypeScript 学习笔记"
 weight: 120
 ---
-
 ## TypeScript 简介
 
 TypeScript 是带了 “类型检查” 的 JavaScript，其最大的特点就是给**变量、函数、对象**加上类型约束。
-
 
 ## 环境安装与运行
 
@@ -21,7 +19,7 @@ npm install -g typescript
 
 ```bash
 # 将文件由 ts 编译 js
-tsc 文件名.tsc 
+tsc 文件名.tsc
 
 # 然后使用 node 命令运行 js
 node 文件名.js
@@ -47,7 +45,7 @@ ts-node 文件名.ts
 ### 类型约束
 
 ```ts
-// 
+//
 let name: string = "Hello ts"
 ```
 
@@ -57,10 +55,10 @@ let name: string = "Hello ts"
 
 ```ts
 // 会自动推断出 name 变量的类型为 string 类型
-let name = "Hello World" 
+let name = "Hello World"
 name = 12 // 无法编译通过，因为 name 的类型为 string 类型
 
-// 会自动推断出函数的类型为：(name: string)=>string 
+// 会自动推断出函数的类型为：(name: string)=>string
 function hello(name :string) {
   return "Hello " + name
 }
@@ -69,14 +67,13 @@ function func() {
   console.log("Hello World")
 }
 
-// 自动推断出 user 变量的类型为：{name : string; age: number } 
+// 自动推断出 user 变量的类型为：{name : string; age: number }
 let user = {
   name: "ts"
   age: 20
 }
 
 ```
-
 
 ## 基础类型
 
@@ -112,7 +109,6 @@ let anyVar:any = "Hello"
 anyVar = 20
 ```
 
-
 ### object 对象类型
 
 object 类型表示非原始类型，即非 number、string、boolean、null 和 undefined 等原始类型，但它非常宽泛，不包含任何具体属性信息。
@@ -120,7 +116,7 @@ object 类型表示非原始类型，即非 number、string、boolean、null 和
 ```ts
 let obj: object = {  name: "ts"}
 // 无法编译通过，因为 object 类型不包含任何具体属性，故 ts 无法访问 name 属性，编译不通过
-console.log(obj.name) 
+console.log(obj.name)
 ```
 
 ### 数组类型
@@ -128,7 +124,7 @@ console.log(obj.name)
 ```ts
 let nums: number[] = [1,2,3,4,5]
 let nums2: Array<number> = [1,2,3,4,5]
-  
+
 let strs: string[] = ["Hello", "World"]
 ```
 
@@ -150,7 +146,7 @@ enum Color {
 
 ## 类型断言、类型转换和类型推断以及类型兼容性
 
-### 类型断言 
+### 类型断言
 
 类型断言表示不改变数据类型，只是告诉编译器，变量是什么类型，让 TS 能编译通过，作用时机是编译时，无运行成本。
 
@@ -172,18 +168,17 @@ let stringValue2: string = (<string>someValue2)
 // 类型转换
 let value2: unknown = "123";
 // 将 unknown 类型的值，转换成数字类型
-let num2 = Number(value2);     
-// 编译后的 JavaScript：let num2 = Number(value2); 
-let str2 = String(value2);     
+let num2 = Number(value2);
+// 编译后的 JavaScript：let num2 = Number(value2);
+let str2 = String(value2);
 // 编译后的 JavaScript：let str2 = String(value2);
 ```
-
 
 ### 类型推断
 
 ```ts
 // 声明变量并初始化时，typescript 会自动推断比变量类型
-let value = 3  
+let value = 3
 value = "Hello World" // 会编译报错，因为 value 的类型是 number 类型
 
 // 声明变量，未赋值时，TypeScript 会自动推断变量类型为 any
@@ -203,7 +198,7 @@ let user = {name: "Hello", age: 18}
 
 ```ts
 
-type numberOrString = number | string 
+type numberOrString = number | string
 let v1: numberOrString = "Hello World"
 // 可以编译通过，因为 v1 变量可以是 string 或者 number, 所以它们是兼容的能编译通过
 let v2: string = v1
@@ -217,33 +212,33 @@ let hello2 : number = hello1
 
 对于对象类型的变量，TypeScript 进行类型检查时，只会检查它们的属性结构是否兼容，比如只要 A 类型包含 B 类型的所有成员，TS 就认为 A 兼容 B。
 
-```ts 
+```ts
 interface Person {
-  name : string 
-  age: number 
+  name : string
+  age: number
 }
 
 type User = {
-  name: string 
-  age : number 
+  name: string
+  age : number
 }
 
 let user1: Person = {name : "ts", age: 18}
-// 变量 user1 的值可以赋值给变量 user2，因为因为它们的属性相同，则它们是兼容的类型 
-let user2: {name: string; age: number } = user1 
+// 变量 user1 的值可以赋值给变量 user2，因为因为它们的属性相同，则它们是兼容的类型
+let user2: {name: string; age: number } = user1
 // 以下也是类型兼容的，能编译通过
-let user3: User = user2 
+let user3: User = user2
 ```
 
 #### 类兼容
 
-类也是看结构，只要结构一样，就算类名不同，也兼容。 
+类也是看结构，只要结构一样，就算类名不同，也兼容。
 
-```ts 
+```ts
 class User { name: string }
 class Person { name: string }
 // 兼容，能编译通过
-let u: User = new Person(); 
+let u: User = new Person();
 ```
 
 #### 函数兼容
@@ -251,7 +246,7 @@ let u: User = new Person();
 函数兼容主要看参数个数 + 返回值类型是否兼容。需要注意的一点是参数少的兼容参数多的，但是返回值一定要兼容。
 
 ```ts
-type Fn = (a: number, b: number)=> number 
+type Fn = (a: number, b: number)=> number
 
 // 参数少的兼容参数多的，能编译通过
 let fn: Fn = function () {
@@ -271,7 +266,6 @@ let fn2: Fn = function(a: string) {
 - 少的兼容多的（函数参数少 → 兼容多的）
 - 子类型兼容父类型
 - 只看结构，不看名字
-
 
 ## 常用关键字
 
@@ -303,13 +297,13 @@ function hello2(value: string | number): void {
 ```ts
 interface User {
   name: string
-  age: number 
+  age: number
 }
 
 // 获取对象类型的键的常量联合类型
 type keyType = keyof User // 返回的是: "name" | "age" 常量联合类型
 // 等价于
-type keyType2 = "name" | "age" 
+type keyType2 = "name" | "age"
 
 // 变量的值，只能是 name 和 age 字符串
 let str1: keyType  = "name"
@@ -327,12 +321,12 @@ function getProperty(user: User, key: keyof User) {
 
 ### 定义接口
 
-#### 定义普通对象类型 
+#### 定义普通对象类型
 
 ```ts
 interface User {
-  id: number 
-  name: string 
+  id: number
+  name: string
   age?: number // 表示可选属性，实例化时，可以不赋值，非可选属性，实例化时，必须初始化赋值
   readonly sex: string // 表示只读属性，不能修改
 }
@@ -350,7 +344,7 @@ interface NumIndex {
 interface FixKeyIndex {
   name: string,
   age: number,
-  [key: string]: string | number 
+  [key: string]: string | number
 }
 ```
 
@@ -363,7 +357,7 @@ interface AddFunc {
 }
 // 用函数类型标注变量
 let add: AddFunc = function(a: number, b: number): number {
-  return a + b 
+  return a + b
 }
 
 // 重载
@@ -375,7 +369,7 @@ interface OverloadFunc {
 // 可以不用声明返回值，会自动推断
 let overlaodFunc = function(value : string | number | boolean) {
   if(typeof value == "string") {
-    return "hello " + value 
+    return "hello " + value
   }else if(typeof value == "number") {
     return value + 1
   }else {
@@ -405,11 +399,11 @@ let overloadFunc2 = function(value: any) {
 ```ts
 
 interface Person {
-  name: string 
+  name: string
 }
 
 interface Person {
-  age: number 
+  age: number
 }
 
 let p: Person = {name: "ts001", age: 20}
@@ -417,11 +411,11 @@ console.log(p.name, p.age)
 
 // 同名接口，并且属性相同时，如果类型不相同，则无法编译通过
 interface User {
-  name: string 
+  name: string
 }
 interface User {
   // ❌ 报错！类型冲突，无法合并
-  name: number 
+  name: number
 }
 
 ```
@@ -432,24 +426,24 @@ TypeScript 接口支持单继承和多继承
 
 ```ts
 interface A {
-  value: number: string 
+  value: number: string
 }
 interface B extends A {
   // 子类属性可以缩小类型
-  value: number 
+  value: number
   hello(): void
 }
 
 // 多继承
 interface A {
-  value: number 
+  value: number
 }
 interface B {
   value: string
 }
 interface C extends A, B {
   // 当多个父接口有同名属性时，子接口必须通过联合类型来兼容：
-  value: string: number 
+  value: string: number
 }
 
 ```
@@ -462,7 +456,7 @@ interface C extends A, B {
 
 ### 基本类型的联合类型
 
-```ts 
+```ts
 // 表示变量可以是数字类型或者字符类型
 let value: number: string = "Hello World"
 // 可以编译通过
@@ -500,7 +494,6 @@ console.log((user as {sex: string}).sex)
 let arr: ( string| number )[] = [20, "hello"]
 ```
 
-
 ## 交叉类型
 
 交叉类型通过 & 符号将多个类型的属性和方法组合在一起，形成一个新的类型。表示变量必须同时拥有所有类型的属性。
@@ -516,7 +509,7 @@ type Person = Name & Age;
 // 必须两个属性都要有，少一个编译就不能通过！
 const p: Person = {
   name: "Hello Ts",
-  age: 18 
+  age: 18
 };
 ```
 
@@ -526,17 +519,17 @@ const p: Person = {
 
 ### 字符串字面量类型
 
-示例1： 
+示例 1：
 
-```ts 
+```ts
 // 定义 num 变量只能固定值 12
-let num: 12 = 12 
+let num: 12 = 12
 
-// 定义 value 变量只能取固定值 hello 
+// 定义 value 变量只能取固定值 hello
 let value: "hello" = "hello"
 ```
 
-示例2：
+示例 2：
 
 ```ts
 // 定义 method 变量的值，只能是 “GET” 或者 “POST”
@@ -557,7 +550,7 @@ let size: Size = 10
 ### 布尔字面量类型
 
 ```ts
-type isEnabled = true 
+type isEnabled = true
 // 能编译通过
 let enable: isEnabled = true
 // 无法编译通过
@@ -576,19 +569,17 @@ let t1: TimingEvent = {name: "start", userStarted: false }
 let value: {name: "Hello", age: 20} = {name: "Hello", age: 20}
 ```
 
-
-
 ## 可空类型
 
 在 JavaScript 中，变量可以被随意赋值为 null 或 undefined，容易引发潜在错误。
 TypeScript 通过类型系统提供了可空类型支持，允许我们明确声明一个变量可能为 null 或 undefined，并在编译阶段提前检查出空值相关的问题。
 
-```ts 
+```ts
 let name: string | null = null;
 // 能编译通过
 name = "Ts";
 // 能编译通过
-name = null; 
+name = null;
 
 function hello(name: string | null) {
   // 通过类型守卫，我们可以在代码中明确检查变量是否为 null 或 undefined
@@ -600,26 +591,24 @@ function hello(name: string | null) {
 
 ```
 
-
-
 ## 类型别名
 
 类型别名是给类型起个新的名字，本身不创建新类型，只是引入一个同义名称，能让代码更清晰、简洁或便于维护。
 
 ### 基本类型别名
 
-```ts 
+```ts
 // 给 string 类型定义一个新的别名
-type Str = string 
+type Str = string
 let s1: string = "Hello World"
 // 能编译通过
 let s2: Str = s1
 
-type numberOrString = number | string 
-// 限制 value 变量的类型只能是 number 或者 string 
+type numberOrString = number | string
+// 限制 value 变量的类型只能是 number 或者 string
 let value: numberOrString = "hello World"
 value = 90 // 能编译通过
-value = true // 编译不通过报错 
+value = true // 编译不通过报错
 ```
 
 ### 对象类型别名
@@ -635,7 +624,7 @@ let user: User = { ... };
 
 ### 函数类型别名
 
-```ts 
+```ts
 // 给函数类型定义别名
 type Callback = (code: number, msg: string) => boolean;
 ```
@@ -643,7 +632,7 @@ type Callback = (code: number, msg: string) => boolean;
 ### 联合和交叉类型别名
 
 ```ts
-type NumOrStr = number | string 
+type NumOrStr = number | string
 
 type User = {name: string} & {age: number}
 ```
@@ -671,7 +660,7 @@ const add: CalcFunc = (x, y) => x + y;
 ```ts
 interface AddFunc {
   // 定义函数的签名，注意这里的返回类型声明必须使用 : 符号
-  (a: number, b: number): number; 
+  (a: number, b: number): number;
   // 定义函数一个 hello 属性
   hello: string;
 }

@@ -3,7 +3,6 @@ title: "mise 完整详细教程"
 linkTitle: "mise 完整详细教程"
 weight: 10
 ---
-
 > **mise**（mise-en-place）是一个现代化的开发环境管理工具，集版本管理（类 nvm/pyenv/asdf）、环境变量管理、任务运行器于一体，支持 Windows、macOS、Linux。
 
 ---
@@ -34,11 +33,10 @@ https://github.com/jdx/mise/releases
 
 ### 默认目录说明：
 
-- 默认数据目录： ~\AppData\Local\mise 安装版本工具的目录，可通过 MISE_DATA_DIR 环境变量修改默认值  
+- 默认数据目录： ~\AppData\Local\mise 安装版本工具的目录，可通过 MISE_DATA_DIR 环境变量修改默认值
 - 默认配置目录：~\.config\mise 存放 mise 配置信息的的目录，可通过 MISE_CONFIG_DIR 环境变量修改默认值
 - 默认缓存目录：~\AppData\Local\Temp\mise 版本工具下载缓存目录，可通过 MISE_CACHE_DIR 环境变量修改默认值
 - 默认 shims 可执行垫片目录： ~\AppData\Local\mise\shims 可通过 MISE_SHIMS_DIR 环境变量修改默认值
-
 
 ---
 

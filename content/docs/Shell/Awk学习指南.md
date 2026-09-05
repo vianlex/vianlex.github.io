@@ -3,7 +3,6 @@ title: "AWK 学习指南"
 linkTitle: "AWK 学习指南"
 weight: 20
 ---
-
 > AWK 学习指南 | 涵盖基础到进阶
 
 ---
@@ -37,7 +36,7 @@ weight: 20
 AWK 是一种**强大的文本处理工具**，诞生于 1977 年，由贝尔实验室的三位计算机科学家发明：
 
 - **A**ho
-- **W**einberger  
+- **W**einberger
 - **K**ernighan
 
 它的名字就是这三位姓氏首字母的组合。
@@ -76,7 +75,7 @@ gawk --version
 
 AWK 处理数据的方式是：**逐行读取 → 按列拆分 → 处理字段**
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────┐
 │                        数据流                               │
 ├─────────────────────────────────────────────────────────────┤
@@ -111,7 +110,7 @@ AWK 处理数据的方式是：**逐行读取 → 按列拆分 → 处理字段*
 
 ### 2.2 处理流程图
 
-```
+```text
                     ┌─────────────────────┐
                     │    程序开始          │
                     │    BEGIN { }        │ ← 只执行1次
@@ -167,17 +166,17 @@ END {
 | 变量 | 说明 | 示例 |
 |------|------|------|
 | `$0` | 当前整行 | `Tom,95,Math` |
-| `$1` | 第1列 | `Tom` |
-| `$2` | 第2列 | `95` |
-| `$3` | 第3列 | `Math` |
-| `$NF` | 最后1列 | `$3` |
-| `$(NF-1)` | 倒数第2列 | `$2` |
-| `$N` | 第N列 | 动态 |
+| `$1` | 第 1 列 | `Tom` |
+| `$2` | 第 2 列 | `95` |
+| `$3` | 第 3 列 | `Math` |
+| `$NF` | 最后 1 列 | `$3` |
+| `$(NF-1)` | 倒数第 2 列 | `$2` |
+| `$N` | 第 N 列 | 动态 |
 
 **示例：**
 ```bash
 # 文件: Tom,95,Math
-echo "Tom,95,Math" | awk -F',' '{ 
+echo "Tom,95,Math" | awk -F',' '{
     print "$0 =", $0    # Tom,95,Math
     print "$1 =", $1    # Tom
     print "$2 =", $2    # 95
@@ -408,18 +407,18 @@ awk '{ printf "format", args }' file
 
 | 修饰 | 说明 | 示例 |
 |------|------|------|
-| `%10s` | 右对齐，占10字符 | `     Tom` |
-| `%-10s` | 左对齐，占10字符 | `Tom     ` |
-| `%.3s` | 截取前3字符 | `Tom` |
-| `%10.3s` | 右对齐，截取3字符 | `     Tom` |
-| `%-10.3s` | 左对齐，截取3字符 | `Tom      ` |
+| `%10s` | 右对齐，占 10 字符 | `     Tom` |
+| `%-10s` | 左对齐，占 10 字符 | `Tom     ` |
+| `%.3s` | 截取前 3 字符 | `Tom` |
+| `%10.3s` | 右对齐，截取 3 字符 | `     Tom` |
+| `%-10.3s` | 左对齐，截取 3 字符 | `Tom      ` |
 | `%05d` | 补零 | `00095` |
 
 ### 6.4 示例
 
 ```bash
 # 表格式输出
-awk 'BEGIN { 
+awk 'BEGIN {
     printf "%-10s %-5s %s\n", "姓名", "分数", "科目"
     printf "%-10s %-5s %s\n", "----", "----", "----"
 }
@@ -480,11 +479,11 @@ awk 'BEGIN { min = 999999 } $2 < min { min = $2 } END { print min }' file
 awk '$2 >= 60 { pass++ } END { print pass }' file
 
 # 方差
-awk '{ 
-    sum += $2; 
-    sumsq += $2*$2 
-} END { 
-    print sqrt(sumsq/NR - (sum/NR)^2) 
+awk '{
+    sum += $2;
+    sumsq += $2*$2
+} END {
+    print sqrt(sumsq/NR - (sum/NR)^2)
 }' file
 ```
 
@@ -516,9 +515,9 @@ awk 'END {
 
 ```bash
 # 统计每个值出现的次数
-awk '{ count[$3]++ } END { 
-    for (k in count) 
-        print k, count[k] 
+awk '{ count[$3]++ } END {
+    for (k in count)
+        print k, count[k]
 }' file
 
 # 示例数据：
@@ -535,11 +534,11 @@ awk '{ count[$3]++ } END {
 
 ```bash
 # 第一遍建立查找表，第二遍使用
-awk 'NR==FNR { 
+awk 'NR==FNR {
     rate[$1] = $2   # 建立汇率表: USD=7.0
-    next 
-} { 
-    printf "%s = %.2f CNY\n", $1, $1 * rate[$1] 
+    next
+} {
+    printf "%s = %.2f CNY\n", $1, $1 * rate[$1]
 }' rate.txt goods.txt
 ```
 
@@ -769,7 +768,7 @@ awk 'BEGIN { ORS = "" } { print }' file
 awk '{ print FILENAME, $0 }' file1.txt file2.txt
 
 # 文件名不同时重置 FNR
-awk 'BEGIN { FILENAME != prev { FNR = 0; prev = FILENAME } 
+awk 'BEGIN { FILENAME != prev { FNR = 0; prev = FILENAME }
     { print FNR, $0 }
 }' file1.txt file2.txt
 ```
@@ -832,7 +831,7 @@ function max(a, b) {
 function min(a, b) {
     return (a < b) ? a : b
 }
-{ 
+{
     print "max:", max($1, $2)
     print "min:", min($1, $2)
 }' file
@@ -846,8 +845,8 @@ function fact(n) {
     if (n <= 1) return 1
     return n * fact(n-1)
 }
-{ 
-    print fact($1) 
+{
+    print fact($1)
 }' <<< "5"
 # 输出: 120
 ```
@@ -878,8 +877,8 @@ awk '{ code[$9]++ } END { for (c in code) print c, code[c] }' access.log
 awk '{ bytes += $10 } END { print bytes }' access.log
 
 # 找出访问量最大的IP
-awk '{ ip[$1]++ } END { 
-    for (i in ip) 
+awk '{ ip[$1]++ } END {
+    for (i in ip)
         if (ip[i] > max) { max = ip[i]; top = i }
     print top, max
 }' access.log
@@ -910,11 +909,11 @@ awk -F',' '{ print $0 }' data.csv | sort -t',' -k3 -n
 
 ```bash
 # CSV 转 JSON
-awk -F',' 'BEGIN { print "[" } 
-{ 
+awk -F',' 'BEGIN { print "[" }
+{
     printf "  {\"name\":\"%s\",\"age\":\"%s\",\"city\":\"%s\"}", $1, $2, $3
     if (NR < 10) print ","; else print ""
-} 
+}
 END { print "]" }' data.csv
 
 # 文本列对齐
@@ -986,7 +985,7 @@ awk '{ for (i=1; i<=NF; i++) $i > 0 && print $i }' file
 | 无输出 | 文件路径错误 | 检查文件是否存在 |
 | 列数不对 | 分隔符错误 | 用 `-F` 指定正确分隔符 |
 | 全部输出 | 条件写法错误 | 检查 `$1`、`$2` |
-| END不执行 | 输入为空 | 确认文件有内容 |
+| END 不执行 | 输入为空 | 确认文件有内容 |
 | 数组为空 | 作用域问题 | 在 BEGIN 外定义 |
 
 ### 16.2 调试技巧
@@ -1012,8 +1011,8 @@ awk --profile file
 | 变量 | 说明 |
 |------|------|
 | `$0` | 整行 |
-| `$1~$N` | 第N列 |
-| `$NF` | 最后1列 |
+| `$1~$N` | 第 N 列 |
+| `$NF` | 最后 1 列 |
 | `NR` | 行号 |
 | `NF` | 字段数 |
 | `FS` | 输入分隔符 |

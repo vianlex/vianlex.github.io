@@ -3,15 +3,14 @@ title: "kubeadm 快速部署 kubernetes 集群测试环境"
 linkTitle: "kubeadm 快速部署 kubernetes 集群测试环境"
 weight: 30
 ---
-
 ## 1. 安装要求
 
 部署 Kubernetes 集群机器需要满足以下几个条件：
 
-- 至少2台机器
-- 硬件配置：2GB或更多RAM，2个CPU或更多CPU，硬盘30GB或更多
+- 至少 2 台机器
+- 硬件配置：2GB 或更多 RAM，2 个 CPU 或更多 CPU，硬盘 30GB 或更多
 - 可以访问外网，需要拉取镜像，如果服务器不能上网，需要提前下载镜像并导入节点
-- 禁止swap分区
+- 禁止 swap 分区
 
 ## 2. 硬件环境准备
 
@@ -27,15 +26,14 @@ weight: 30
 
 如果搭建的集群使用外网，需要在安全组中开放端口
 
-|  节点              |  协议类型| 访问方向     |  端口  |   描述 |  
-|   --               | --      | --      | --    |  --      | 
-|  Master 服务器     | TCP     |	入方向	| 6443	| Kubernetes API server	的端口 |
-|   Master 服务器    | TCP	    | 入方向	| 2379-2380	| etcd server client API	kube-apiserver, etcd 的端口 |
-|   Master 服务器    | TCP	    | 入方向	| 10250	| Kubelet API	的端口 |
-|   Master 服务器    | TCP	    | 入方向	| 10259	| kube-scheduler	的端口 |
-| node 服务器        | TCP      | 入方向	| 10250 | Kubelet API	的端口 |
-| node 服务器        | TCP      | 入方向	| 30000-32767 |  NodePort Services 的端口 |
-
+|  节点              |  协议类型| 访问方向     |  端口  |   描述 |
+|   --               | --      | --      | --    |  --      |
+|  Master 服务器     | TCP     | 入方向 | 6443 | Kubernetes API server 的端口 |
+|   Master 服务器    | TCP     | 入方向 | 2379-2380 | etcd server client API kube-apiserver, etcd 的端口 |
+|   Master 服务器    | TCP     | 入方向 | 10250 | Kubelet API 的端口 |
+|   Master 服务器    | TCP     | 入方向 | 10259 | kube-scheduler 的端口 |
+| node 服务器        | TCP      | 入方向 | 10250 | Kubelet API 的端口 |
+| node 服务器        | TCP      | 入方向 | 30000-32767 |  NodePort Services 的端口 |
 
 ## 3. CenteOs 系统环境配置（ master 和 node 机器都要改）
 
@@ -88,7 +86,7 @@ net.bridge.bridge-nf-call-iptables = 1
 EOF
 
 # 立即生效
-sysctl --system 
+sysctl --system
 ```
 ### 3.5 时间同步(可以不修改)
 
@@ -98,12 +96,11 @@ sysctl --system
 # 安装时间同步软件
 yum install ntpdate -y
 # 使用阿里云的时间服务器
-ntpdate time1.aliyun.com 
+ntpdate time1.aliyun.com
 # 通过定时任务，定时同步时间
 */1 * * * * /usr/sbin/ntpdate time2.aliyun.com > /dev/null 2>&1
 
 ```
-
 
 ## 4 安装 kubeadm、kubelet 和 kubectl
 
@@ -115,7 +112,7 @@ kubeadm 创建 Kubernetes 集群的最快捷的一种命令行工具，其常用
  - kubeadm reset 还原 kubeadm init 或者 kubeadm join 所作的操作
  - kubeadm version 打印出 kubeadm 版本
 kubectl 是操作管理 k8s 集群的命令行工具。
-kubelet 是容器运行时，k8s 组件 api service 接收到 kubectl 的操作请求，通过控制 kubelet 去创建和管理容器的。 
+kubelet 是容器运行时，k8s 组件 api service 接收到 kubectl 的操作请求，通过控制 kubelet 去创建和管理容器的。
 
 ### 4.1 添加阿里云源
 
@@ -155,7 +152,7 @@ systemctl start kubelet && systemctl enable kubelet
 
 ```bash
 kubeadm init \
-  --apiserver-advertise-address=192.168.204.3 \ 
+  --apiserver-advertise-address=192.168.204.3 \
   --image-repository registry.aliyuncs.com/google_containers \
   --kubernetes-version v1.20.15 \
   --service-cidr=10.96.0.0/12 \
@@ -169,7 +166,7 @@ kubeadm init \
 ```
 ### 4.4 k8s 客户端 kubectl 工具配置
 
-kubectl 是与 kubernetes 集群交互的一个命令行工具, kubectl 通过调用 api server 组件 Rest Api 来交互来操作集群的。Api Server 接口的认证信息和访问地址默认是存放在 /etc/kubernetes/admin.conf 的， kubectl 请求 Api 
+kubectl 是与 kubernetes 集群交互的一个命令行工具, kubectl 通过调用 api server 组件 Rest Api 来交互来操作集群的。Api Server 接口的认证信息和访问地址默认是存放在 /etc/kubernetes/admin.conf 的， kubectl 请求 Api
 Server 接口获取认证信息和访问地址，默认是从用户目录下的 .kube/config 文件读取或者从环境变量 KUBECONFIG 指定的文件中读取，所以要作以下配置：
 
 ```bash
@@ -180,7 +177,7 @@ sudo chown $(id -u):$(id -g) $HOME/.kube/config
 echo "export KUBECONFIG=/etc/kubernetes/admin.conf" >> ~/.bash_profile
 source ~/.bash_profile
 ```
-### 4.5 node 节点安装 kubeadm、kubelet 
+### 4.5 node 节点安装 kubeadm、kubelet
 
 ```bash
 yum install -y  kubeadm-1.20.15  kubelet-1.20.15
@@ -192,9 +189,9 @@ systemctl start kubelet && systemctl enable kubelet
 需要在 master 节点中先安装网络插件，才能访问到集群
 
 ```
-# master 节点获取 token, 默认token有效期为24小时 
+# master 节点获取 token, 默认token有效期为24小时
 kubeadm token create --print-join-command
-# 在 node 指定 kubeadm join 命令即可加入集群 
+# 在 node 指定 kubeadm join 命令即可加入集群
 kubeadm join 192.168.1.1:6443 --token esce21.q6hetwm8si29qxwn \
     --discovery-token-ca-cert-hash sha256:00603a05805807501d7181c3d60b478788408cfe6cedefedb1f97569708be9c5
 
@@ -210,11 +207,11 @@ kubernetes 需要使用第三方的网络插件来实现 kubernetes 的网络功
 k8s 的组件可以通过容器化的方式，运行在 k8s 集群中，将 calico 网络插件创建在集群中，操作如下：
 
 ```
-# 下载网络插件的资源文件，要注意下载的版本是否支持安装的 k8s 
+# 下载网络插件的资源文件，要注意下载的版本是否支持安装的 k8s
 wget https://docs.projectcalico.org/v3.20/manifests/calico.yaml
 # 部署网络插件
 kubectl apply -f calico.yaml
-# 查看部署的网络插件，使用如下命令       
+# 查看部署的网络插件，使用如下命令
 kubectl get pods -n kube-system
 # 显示的结果如下，说明部署成功
 NAME                   READY   STATUS    RESTARTS   AGE
@@ -222,18 +219,14 @@ calico-kube-xx-xx-xx   1/1    Running   0          72s
 
 ```
 
-## 7. 测试kubernetes集群
+## 7. 测试 kubernetes 集群
 
 在 Kubernetes 集群中创建一个 pod，验证是否正常运行：
 
-```
+```bash
 $ kubectl create deployment nginx --image=nginx
 $ kubectl expose deployment nginx --port=80 --type=NodePort
 $ kubectl get pod,svc
 ```
 
-访问地址：http://NodeIP:Port  
-
-
-
-
+访问地址：http://NodeIP:Port

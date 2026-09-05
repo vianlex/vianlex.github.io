@@ -3,10 +3,9 @@ title: "Gateway学习笔记"
 linkTitle: "Gateway学习笔记"
 weight: 30
 ---
-
 ## Gateway 请求流程图
 
-![Gateway请求流程图](/images/Gateway请求流程图.png)
+![Gateway 请求流程图](/images/Gateway 请求流程图.png)
 
 **注意**过滤器的执行顺序是：全局过滤器 → 路由过滤器 → 转发 → 路由过滤器后置 → 全局过滤器后置
 
@@ -43,7 +42,7 @@ weight: 30
 
 ### 路由配置
 
-**第一种方式**： 在 Yaml 文件中配置路由规则（推荐方式） 
+**第一种方式**： 在 Yaml 文件中配置路由规则（推荐方式）
 ```yaml
 logging:
   level:
@@ -61,7 +60,7 @@ spring:
         - id: order-server
           # lb 转发逻辑是在 ReactiveLoadBalancerClientFilter 全局过滤器中实现的，需要整合负载均衡器 loadbalancer
           # 定义路由的 URL 要转发到哪个服务器
-          uri: lb://order-server 
+          uri: lb://order-server
           # 谓词断言，表示需要匹配哪些 URL 地址转发到 uri 服务
           predicates:
             - Path=/api/order/**
@@ -69,7 +68,7 @@ spring:
             # 局部过滤器（只对 order-server 路由生效）
             - AddRequestParameter=name, tim
         - id: vainelx-http
-          uri: http://127.0.0.1:8081 
+          uri: http://127.0.0.1:8081
           predicates:
             - Path=/api/vianlex/**
           filters:
@@ -138,7 +137,7 @@ spring:
            - Method=PUT,DELETE
            # 按请求头匹配（Header）
            - Header=X-Request-Id # 检查是否存在指定请求头
-           - Header=X-Request-Id, \d+ # 检查请求头值是否匹配正则  
+           - Header=X-Request-Id, \d+ # 检查请求头值是否匹配正则
            - Header=Content-Type, application/json # 检查请求头值是否等于指定值
            # 按请求参数匹配（Query）
            - Query=userId # 检查是否存在参数
@@ -158,7 +157,7 @@ spring:
            - RemoteAddr=2001:db8::1 # IPv6
            # 按权重匹配（Weight） - （一般用于灰度发布）
            - Weight=group1, 8
-           
+
 ```
 
 组合使用示例，如下：
@@ -178,21 +177,21 @@ spring:
             - Query=debug, true
             - After=2024-01-01T00:00:00+08:00
             - Host=api.company.com
-            
+
         - id: admin_api
           uri: lb://admin-service
           predicates:
             - Path=/admin/**
             - Header=X-User-Role, admin
             - RemoteAddr=192.168.1.0/24, 10.0.0.0/8
-            
+
         - id: mobile_api
           uri: lb://mobile-service
           predicates:
             - Path=/mobile/**
             - Header=User-Agent, .*Mobile.*
             - Cookie=mobile_app, true
-            
+
         - id: maintenance_route
           uri: http://localhost:8081/maintenance
           predicates:
@@ -200,14 +199,14 @@ spring:
             # 维护期间路由到维护页面
             - After=2024-12-24T00:00:00+08:00
             - Before=2024-12-26T00:00:00+08:00
-         
+
         - id: weight_high
           uri: lb://service-v1
           predicates:
             - Path=/api/**
             # 版本A - 80%流量
-            - Weight=group1, 8 
-          
+            - Weight=group1, 8
+
         - id: weight_low
           uri: lb://service-v2
           predicates:
@@ -215,7 +214,6 @@ spring:
              # 版本B - 20%流量
             - Weight=group1, 2
 ```
-
 
 ## 自定义断言工厂
 
@@ -229,47 +227,47 @@ import java.util.function.Predicate;
 import java.util.List;
 
 @Component
-public class CustomHeaderPredicateFactory extends 
+public class CustomHeaderPredicateFactory extends
         AbstractRoutePredicateFactory<CustomHeaderPredicateFactory.Config> {
-    
+
     public static class Config {
         private String headerName;
         private String expectedValue;
-        
+
         // Getters and Setters
         public String getHeaderName() { return headerName; }
         public void setHeaderName(String headerName) { this.headerName = headerName; }
-        
+
         public String getExpectedValue() { return expectedValue; }
         public void setExpectedValue(String expectedValue) { this.expectedValue = expectedValue; }
     }
-    
+
     public CustomHeaderPredicateFactory() {
         super(Config.class);
     }
-    
+
     @Override
     public List<String> shortcutFieldOrder() {
         return List.of("headerName", "expectedValue");
     }
-    
+
     @Override
     public Predicate<ServerWebExchange> apply(Config config) {
         return exchange -> {
             String actualValue = exchange.getRequest()
                 .getHeaders()
                 .getFirst(config.getHeaderName());
-            
+
             if (actualValue == null) {
                 return false;
             }
-            
+
             // 支持正则表达式匹配
             if (config.getExpectedValue().startsWith("regex:")) {
                 String regex = config.getExpectedValue().substring(6);
                 return actualValue.matches(regex);
             }
-            
+
             // 精确匹配
             return actualValue.equals(config.getExpectedValue());
         };
@@ -295,7 +293,6 @@ spring:
             # 简写形式（需实现shortcutFieldOrder）
             - CustomHeader=X-Custom-Header,special-value
 ```
-
 
 ## 自定义局部过滤器
 
@@ -433,7 +430,6 @@ public class AuthGlobalFilter implements GlobalFilter, Ordered {
     }
 }
 ```
-
 
 ## 整合 Sentinel 限流
 

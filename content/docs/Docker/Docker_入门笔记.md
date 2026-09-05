@@ -3,15 +3,14 @@ title: "Docker 入门笔记"
 linkTitle: "Docker 入门笔记"
 weight: 30
 ---
-
 ## Docker 网络原理
 
-  Docker 服务进程启动时，默认会创建一个 docker0 虚拟网桥，也就是虚拟交换机，docker0 的默认 IP 地址为172.17.0.1，子网掩码为255.255.0.0。
+  Docker 服务进程启动时，默认会创建一个 docker0 虚拟网桥，也就是虚拟交换机，docker0 的默认 IP 地址为 172.17.0.1，子网掩码为 255.255.0.0。
 在 Linux 系统中可以使用命令 `brctl show` 可以查看虚拟网桥，如果命令不存在，需要安 `bridge-utils` 软件。
 
 ## Docker 网络模式
-    
-  Docker 默认支持4种网络工作模式，分别如下：
+
+  Docker 默认支持 4 种网络工作模式，分别如下：
 
 1. Host 模式
 
@@ -32,25 +31,9 @@ doker0 网桥可以看成是是虚拟交换机，工作于数据链路层，主�
 
   ![docker-网桥模式示意图](/images/docker-网桥模式示意图.png)
 
-  Docker 创建启动一个容器的时候，会在宿主机中创建一对虚拟接口/网卡 Veth Pair，虚拟端口的一端桥接到 docker0 网桥，在宿主机中使用 `ifconfig | grep veth` 
+  Docker 创建启动一个容器的时候，会在宿主机中创建一对虚拟接口/网卡 Veth Pair，虚拟端口的一端桥接到 docker0 网桥，在宿主机中使用 `ifconfig | grep veth`
 可以查看到，其命名的方式前缀固定 Veth 后缀随机，如 veth080517f，虚拟端口的另一端连接到新启动的容器内部网络中，因为容器内跟宿主机的网络命名空间是隔离的，
 所其名字会被命名给 eth0，然后从网桥的可用地址段中获取一个空闲地址分配给容器的 eth0。
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 ## 参考链接
 1、https://blog.csdn.net/m0_49654228/article/details/117446963

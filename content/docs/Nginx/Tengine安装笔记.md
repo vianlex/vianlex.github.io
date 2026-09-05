@@ -3,23 +3,21 @@ title: "tengine 安装笔记"
 linkTitle: "tengine 安装笔记"
 weight: 30
 ---
-
-## 编译安装 nginx 淘宝定制的 
+## 编译安装 nginx 淘宝定制的
 
 1. 官网下载 tengine
 2. 解压文件 `tar zxvf tengine-2.3.3.tar.gz`
 3. `cd tengine-2.3.3 `
-4. `./configure` 
+4. `./configure`
 5. `make `
 6. `sudo make install`  默认会将 tengine 安装到 /usr/local/nginx 下
 7. 编译提示 `error: the HTTP rewrite module requires the PCRE library `安装 `yum -y install pcre-devel`
 8. 编译提示` error: SSL modules require the OpenSSL library `安装 `yum -y install openssl openssl-devel`
 
-
 注意使用 `./configure` 生成 makefile 时，可以使用 ` ./configure --help ` 查看其有哪些参数可设置，其中部分参数例子，使用如下：
 
 ```bash
-# --prefix 参数指定安装目录，--add-module 指定要安装的第三方模块目录，使用 --without 禁用默认模块，使用 --with 启动默认的模块 
+# --prefix 参数指定安装目录，--add-module 指定要安装的第三方模块目录，使用 --without 禁用默认模块，使用 --with 启动默认的模块
 ./configure --prefix=/usr/local/nginx --add-module=/home/sysadmin/ngx_log_if-master --add-module=xxxxx --without-stream_return_module
 ```
 
@@ -44,12 +42,12 @@ nginx 服务启动的相关命令：
 
 ```
 systemctl start nginx.service 启动nginx服务
-systemctl stop nginx.service　停止服务      
-systemctl restart nginx.service　 重新启动服务     
-systemctl list-units --type=service   查看所有已启动的服务  
-systemctl status nginx.service  查看服务当前状态        
-systemctl enable nginx.service  设置开机自启动      
-systemctl disable nginx.service 停止开机自启动 
+systemctl stop nginx.service　停止服务
+systemctl restart nginx.service　 重新启动服务
+systemctl list-units --type=service   查看所有已启动的服务
+systemctl status nginx.service  查看服务当前状态
+systemctl enable nginx.service  设置开机自启动
+systemctl disable nginx.service 停止开机自启动
 
 ```
 
@@ -60,7 +58,7 @@ systemctl disable nginx.service 停止开机自启动
 ```
 Tengine version: Tengine/2.3.2
 nginx version: nginx/1.17.3
-built by gcc 4.8.5 20150623 (Red Hat 4.8.5-39) (GCC) 
+built by gcc 4.8.5 20150623 (Red Hat 4.8.5-39) (GCC)
 built with OpenSSL 1.0.2k-fips  26 Jan 2017
 TLS SNI support enabled
 configure arguments: --prefix=/usr/local/nginx  --add-module=/home/sysadmin/ngx_log_if-master

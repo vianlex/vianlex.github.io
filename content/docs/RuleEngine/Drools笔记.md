@@ -3,7 +3,6 @@ title: "Drools 笔记"
 linkTitle: "Drools 笔记"
 weight: 10
 ---
-
 ## 一、 Drools 简介
 
 Drools 是一款基于 Java 的开源规则引擎，规则引擎的核心思想是是将应用程序中的业务决策（if-else）部分分离出来，以规则脚本的形式存编写在文件中，从而达到业务规则与业务代码解耦。当业务规则的变化不需要修改代码，只需要修改业务规则即可。
@@ -19,7 +18,7 @@ Drools 是一款基于 Java 的开源规则引擎，规则引擎的核心思想�
 ## 三 Kie 简介
 
 Kie 的全称是 knowledge is everything，即“知识就是一切”的缩写。Kie 是 Jboss 一系列项目的总称，Kie 包含的一系列子项目如下图所示，Drools 只是 Kie 其中的一个子项目而已。
-![kie项目子模块图](/images/kie项目子模块图.png)
+![kie 项目子模块图](/images/kie 项目子模块图.png)
 
 ## 四、Kie APi 介绍
 
@@ -29,33 +28,33 @@ KieModule 是 Drools 规则引擎中的一个概念，KieMolde 在宏观上指�
 
 ![KieModule](/images/KieModule.png)
 
-同时 KieModule 也是 Drools 规则引擎中非常重要的一个接口，它定义了访问 KieModule 工程的方法，包括获取 KieBase、KieSession 和其他资源等。通过 KieModule 接口，可以方便地管理和使用 KieModule 工程下的资源，提高规则引擎的可维护性和可扩展性。KieModule接口提供了以下功能：
+同时 KieModule 也是 Drools 规则引擎中非常重要的一个接口，它定义了访问 KieModule 工程的方法，包括获取 KieBase、KieSession 和其他资源等。通过 KieModule 接口，可以方便地管理和使用 KieModule 工程下的资源，提高规则引擎的可维护性和可扩展性。KieModule 接口提供了以下功能：
 - 获取 KieBase：KieBase 是 Drools 规则引擎的核心组件之一，它表示规则的集合。KieModule 接口定义了一个 getKieBase() 方法，可以用来获取 KieBase 对象。通过 KieBase，可以加载和执行 KieModule 中定义的所有规则。
-- 获取 KieSession：KieSession 是 Drools 规则引擎中用于执行规则的主要组件之一。KieModule 接口定义了一个getKieSession() 方法，可以用来获取 KieSession 对象。通过 KieSession，可以加载和执行 KieModule 中定义的所有规则。
+- 获取 KieSession：KieSession 是 Drools 规则引擎中用于执行规则的主要组件之一。KieModule 接口定义了一个 getKieSession() 方法，可以用来获取 KieSession 对象。通过 KieSession，可以加载和执行 KieModule 中定义的所有规则。
 - 获取其他资源：KieModule 可能包含其他类型的资源文件，如图像、文本文件和属性文件。KieModule 接口定义了一系列方法，可以用来获取这些资源文件。这些资源文件可以被用来支持规则的执行或提供其他功能。
 - 版本控制：KieModule 接口支持版本控制机制，可以通过接口的方法获取 KieModule 的版本信息。这个版本信息可以用来检测 KieModule 是否有新版本，并且可以用来更新已经存在的 KieModule。
 
 ### 4.2 kieBase
 
-KieBase 是规则引擎的知识库，它包含了规则、流程、函数等各种知识元素，并提供了一种高效的方式来执行规则。每个 KieBase 都与一个或多个 KieSession 相关联，其中包括 stateful 和 stateless KieSession。KieBase 还可以从多种来源创建，例如从规则文件、数据库或Java类中加载规则。
+KieBase 是规则引擎的知识库，它包含了规则、流程、函数等各种知识元素，并提供了一种高效的方式来执行规则。每个 KieBase 都与一个或多个 KieSession 相关联，其中包括 stateful 和 stateless KieSession。KieBase 还可以从多种来源创建，例如从规则文件、数据库或 Java 类中加载规则。
 
 ### 4.3 KieContainer
 
-KieContainer 是Drools 中的一个高级组件，它提供了一个应用程序的部署单元。KieContainer 包含一个或多个 KieModule，每个 KieModule 包含一个或多个 KieBase。KieContainer 的主要作用是管理应用程序中的规则库，包括从外部资源（如文件、数据库等）加载规则，并提供一种简单的方式来访问这些规则库。
+KieContainer 是 Drools 中的一个高级组件，它提供了一个应用程序的部署单元。KieContainer 包含一个或多个 KieModule，每个 KieModule 包含一个或多个 KieBase。KieContainer 的主要作用是管理应用程序中的规则库，包括从外部资源（如文件、数据库等）加载规则，并提供一种简单的方式来访问这些规则库。
 KieContainer 还提供了一些有用的方法，例如从 KieBase 创建 KieSession，从外部资源（如文件、数据库等）加载规则库，以及获取 KieBase 的详细信息。
 
-### 4.4 KieService 
+### 4.4 KieService
 
 KieService 接口提供了很多方法，可以通过这些方法访问 Kie 操作和管理的 Drools 资源的接口对象。比如说可以获取 KieContainer，然后利用 KieContainer 来访问 KBase 和 KSession 等信息；可以获取 KieRepository 对象，利用 KieRepository 来管理 KieModule 等。
 
-### 4.5 KieSession 
+### 4.5 KieSession
 
 KieSession 表示的是规则引擎的会话，用于执行规则，和插入事实（insert）、更新事实（update）、删除事实（delete）等，还提供了一些高级特性，如全局变量、动态规则修改、事实监听等，可以增强规则引擎的功能和灵活性。KieSession 的创建是比较消耗资源的操作，因此一般情况下应该尽可能重复利用同一个 KieSession，而不是频繁地创建和销毁。
 
 KieSession 分为有状态和无状态两种模式，它们两种的区别如下：
 - 有状态模式：在有状态模式下，KieSession 会维护一个工作内存（working memory），并根据规则对工作内存中的事实进行推理、更新和删除，并且每次插入、更新、删除事实后，KieSession 都会重新匹配和执行规则，有状态模式的 Session 需要直到显式地销毁，销毁调用方法 `kSession.dispose()`。
 
-- 无状态模式：KieSession 会在执行完规则后立即销毁 Session，故每次调用 KieSession 时，它都是一个新的实例，每次调用KieSession时，需要将所有需要的事实重新插入到KieSession中。因此，无状态模式适用于单独的、短暂的推理和查询，长时间持续的会话需要用有状态的 Session，否则会会影响性能。
+- 无状态模式：KieSession 会在执行完规则后立即销毁 Session，故每次调用 KieSession 时，它都是一个新的实例，每次调用 KieSession 时，需要将所有需要的事实重新插入到 KieSession 中。因此，无状态模式适用于单独的、短暂的推理和查询，长时间持续的会话需要用有状态的 Session，否则会会影响性能。
 
 需要注意的是，在无状态模式下，每次都需要重新加载规则，因为无状态模式执行规则后会立即消耗。而有状态模式则只需要加载一次规则，之后在会话期间都可以使用。
 
@@ -69,8 +68,8 @@ KieSession 分为有状态和无状态两种模式，它们两种的区别如下
 |includes|none|逗号分隔的 KieBase 名称列表|表示引入其他的 KieBase|
 |packages|all|逗号分隔的字符串列表|定义 KieBases 规则资源的路径，默认情况下将包含 resources 目录下面（子目录）的所有规则文件。也可以指定具体目录下面的规则文件，通过逗号可以包含多个目录下的文件。|
 |default|false|true, false| 表示当前 KieBase 是不是默认的，如果是默认的话，则在 Java 中不需要显示的根据名字指定使用哪个 KieBases |
-|equalsBehavior|identity|identity,equality| 设置为identity 时，每次 insert 事实`FactHandle faceHandle = kieSession.insert(事实) ` 都会返回一个新的 FactHandle，如果使用 equality 则会判断是否已经存在相同的事实对象，如果已经存在则返回已经存在的 FactHandle。|
-|eventProcessingMode|cloud|cloud, stream|当以云模式编译时，KieBase将事件视为正常事实，而在流模式下允许对其进行时间推理。|
+|equalsBehavior|identity|identity,equality| 设置为 identity 时，每次 insert 事实`FactHandle faceHandle = kieSession.insert(事实) ` 都会返回一个新的 FactHandle，如果使用 equality 则会判断是否已经存在相同的事实对象，如果已经存在则返回已经存在的 FactHandle。|
+|eventProcessingMode|cloud|cloud, stream|当以云模式编译时，KieBase 将事件视为正常事实，而在流模式下允许对其进行时间推理。|
 |declarativeAgenda|disabled|disabled,enabled|该属性是一个高级功能开关，打开后规则将可以控制一些规则的执行与否。|
 
 ### 5.2 KieSession 标签属性说明
@@ -80,10 +79,8 @@ KieSession 分为有状态和无状态两种模式，它们两种的区别如下
 |name|none|any|设置 KieSession 的名称，该值必须唯一，且必须设置。|
 |type|stateful|stateful, stateless| 定义 session 的工作状态模式|
 |default|false|true, false| 定义该 session 是否是默认的，非默认的，需要在 Java 代码中根据名称指定才行，注意是每个工作状态模式的 session 都可以定义一个默认值 |
-|clockType|realtime|realtime,pseudo| 定义时钟类型，用在事件处理上面，在复合事件处理上会用到，其中realtime表示用的是系统时钟，而pseudo则是用在单元测试时模拟用的。|
-|beliefSystem|simple|simple,defeasible, jtms|定义KieSession使用的 belief System的类型。|
-
-
+|clockType|realtime|realtime,pseudo| 定义时钟类型，用在事件处理上面，在复合事件处理上会用到，其中 realtime 表示用的是系统时钟，而 pseudo 则是用在单元测试时模拟用的。|
+|beliefSystem|simple|simple,defeasible, jtms|定义 KieSession 使用的 belief System 的类型。|
 
 ## 六、Drools 入门例子
 
@@ -234,7 +231,7 @@ end
 
 ### 6.5 编写 kiemodule.xml 文件
 
-在 Maven 工程中创建文件 `resource/META-INF/kiemodule.xml` 
+在 Maven 工程中创建文件 `resource/META-INF/kiemodule.xml`
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -310,7 +307,7 @@ public class DroolsTest {
 //定义规则包，注意只是逻辑上的包，实际上并不要求规则文件存放路径跟包路径一样，在不同的规则文件中包是可以相同的，包是规则的命名空间，在同一个包即一个命名空间下 rule 的名字不能重复
 package com.rule
 
-// 导入需要引用的 Java Class 
+// 导入需要引用的 Java Class
 import   // Optional
 
 // 函数定义，可以在 then 中执行
@@ -336,13 +333,13 @@ end
 
 rule "rule2 name"
   when
-   
+
   then
-   
+
 end
 ```
 
-### 7.1 function 语法 
+### 7.1 function 语法
 
 ```java
 function String hello(String applicantName) {
@@ -373,8 +370,8 @@ end
 rule "rule name1"
     when
 
-    then 
-end 
+    then
+end
 ```
 2. Java 代码中引用方式如下：
 
@@ -410,7 +407,7 @@ rule "Using a declared type"
   when
     // 判断规则引擎工作内存中，是否有 name == "James" 的 Person 对象，并将该对象，赋值给 $p
     $p : Person( name == "James" )
-  then   
+  then
     Person mark = new Person();
     mark.setName( "Mark" );
     insert( mark );
@@ -456,7 +453,7 @@ end
 | activation-group| 值为字符串，指定规则的激活分组名，同一个分组的规则只能执行一个，默认按顺序执行第一个，可以通过 salience 设置最高优先级的执行 <br> activation-group "group name01" |
 | agenda-group    | 值为字符串，指定规则的议程分组名称，跟 activation-group 的区别时是，需要获取焦点后才能执行，可以执行多个，需要在 Java 代码中设置焦点或者使用 auto-focus 属性设置焦点 <br>例子：agenda-group "GroupName"|
 | auto-focus | 值为布尔类型，自动为 agenda-group 设置焦点 <br>例子：auto-focus true |
-| timer      | 值为间隔的整形时间或者 corn 表达式，通过定时器指定规则的执行时间<br>例子1：timer(10s 2s) 表示10秒后触发，然后每隔2s重新触发<br>例子2： timer (cron:* 0/15 * * * ? ) 表示每15分钟执行一次 |
+| timer      | 值为间隔的整形时间或者 corn 表达式，通过定时器指定规则的执行时间<br>例子 1：timer(10s 2s) 表示 10 秒后触发，然后每隔 2s 重新触发<br>例子 2： timer (cron:* 0/15 * * * ? ) 表示每 15 分钟执行一次 |
 | calendar   | 通过日历来定时执行规则，可以排除节假日<br>例子：calendars "* * 0-7,18-23 ? * *" |
 | ruleflow-group | 值为字符串，用于标识规则为流程组。在规则流组中，规则只有在该组被相关的规则流激活时才能启动<br>例子：ruleflow-group "GroupName"|
 | dialect | 值为 JAVA or MVEL，用于指定当前规则使用的语言类型，默认是 JAVA<br>例子：dialect "JAVA"|
@@ -488,7 +485,7 @@ when 语句用于判断条件是否满足，条件满足时，就会执行 then 
 rule "Always insert applicant"
   when
     // Empty ，空条件时，规则引擎会默认添加 eval(true), 所以空条件，默认为真
-  then   
+  then
     insert( new Applicant() );
 end
 
@@ -507,30 +504,29 @@ end
 
 ```java
 rule "rule1"
-when 
+when
     // 表示匹配到任意一个事实对象，就返回真
-     Object() 
-then 
-end 
+     Object()
+then
+end
 
-when 
+when
     // 匹配到任意一个 Person 事实对象，就返回真
-    Person() 
-then 
-end 
+    Person()
+then
+end
 
-when 
+when
     // 匹配任意一个 username = "admin" 的 Person 事实对象，就返回真
     Person(username="admin")
-then 
-end 
+then
+end
 
 ```
 
 ### 7.7 Drools 内置方法
 
 Drools 规则语法中也提供了插入、删除、更新工作内存 Fact 事实数据的内置方法，来方便在规则中控制规则引擎的执行。通过内置方法操作 Fact 事实数据后，规则引擎会把同一个包下的相关规则重新匹配执行。
-
 
 ### update 方法
 
@@ -545,9 +541,9 @@ package com.github.drools.rules
 import com.github.drools.model.User
 
 rule "username eq admin"
-    when 
+    when
         u1: User(username=="admin")
-    then 
+    then
         System.out.println("用户名为 admin 触发了规则");
         u1.setAge(19);
         //update 方法更新 Fact 事实对象后，把同一个包下的除本条规则外的所有规则重新匹配执行一次。
@@ -591,10 +587,10 @@ import com.github.drools.model.User
 
 rule "rule1"
     // 限制本条规则，只能匹配一次，不管是在 Java 中还是在规则文件只要调用  insert 事实对象，都是从头开始执行所有规则，当多次 insert 不同的事实实例对象时，如果 when 条件都满足会重复执行，故而需要该属性来限制只能执行一次。
-    no-loop true 
-    when 
+    no-loop true
+    when
         u1: User(username=="admin")
-    then 
+    then
         System.out.println("用户名为 admin 触发了规则");
         User user = new User();
         // 如果将用名字设置为 admin 的话，该 rule1 规则会死循环执行，当出现这种情况时，需要通过规则属性 no-loop 限制规则不能重复执行。
@@ -604,11 +600,11 @@ rule "rule1"
 end
 
 rule "rule2"
-    when 
+    when
         u2: User(username=="dev")
     then
-        System.out.println("用户名为 dev 触发了规则");   
-end 
+        System.out.println("用户名为 dev 触发了规则");
+end
 ```
 
 #### retract 方法
@@ -623,24 +619,23 @@ import com.github.drools.model.User
 rule "rule1"
     // 设置规则优先级，值越大优先级越高
     salience 10
-    when 
+    when
         u1:User(age == 20)
-    then 
+    then
         System.out.println( u1.getUsername()+"用户的年龄等于20岁，触发规则");
         // 删除 u1 事实对象，规则引擎会重新匹配规则，则 rule2 规则将不会执行。
         retract(u2);
-end 
+end
 
 rule "rule2"
     salience 9
-    when 
+    when
         u1:User(age >= 20)
-    then 
+    then
         System.out.println( u1.getUsername()+"用户的年龄大于等于20岁，触发规则");
-end 
+end
 
 ```
-
 
 ## 参考连接
 1. https://docs.drools.org/7.73.0.Final/drools-docs/html_single/index.html#_droolslanguagereferencechapter

@@ -3,7 +3,6 @@ title: "ByteBuddy 入门笔记"
 linkTitle: "ByteBuddy 入门笔记"
 weight: 80
 ---
-
 ## ByteBuddy 概述
 
 ByteBuddy 是一个可以在运行时动态生成 java class 的类库。
@@ -82,16 +81,16 @@ ByteBuddy 动态生成的类, 需要重写父类方法时， 使用 method 配�
 class Foo {
 
 	public String bar() {
-		return null; 
+		return null;
    	}
   	public String foo() {
-	 	return null; 
+	 	return null;
   	}
-  	public String foo(Object o) { 
-		return null; 
+  	public String foo(Object o) {
+		return null;
 	}
 }
- 
+
 class MethodTest {
 
 	@Test
@@ -109,7 +108,7 @@ class MethodTest {
 		// 输出 Hello Method!
 		System.out.println(dynamicFoo.bar());
 		// 输出 Hello Method!
-		System.out.println(dynamicFoo.foo()); 
+		System.out.println(dynamicFoo.foo());
 		// 输出 Hello Method!
 		System.out.println(dynamicFoo.foo("")); // 输出 One!
 	}
@@ -130,7 +129,7 @@ class MethodTest {
 		System.out.println(dynamicFoo.bar()); // 输出 One!
 		System.out.println(dynamicFoo.foo()); // 输出 Two!
 		System.out.println(dynamicFoo.foo("Hello Wold")); // 输出 Three!
-		
+
 		Unloaded<Foo> unloadedClass02 = new ByteBuddy().subclass(Foo.class)
 				.method(ElementMatchers.named("foo")).intercept(FixedValue.value("Two!"))
 				.method(ElementMatchers.named("foo").and(ElementMatchers.takesArguments(1))).intercept
@@ -177,7 +176,7 @@ public class Target {
 public class DelegationTest {
 	/**
 	 * 方法委托调用
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	@Test
@@ -203,29 +202,3 @@ public class DelegationTest {
 	}
 }
 ```
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -3,10 +3,9 @@ title: "Maven 常用插件"
 linkTitle: "Maven 常用插件"
 weight: 40
 ---
-
 ## 定义项目编译 JDK 版本插件
 
-比如系统环境安装的是 1.8 版本的 JDK，当我们的项目依赖的 JDK 版本不是1.8时，我们可以通过 `maven-toolchains-plugin` 去指定 maven 编译项目所需的 JDK 版本。具体的使用方式如下：
+比如系统环境安装的是 1.8 版本的 JDK，当我们的项目依赖的 JDK 版本不是 1.8 时，我们可以通过 `maven-toolchains-plugin` 去指定 maven 编译项目所需的 JDK 版本。具体的使用方式如下：
 
 第一步：先在用户配置目录 `~/.m2/toolchains.xml` 或 `Maven` 安装目录 `conf/toolchains.xml` 创建工具链配置文件。
 
@@ -27,7 +26,7 @@ weight: 40
             <jdkHome>/usr/lib/jvm/java-11-openjdk</jdkHome>
         </configuration>
     </toolchain>
-    
+
     <toolchain>
         <type>jdk</type>
         <provides>
@@ -51,7 +50,7 @@ weight: 40
             <jdkHome>/opt/jdk-17.0.5</jdkHome>
         </configuration>
     </toolchain>
-    
+
 </toolchains>
 
 ```

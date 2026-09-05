@@ -3,7 +3,6 @@ title: "飞书 lark-cli 安装笔记"
 linkTitle: "飞书 lark-cli 安装笔记"
 weight: 50
 ---
-
 ## 第一章 概述
 
 ### 1.1 工具简介
@@ -54,7 +53,7 @@ npm view @larksuite/cli dist.tarball
 方式二：通过 `npm pack` 命令直接下载 `lark-cli` 安装包
 
 ```bash
-# 下载 lark-cli-*.tgz 安装到当前目录 
+# 下载 lark-cli-*.tgz 安装到当前目录
 npm pack @larksuite/cli
 
 # 将安装下载到指定目录
@@ -87,7 +86,7 @@ npm root -g
 
 注意： `lark-cli-*.tgz` 解压后, 将 `package.json` 根目录下的所有文件复制到 `node_modules/@larksuite/cli` 目录下即可。
 
-4. 安装 lark-cli.exe 运行命令 
+4. 安装 lark-cli.exe 运行命令
 
 ```bash
 # 下载 lark-cli.exe 运行命令

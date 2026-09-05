@@ -3,10 +3,9 @@ title: "Kafka 学习笔记"
 linkTitle: "Kafka 学习笔记"
 weight: 40
 ---
-
 ## Kafka 核心概念
 
-![Kafka 架构图](/images/Kafka架构图.png)
+![Kafka 架构图](/images/Kafka 架构图.png)
 
 ### Broker 消息代理
 
@@ -33,7 +32,6 @@ weight: 40
 
 - 消息生产者，向 Broker 发送消息的客户端
 
-
 ### Consumer 消费者
 
 - 消费者是从 Broker 读取消息的客户端，消费者可以订阅一个或多个消息主题，并从 Broker 节点中拉取消息。
@@ -44,7 +42,6 @@ weight: 40
 - 一个消费者可以消费多个分区的消息，一个分区只能被同一个消费者组内的一个消费者消费，但是需要注意不同消费者组内的消费者是可以对同一分区消费。
 - 消息者组允许消费者水平扩展，我们可以通过增加消费者，提高处理吞吐量，注意消费者数量不能大于分区数量，多余的消费者将处于**空闲状态**，不会分配到任何分区。
 
-
 ## Kafka 如何保证消息顺序
 
 Kafka 消息在分区中是以文件日志形式按顺序存储的，只保证消息在分区内的顺序性，不保证 Topic 级别或全局顺序，我们可以通过以下方式实现消息的顺序性。
@@ -54,15 +51,13 @@ Kafka 消息在分区中是以文件日志形式按顺序存储的，只保证�
 - **自定意生产和消费者的分区路由**：在同一个分区内的消息是顺序储存的，通过路由自定义到指定分区。
 - **消费者**使用单一线程处理分区消息，不要使用多线程，同时手动管理消息偏移量。
 
-
 ## 消息传递语义
 
 - 最多一次（At Most Once）: 设置 `acks =0`，消息可能会丢失，但绝不会重复发送，生产者只发送一次消息，不管消费者有没有收到。该语义适用于对消息丢失不敏感的场景，但可能导致数据不一致。
 
-- 至少一次（At Least Once）: 设置 `acks =1 | all`，消息永远不会丢失，但可能会重复发送。如果生产者没有收到 Broker 发送的 ack 确认消息，生产者会一直重试发送（如果 Broker 收到消息了，只是 Broker 发送确认消息出错了，生产者也会重试发送消息），直到收到 Broker 响应的确认消息， 该语义确保了消息的可靠传递，适用于需要确保消息到达的场景，但需要在消费者端处理重复消息的逻辑。 
+- 至少一次（At Least Once）: 设置 `acks =1 | all`，消息永远不会丢失，但可能会重复发送。如果生产者没有收到 Broker 发送的 ack 确认消息，生产者会一直重试发送（如果 Broker 收到消息了，只是 Broker 发送确认消息出错了，生产者也会重试发送消息），直到收到 Broker 响应的确认消息， 该语义确保了消息的可靠传递，适用于需要确保消息到达的场景，但需要在消费者端处理重复消息的逻辑。
 
 - 精确一次（Exactly Once）: 设置 `acks =all`，每条消息只传递一次，既不会丢失也不会重复。该语义是最理想的语义，但实现起来较为复杂，通常需要结合事务处理和幂等性来保证。
-
 
 ## 消息模型
 
@@ -85,18 +80,17 @@ Kafka 对于以上两种消息传递模式的实现原理如下：
 │         │ P0  │ │ P1  │ │ P2  │      │
 │         └─────┘ └─────┘ └─────┘      │
 └─────────────────┬────────────────────┘
-                  │ 
-            ┌─────▼─────┐ 
-            │ Group A   │ 
-            │ ┌───────┐ │ 
-            │ │ Cons1 │ │ 
-            │ └───────┘ │ 
-            │ ┌───────┐ │ 
-            │ │ Cons2 │ │ 
-            │ └───────┘ │ 
-            └───────────┘ 
+                  │
+            ┌─────▼─────┐
+            │ Group A   │
+            │ ┌───────┐ │
+            │ │ Cons1 │ │
+            │ └───────┘ │
+            │ ┌───────┐ │
+            │ │ Cons2 │ │
+            │ └───────┘ │
+            └───────────┘
 ```
-
 
 通过同一个分区的消息能被不同消费者组内的消费者消费的规则，来指定一个主题多个消费者组来消费，就能实现发布订阅模型，发布订阅模型示意图如下：
 
@@ -120,7 +114,6 @@ Kafka 对于以上两种消息传递模式的实现原理如下：
 
 ```
 
-
 ## 生产者消息路由机制
 
 每个主题（Topic）可以划分为多个 leader 分区，分布在 Broker 集群的节点中，来实现主题消息的负载均衡。生产发送主题消息时，kafka 通过路由分区器决定将消息发送到哪个 leader 分区中，kafka 默认有多个路由分区器，同时也支持我们自定义路由分区器。
@@ -140,11 +133,9 @@ partition = hash(key) % numPartitions
 
 当消息未指定 Key（null）时，每条消息轮询发送到主题的不同分区上，特点是实现消息的均匀分布。
 
-
 #### Sticky Partitioning（粘性分区）
 
 生产者批量发送时，会将同一批次的消息"粘"（全部发送）到一个分区，特点是减少批处理的创建开销提高吞吐量。
-
 
 ### 自定义分区路由
 
@@ -153,33 +144,33 @@ partition = hash(key) % numPartitions
 ```java
 
 public class CustomPartitioner implements Partitioner {
-    
+
     @Override
     public int partition(String topic, Object key, byte[] keyBytes,
                         Object value, byte[] valueBytes, Cluster cluster) {
-        
+
         List<PartitionInfo> partitions = cluster.partitionsForTopic(topic);
         int numPartitions = partitions.size();
-        
+
         // 自定义逻辑示例1：基于业务字段
         if (key instanceof String) {
             String strKey = (String) key;
             return strKey.startsWith("A") ? 0 : 1;
         }
-        
+
         // 自定义逻辑示例2：时间范围分区
         if (value instanceof Event) {
             Event event = (Event) value;
             return event.getTimestamp() % numPartitions;
         }
-        
+
         // 默认使用哈希
         return Math.abs(key.hashCode()) % numPartitions;
     }
-    
+
     @Override
     public void close() {}
-    
+
     @Override
     public void configure(Map<String, ?> configs) {}
 }
@@ -231,10 +222,9 @@ c2: tp1-p1, tp2-p0
 
 Sticky 粘性分配策略的分配逻辑有两个原则，如下：
 
-1、在开始分区时，尽量保持分区的分配均匀。比如按照Range策略分（这一步实际上是随机的）。
+1、在开始分区时，尽量保持分区的分配均匀。比如按照 Range 策略分（这一步实际上是随机的）。
 
-2、分区的分配尽可能的与上一次分配的保持一致。比如在range分区的情况下，第三个Consumer的服务岩机了，那么按照sticky策略，就会保持consumer1和consumer2原有的分区分配情况。然后将consumer3分配的7~9分区尽量平均的分配到另外两个consumer上。这种粘性策略可以很好的保持Consumer的数据稳定性。
-
+2、分区的分配尽可能的与上一次分配的保持一致。比如在 range 分区的情况下，第三个 Consumer 的服务岩机了，那么按照 sticky 策略，就会保持 consumer1 和 consumer2 原有的分区分配情况。然后将 consumer3 分配的 7~9 分区尽量平均的分配到另外两个 consumer 上。这种粘性策略可以很好的保持 Consumer 的数据稳定性。
 
 ### 自定义分配策略
 
@@ -247,19 +237,13 @@ class CustomAbstractPartitionAssignor extends AbstractPartitionAssignor {
 }
 ```
 
-
-
-
-
 ## 生产者和消费属性配置介绍
-
 
 ### broker 服务器属性
 
 **auto.create.topics.enable 属性**：任何生产者发送消息或消费者拉取消息时，如果主题不存在，则根据该属性判断是否自动创建主题。
 
 **min.insync.replicas 属性**：表示当生产者设置 acks = all(-1) 时，需要最少多少个 Fllower 副本分区同步 leader 分区后，才会发确认消息给生产者。
-
 
 ### 生产者属性
 
@@ -271,8 +255,6 @@ class CustomAbstractPartitionAssignor extends AbstractPartitionAssignor {
 
 3. `acks = -1 或者 acks = all` 表示生产者发送消息后， 等待 Leader 分区写入本地日志后，还需要等待 ISR（In-Sync Replicas ）中的所有 Fllower 副本分区都写入成功后，才返回确认消息发送成功。该方案可靠性最高，会存在消息幂等性，即消息重复发送问题，并且延迟性比较高和吞吐量比较低，acks 注意配合 `min.insync.replicas ` 属性使用。
 
-
-
 ### 消费者属性
 
 **auto.offset.reset 属性** 表示消费者组第一次消费主题某个分区的消息时或者消费者在 `__consumer_offsets `主题中查询不到消费组对该主题分区的消费偏移量时，会触发 `auto.offset.reset ` 属性来重置 offset 表示要从哪里开始消费主题分区的消息，有以下几种方式。
@@ -283,9 +265,7 @@ class CustomAbstractPartitionAssignor extends AbstractPartitionAssignor {
 
 3. `auto.offset.reset = none` 表示不自动重置 offset，如果没有找到有效的 offset 偏移量，抛出异常。优点是最安全的防止意外消费错误位置，缺点是可能导致消费停止如果没有正确处理。
 
-
 ### 主题属性
-
 
 主题消息保留机制有两种分别是日志分片滚动和日志保留原理，除了 Broker 级别的保留机制配置，我们还可以为每个主题单独配置不同的保留机制，我们只需要创建主题时，指定以下参数即可。
 
@@ -294,15 +274,12 @@ class CustomAbstractPartitionAssignor extends AbstractPartitionAssignor {
 - 基于时间的滚动：当活动分片的存在时间超过配置的 `segment.ms(默认7天)` 时，Kafka 会关闭当前分片并创建一个新的分片。
 - 基于大小的滚动：当活动分片的大小达到配置的 `segment.bytes(默认1G)` 时，Kafka 会关闭当前分片并创建一个新的分片。
 
-
 第二种机制：日志保留机制，该策略决定了消息在被删除之前可以保留多长时间或占用多大空间。
 
 - 基于时间的保留：配置 `retention.ms(默认值3天)` 指定消息的保留时间，超过该时间的非活动分片将被删除。
 - 基于大小的保留：配置 `retention.bytes(默认值无限制)` 指定每个分区的最大日志大小，超过该大小的旧分片将被删除。
 
-
 ## 客户端常用命令
-
 
 查看所有消费者组
 
@@ -315,7 +292,6 @@ kafka-consumer-groups.sh --bootstrap-server 10.250.6.61:9092 --all-groups --desc
 ```bash
 kafka-topics.sh --bootstrap-server 127.0.0.1：19092 --describe --topic __consumer_offsets
 ```
-
 
 ## 参考链接
 

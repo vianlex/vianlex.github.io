@@ -3,7 +3,6 @@ title: "Go 包导入说明"
 linkTitle: "Go 包导入说明"
 weight: 20
 ---
-
 ## 一、import 导入方式
 
 ### 1.1 匿名导入
@@ -68,7 +67,7 @@ var _ io.Reader = (*MyReader)(nil)
 
 ### 2.1 三种路径类型
 
-```
+```text
 ┌─────────────────────────────────────────────┐
 │                  import 路径                 │
 ├──────────────┬──────────────┬───────────────┤
@@ -178,7 +177,7 @@ github.com/gin-gonic/gin v1.9.1/go.mod h1:Hash值
 
 **语义化版本：**
 
-```
+```text
 v1.9.1
  │ │ └── Patch：bug 修复
  │ └──── Minor：新功能
@@ -242,7 +241,7 @@ func B() {}
 
 **可见性规则：** 只能被父包及其子包访问
 
-```
+```text
 project/
 ├── cmd/main.go      ✓ 可访问 internal/pkg
 └── internal/pkg/   ✓ 可访问 internal/utils

@@ -3,11 +3,9 @@ title: "Maven 问题记录"
 linkTitle: "Maven 问题记录"
 weight: 50
 ---
-
 ## Maven 依赖 OpenJDK 时，运行 mvn 命令会出现证书验证问题
 
 >报错信息：java.lang.RuntimeException: Unexpected error: java.security.InvalidAlgorithmParameterException: the trustAnchors parameter must be non-empty
-
 
 1. 第一种临时的解决方式：
 
@@ -45,7 +43,6 @@ Maven 读取本地依赖包时，会有一个 Verifying availability 验证依�
 
 2. 第二种方式，执行命令时加上 `-llr 或 -Dmaven.artifact.enhancedLocalRepository.enabled=false ` 参数表示不使用 __remote.repositories 文件。
 
-
 ## maven 编译项目时，提示 JDK 版本不对
 
 通过 maven 编译项目时，如果提示以下错误，则说明系统环境中安装的 JDK 版本，与项目中 jar 依赖包支持的 JDK 版本不匹配。
@@ -56,7 +53,6 @@ jar 中的类文件具有错误的版本 61.0, 应为 52.0，请删除该文件�
 
 解决方式：将依赖包的版本进行更换，或者修改系统环境中安装的 JDK 版本。
 
-
 ## maven 编译项目时，找不到对应的 JDK
 
 通过 maven 编译项目时，如果项目出现以下问题，说明 maven-compiler-plugin 找不到指定的 JDK 版本。
@@ -66,7 +62,6 @@ org.apache.maven.plugins:maven-compiler-plugin:3.13.0:compile (default-compile) 
 ```
 
 解决方式：检查系统环境中是否安装了对应的 JDK 版本。
-
 
 ## maven 项目中子模块的版本，使用属性统一配置时，报错问题
 
@@ -116,17 +111,16 @@ org.apache.maven.plugins:maven-compiler-plugin:3.13.0:compile (default-compile) 
 通过以下命令，上传第三 JAR 包
 
 ```bash
-mvn deploy:deploy-file 
-  -Dfile=D:/xxx/bos-webapi-sdk-8.2.0.jar 
-  -DgroupId=com.kingdee 
-  -DartifactId=bos-webapi-sdk 
-  -Dversion=8.2.0 
-  -Dpackaging=jar 
-  -DpomFile=D:/xxx/bos-webapi-sdk-8.2.0.pom 
-  -Durl=http://192.168.18.226:8888/repository/maven-releases/ 
+mvn deploy:deploy-file
+  -Dfile=D:/xxx/bos-webapi-sdk-8.2.0.jar
+  -DgroupId=com.kingdee
+  -DartifactId=bos-webapi-sdk
+  -Dversion=8.2.0
+  -Dpackaging=jar
+  -DpomFile=D:/xxx/bos-webapi-sdk-8.2.0.pom
+  -Durl=http://192.168.18.226:8888/repository/maven-releases/
   -DrepositoryId=maven-releases
 ```
-
 
 ### 解决方式
 
@@ -134,7 +128,7 @@ mvn deploy:deploy-file
 
 注意，勾选 `Generate a POM file with these coordinates` 后，Maven 仓库会自动生成的 pom.xml 文件，但是内容非常精简，如下
 
-```xml 
+```xml
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 <modelVersion>4.0.0</modelVersion>
 
@@ -149,9 +143,8 @@ mvn deploy:deploy-file
 Maven 仓库自动生成的 POM 文件非常精简，不会包含任何 `<dependencies>` 信息
 
 - 后果：如果你上传的 JAR 本身又依赖了其他库（比如它需要 `commons-lang` 才能运行），这个自动生成的 pom 文件里并没有声明这些依赖。
-- 导致的问题：在项目A中依赖这个JAR后，编译时可能会报错，提示找不到 `commons-lang` 中的类。因为你项目A的 Maven 无法得知这个传递性依赖，所以不会自动下载 `commons-lang`。
-- 解决办法：你必须到项目A的 `pom.xml` 里，手动添加 `commons-lang` 的依赖。
-
+- 导致的问题：在项目 A 中依赖这个 JAR 后，编译时可能会报错，提示找不到 `commons-lang` 中的类。因为你项目 A 的 Maven 无法得知这个传递性依赖，所以不会自动下载 `commons-lang`。
+- 解决办法：你必须到项目 A 的 `pom.xml` 里，手动添加 `commons-lang` 的依赖。
 
 ### 问题解释
 

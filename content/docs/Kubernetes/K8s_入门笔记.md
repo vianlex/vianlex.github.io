@@ -3,7 +3,6 @@ title: "K8s 入门笔记"
 linkTitle: "K8s 入门笔记"
 weight: 10
 ---
-
 ## 1. 介绍
 
 Kubernetes 的简称 K8s，Kubernetes 是 Google 开源的容器编排工具。kubernetes 的本质是一组服务器集群，集群的每个节点上运行特定的程序组件，通过组件去实现资源管理的自动化。
@@ -12,15 +11,15 @@ Kubernetes 的简称 K8s，Kubernetes 是 Google 开源的容器编排工具。k
 
 一个 K8s 集群主要是由控制节点（Master node）、工作节点（Work node）构成，每个节点上都会安装不同的组件, 如下图所所示(图片来源于网络)：
 ![图一](/images/k8s-架构图.png)
-### 2.1 Master 节点 
+### 2.1 Master 节点
 
 Mater 节点负载整个集群的管理和和控制、以及负责集群的决策。
 
 | 组件 | 作用 |
 |--    | --  |
-| apiserver |提供了资源操作的唯一入口，并提供认证、授权、访问控制、API注册和发现等机制 |
+| apiserver |提供了资源操作的唯一入口，并提供认证、授权、访问控制、API 注册和发现等机制 |
 | controller-manager | 负责维护集群的状态，比如故障检测、自动扩展、滚动更新等 |
-| scheduler | 负责资源的调度，按照预定的调度策略将Pod调度到相应的机器上 |
+| scheduler | 负责资源的调度，按照预定的调度策略将 Pod 调度到相应的机器上 |
 | etcd | 保存了整个集群的状态（集群中各种资源对象的信息） |
 
 ### 2.2 Node 节点
@@ -31,9 +30,9 @@ Node 真正运行工作负载的节点，通过 kube-proxy 管理应用服务的
 | -- | -- |
 | Kubelet | 负责维护容器的生命周期，即通过控制 docker、来创建、更新、销毁容器 |
 | Kube-Proxy | 负责提供 Node 节点应用集群的服务发现和负载均衡，Internet(或者用户)访问应用前必须经过 Kube-Proxy |
-| docker | 负责镜像管理以及Pod和提供容器的真正运行接口(CRI) , CRI 是一个接口，用来操作容器的接口。k8s通过CRI对容器进行操作，创建、启停容器等 |
+| docker | 负责镜像管理以及 Pod 和提供容器的真正运行接口(CRI) , CRI 是一个接口，用来操作容器的接口。k8s 通过 CRI 对容器进行操作，创建、启停容器等 |
 
-### 2.3 kubectl 
+### 2.3 kubectl
 
 kubectl 是与 kubernetes 集群交互的一个命令行工具，kubectl 通过与 kubernets api server 提供 Rest API 来操作控制 K8s 集群，类似于 docker 中的 docker 命令。kubectl 在执行命令的时候可以加上一个 -v=9 参数（注意参数值越大日志越详细）查看执行的具体步骤：
 - 读取 kubectl 的配置文件，判断需要与哪个 api server 交互
@@ -47,16 +46,16 @@ kubectl 的命令行语法格式 ` kubectl [command] [resource-type] [name] [fla
 - command 指定对资源执行的操作，如：create、apply、get、describe、delete 等
 - resource-type 指定要操作的资源类型，使用资源的单数或者复数、简写都可以，如 pods 或 pod 或 po, nodes 或 node 或 no, 等等
 - name 根据名称指定要操作的具体资源
-- flags 
+- flags
 
 ## 3. K8s resouce(资源)的理解
 
-K8s 组件是支持 K8s 平台运行的软件，是系统运行的进程，资源是通过组件去创建和管理的。跟 Linux 中一切皆文件, 在 K8S 中也有一切皆资源的概念。Resource 是 K8s 的一个基础概念，k8s 用 Resource 来表示集群中的各个资源。d都可以在资源文件中配置。比如 Pod、Service、Deployment、namespace 等等都属于 K8s 的资源，尽管这个资源看起来差别很大，但它们都有许多共同的属性，如 name(名称)、kind(类型)、apiVersion(api版本)、metadata(元信息等)。
+K8s 组件是支持 K8s 平台运行的软件，是系统运行的进程，资源是通过组件去创建和管理的。跟 Linux 中一切皆文件, 在 K8S 中也有一切皆资源的概念。Resource 是 K8s 的一个基础概念，k8s 用 Resource 来表示集群中的各个资源。d 都可以在资源文件中配置。比如 Pod、Service、Deployment、namespace 等等都属于 K8s 的资源，尽管这个资源看起来差别很大，但它们都有许多共同的属性，如 name(名称)、kind(类型)、apiVersion(api 版本)、metadata(元信息等)。
 
 ### 3.1 查看 resource(资源)的命令
 
 ```bash
-kubectl api-resource 
+kubectl api-resource
 ```
 ### 3.2 resource(资源)文件定义
 
@@ -64,11 +63,11 @@ k8s 资源支持定义的属性很多，定义资源文件时，未定义的属�
 
 ```yaml
 # 指定资源的版本，命令 kubectl explain resource 可以查看资源使用的版本，如查看 pod 资源的版本，运行命令： kubectl explain pod
-apiVersion: v1  
+apiVersion: v1
 # 指定资源的类型，pod、namespace, service 等等
 kind: pod
-# metadata 可以定义的资源的名称等，可以使用命令 kubectl explain resource.metadata 查看支持哪些属性的定义  
-metadata:   
+# metadata 可以定义的资源的名称等，可以使用命令 kubectl explain resource.metadata 查看支持哪些属性的定义
+metadata:
   # 指定资源的名称
   name: test-nginx
   # 指定资源的命名空间，指定的话，默认是 default
@@ -76,23 +75,23 @@ metadata:
   # 指定资源的版本
   resourceVersion: "11012"
 # 定义资源的特定属性
-spec: 
+spec:
   # 使用命令 kubectl explain resource.
   containers:
     # 指定容器的名称
-    - name: nginx-container 
+    - name: nginx-container
       # 指定容器运行的镜像
       image: nginx
       ports:
         # hostport(主机端口) 和 containerPort(容器端口) 相当于 docker run -p 指定的端口
         - containerPort: 80
-          hostport: 80  
+          hostport: 80
 ```
 
 快速生成资源文件
 
 ```bash
-# 不存在的资源，需要指定 --dry-run 表示不是正在的创建资源，只是试运行，为了导出资源文件 
+# 不存在的资源，需要指定 --dry-run 表示不是正在的创建资源，只是试运行，为了导出资源文件
 kubectl create deployment web --image=nginx-o yaml --dry-run
 # 或者
 kubectl run Pod test-nginx --image=nginx --dry-run=client -o yaml
@@ -107,12 +106,12 @@ kubectl get pods [pod-name] -o yaml
 
 ```bash
 # 第一种方式创建命名空间，查看创建日志，在命令后面加参数 -v = 9 其中 9 表示日志的级别，一般数字越大信息越详细
-kubectl create [ns | namespaces]  空间名称  
+kubectl create [ns | namespaces]  空间名称
 # 第二种方式，第一中方式其实时第二种方式的简化处理
 kubectl create -f /xx/xx/xx.yaml
 
 # 查看命名空间信息，可选参数 -o 指定查看信息的详细程度和输出格式
-kubectl get [ns | namespaces] 空间名称 -o [wide | ymal | json ] 
+kubectl get [ns | namespaces] 空间名称 -o [wide | ymal | json ]
 # 删除命名空间
 kubectl delete [ns | namespaces]  空间名称
 ```
@@ -132,13 +131,13 @@ kubectl create -f resource-file.yaml 或 resource-file.josn 或 http://xxx/xx/xx
 
 - -f 指定创建资源使用的资源文件或者文件流
 - -k 指定使用某个目录下的 kustomization.yaml 文件创建或者更新资源
-- --record 将当前执行的命令，记录在资源的annotation(注释)中，记录的格式为 ` kubernetes.io/change-cause: <kubectl 执行的命令>` 
+- --record 将当前执行的命令，记录在资源的 annotation(注释)中，记录的格式为 ` kubernetes.io/change-cause: <kubectl 执行的命令>`
 
 ```bash
 # 根据指定的资源文件更新或者创建资源
 kubectl apply -f  resource-file.yml 或 resouce-file.json 或 https://xxx/xxx/resource-file.yml
 # 根据资源文件的标准输入流创建或者更新资源
-cat resource-file.yml |  kubectl apply -f - 
+cat resource-file.yml |  kubectl apply -f -
 # 指定读取目录下的资源文件
 kubectl apply -k  /home/resource-dir
 ```
@@ -146,24 +145,24 @@ kubectl apply -k  /home/resource-dir
 
 - -A 指定查看全部命名空间的资源
 - -n 指定查看某个命名空间的资源，如 `-n kube-system `
-- --show-lables 查看资源的 label 
-- -w, --watch=&lt;true|false> 实时显示资源信息，相当于 tail 中的 -f 
+- --show-lables 查看资源的 label
+- -w, --watch=&lt;true|false> 实时显示资源信息，相当于 tail 中的 -f
 - -o, --output 指定结果的输出格式，常用的可选值有 wide、yaml、json、name(只显示名称) 等等
 注意查看资源时，如果时需要命名空间隔离的资源，需要 `-n ` 参数指定命名空间或者 ` -A ` 指定查看全部命名空间的资源，如果指定命名空间，默认查看的是 default 命名空间的资源，可以使用命令 ` kubectl api-resources ` 查看资源是否需要命名空间隔离。
 
 ```bash
 # 查看 k8s 的所有 node 节点
-kubectl get nodes 
+kubectl get nodes
 # 根据名字查看某个 node 节点
-kubectl get node [node-name] 
+kubectl get node [node-name]
 # 查看 pod 资源
-kubectl get pods # 不指定命名空间，查看的 default 命名空间的所有 pod 
+kubectl get pods # 不指定命名空间，查看的 default 命名空间的所有 pod
 # 查看所有命名空间下的所有 pod
 kubectl get pods -A
 # 查看某个命名空间的所有 pod
 kubectl get pods kube-system
-# 根据名称查看某个 pod 
-kubectl get pod [pod-name] -o wide | yaml | josn 
+# 根据名称查看某个 pod
+kubectl get pod [pod-name] -o wide | yaml | josn
 ```
 4. kubectl describe 命令展示资源详情信息
 
@@ -175,7 +174,7 @@ kubectl describe node [node-name]
 ```
 5. kubectl label 命令，用于新增、更新、删除资源标签，资源的每个标签都是 `key=value` 的形式，注意在 yaml 中定义资源的标签时，使用的是` key : value ` 形式
 
-命令的语法格式 `kubectl lable <resource-type : resource-file > <resouece-name>... <key=label>... [--resource-version=version]` 其中 ... 表示可以指定多个然后用空格隔开 
+命令的语法格式 `kubectl lable <resource-type : resource-file > <resouece-name>... <key=label>... [--resource-version=version]` 其中 ... 表示可以指定多个然后用空格隔开
 
 ```bash
 # 查看 node 节点标签
@@ -185,11 +184,11 @@ kubectl label node k8s-node  hello=world
 # --overwrite 表示打标签时，如果存在标签 key 相同的标签，则覆盖更新标签
 kubectl label node k8s-node --overwrite hello=node-world
 # 给所有node 节点都打上 test-k8s-node = true 标签
-kubectl label node --all  test-k8s-node = true 
+kubectl label node --all  test-k8s-node = true
 # 给名为 k8s-node01 和 k8s-node02 的节点都打上 hello=world 和 whoiam=node 标签
 kubectl label node k8s-node01 k8s-node02 hello=world whoiam=node
 # 删除资源的标签，使用 key和减号，如删除所有节点中标签 key 等于 hello 的标签
-kubectl lable node --all hello- 
+kubectl lable node --all hello-
 
 # 查看 pods 的标签
 kubectl get pods --show--label
@@ -208,13 +207,13 @@ kubectl label pod -f xxx.yaml hello=world
 
 ```bash
 # 进入 default 命名空间下 test-web 内的 web01 容器中
-kubectl exec  test-web -c web01 -it -- /bin/sh 
+kubectl exec  test-web -c web01 -it -- /bin/sh
 ```
 
 ## 4. Pod
 
 Pod 是 k8s 的最小调度单位，Pod 包含一个或多个 Container(容器) ，K8s 创建 Pod 时，Pod 内容器默认使用的 Container 网络模式，所以在运行 Pod 中定义的容器之前，会先默认创建运行一个 init 容器，其他容器使用 init 容器的网络命名空间, 从而实现 Pod 内容器共享网络。即 Pod 内容器使用 localhost 就可以相互访问。注意 init 容器也是可以在资源文件中自定义，具体可以查看官方文档。
-kubernetes 本身的组件也可以通过容器化的方式运行在集群中，并且都存在于 kube-system 命名空间下。注意 k8s 支持通过资源文件或者运行 kubectl run 创建 Pod。 
+kubernetes 本身的组件也可以通过容器化的方式运行在集群中，并且都存在于 kube-system 命名空间下。注意 k8s 支持通过资源文件或者运行 kubectl run 创建 Pod。
 
 ### 4.1 定义 Pod 资源文件
 
@@ -223,7 +222,7 @@ kubernetes 本身的组件也可以通过容器化的方式运行在集群中，
 ```yaml
 apiVersion: v1
 # 注意要大写
-kind: Pod 
+kind: Pod
 metadata:
   name: test-web
 spec:
@@ -239,7 +238,7 @@ spec:
           # 容器 expose 的端口，在集群集群内，可以使用 Pod 分配的 ip 访问
         - containerPort: 80
           # 宿主机的端口，相当于 docker run -p 8000:80，可以使用 Pod 所在节点的 Ip 访问
-          hostPort: 8000 
+          hostPort: 8000
 ```
 ### 4.2 操作 Pod 的常用命令
 
@@ -248,13 +247,13 @@ spec:
 ```bash
 # 创建 pod，注意如果 yaml 文件或者不使用 -n 指定命名空间，则 pod 会创建在默认 default 命名空间下，是使用命令 kubectl explain pod.metadata 可以查看
 kubectl create pod -f xxx.yaml
-# 创建或者更新 pod 
+# 创建或者更新 pod
 kubectl apply pod -f xxx.yaml
 ```
 2. 删除 pod
 
 ```bash
-# 根据名称删除 pod，如果不指定命名空间，则删除 default 命名空间下的 pod 
+# 根据名称删除 pod，如果不指定命名空间，则删除 default 命名空间下的 pod
 kubectl delete pod [pod-name] [-n 命名空间]
 # 根据资源文件中的 kind、metadata.namespace、metadata.name 确定要删除的资源
 kubectl delete -f xxx.yaml
@@ -265,18 +264,18 @@ kubectl delete -f xxx.yaml
 
 ```bash
 # 不指定命名空间，默认查看 default 命名空间下的 pods
-kubectl get pod -o wide 
+kubectl get pod -o wide
 # 查看所有命名空间的 pods
-kubectl get pod -A 
-# 根据名字查看指定的 pod 不指定命名空间，默认查看 default 命名空间的 pod 
+kubectl get pod -A
+# 根据名字查看指定的 pod 不指定命名空间，默认查看 default 命名空间的 pod
 kubectl get pod [pod-name]
 ```
 第二种方式：kubectl describe pod [po-name] [-n 命名空间 | -A]，使用第二种方式，可以查看 pod 详细信息和 events 事件
 
 ```bash
 # 查看 default 命名空间的下的所有 pod
-kubectl describe pod 
-# 根据名称查看 pod 信息，注意如果不指定命名空间，则默认查看 default 命名空间下的 pod 
+kubectl describe pod
+# 根据名称查看 pod 信息，注意如果不指定命名空间，则默认查看 default 命名空间下的 pod
 kubectl describe pod [pod-name]
 ```
 4. pod 端口映射到宿主机端口
@@ -292,7 +291,7 @@ kubectl port-forward test-web --address localhost,192.168.204.3  3000:80
 ```bash
 kubectl exec test-web -n default -c web01 -it -- bash
 # 查看环境变量
-kubectl exec test-web -n default -c web01 env 
+kubectl exec test-web -n default -c web01 env
 ```
 6. 查看 Pod 内的容器日志
 
@@ -304,7 +303,7 @@ kubectl logs test-web -n default -c web01 -f --tail=200
 
 ```bash
 # 通过 --dry-run 参数，指定显示 Pod 的创建资源文件信息，不实际运行 Pod
-kubectl run test-web  --image=nginx --dry-run=client -o yaml  
+kubectl run test-web  --image=nginx --dry-run=client -o yaml
 ```
 ### 4.3 Pod 容器数据持久化，即容器挂载目录到宿主机，防止数据丢失
 
@@ -312,23 +311,23 @@ kubectl run test-web  --image=nginx --dry-run=client -o yaml
 
 ```yaml
 apiVersion: v1
-kind: Pod 
+kind: Pod
 metadata:
   name: test-web
 spec:
   # 指定将 Pod 资源创建在标签为 hello=world 的 node 主机节点中，注意如果多个 node 节点都存在 hello=world 标签, k8s 会调度选定一个节点，
   # 如果固定选择某个 node 节点，需要标签唯一
   nodeSelector:
-    #注意在，在 yaml 中定义或者使用 label 时用 : 代替 = 
-    hello: world 
+    #注意在，在 yaml 中定义或者使用 label 时用 : 代替 =
+    hello: world
   volumes:
     - name: nginx-data
       hostPath: # 定义挂载的宿主机目录
         # 注意该目录是 node 节点主机的目录，Pod 创建时调度到不确定的节点，最好使用 nfs、ceph、glusterfs 文件共享存储目录,
-        # 或者通过 nodeSelector 指定 pod 部署的节点，才能保证，Pod 删除后重新创建时，挂载目录还是固定的主机目录 
-        path: /opt/data 
+        # 或者通过 nodeSelector 指定 pod 部署的节点，才能保证，Pod 删除后重新创建时，挂载目录还是固定的主机目录
+        path: /opt/data
         # 指向一个目录，不存在时自动创建
-        type: DirectoryOrCreate     
+        type: DirectoryOrCreate
   containers:
     - name: test-nginx # 容器名字
       image: nginx # 镜像
@@ -341,12 +340,12 @@ spec:
 
 Pod 重启策略(RestartPolicy)，定义容器的重启规则，当 Pod 内某个容器异常退出或者探针健康检测失败时，kubelet 会根据重启策略(RestartPolicy)来进行相应的操作。Pod 的重启策略有三种分别是 Always、OnFailure、Never，默认值是 Always。
 - Always 当容器进程退出时，kubelet 总是会自动重启容器
-- OnFailure 当容器终止运行且退出码不为0时，kubelet 会自动重启容器
-- Never 当前容器运行状态如何，kubelet 都不会自动启动容器 
+- OnFailure 当容器终止运行且退出码不为 0 时，kubelet 会自动重启容器
+- Never 当前容器运行状态如何，kubelet 都不会自动启动容器
 
 ```bash
 apiVersion: v1
-kind: Pod 
+kind: Pod
 metadata:
   name: test-web
   namespace: default
@@ -356,9 +355,9 @@ spec:
     - name: busybox
       image: busybox
       # 命令正常执行成功返回的 0，设置退出码为 1 测试 OnFailure 重启策略
-      args: 
+      args:
         - /bin/sh
-        - c 
+        - c
         - sleep 10 && exit 1
 
 ```
@@ -370,7 +369,7 @@ probe(探针) 是由 kubelet 对容器定期执行的健康诊断。 诊断的�
 #### 4.5.1 探针检测的方式
 
 - exec 在容器内执行指定命令。如果命令退出时返回码为 0 则认为诊断成功。
-- gRPC 如果容器中实现 gRPC健康检查，可以使用 gRPC 执行一个远程过程调用。如果响应的状态是 SERVING，则认为诊断成功。
+- gRPC 如果容器中实现 gRPC 健康检查，可以使用 gRPC 执行一个远程过程调用。如果响应的状态是 SERVING，则认为诊断成功。
 - httpGet 对容器服务发起 HTTP GET 请求。如果响应的状态码大于等于 200 且小于 400，则任务诊断成功。
 - tcpSocket 对容器的指定端口执行 TCP 检查。如果端口打开，则诊断被认为成功
 
@@ -425,13 +424,13 @@ sepc:
     - name: web01
       image: nginx
       resource:
-        # 使用命令 kubectl describe node [node-name] 能查看主机节点的内存和 cpu 
+        # 使用命令 kubectl describe node [node-name] 能查看主机节点的内存和 cpu
         requests:
           memory: 200Mi
           cpu: 50m
         limits:
           memory: 500Mi
-          cpu: 100m 
+          cpu: 100m
 ```
 
 ### 4.7 Pod 状态和生命周期
@@ -455,7 +454,7 @@ gantt
   livenessProbe: m1, 07, 2s
   readinessProbe: m1, 07, 2s
   pre stop hook: m1, 09, 2s
-  section  
+  section
   pod stop : milestone, crit, s1, 11, 0s
 ```
 Pod 资源对象从创建到结束的时间段称为 Pod 的生命周期，Pod 周期过程和钩子函数说明如下：
@@ -473,18 +472,18 @@ Pod 资源对象从创建到结束的时间段称为 Pod 的生命周期，Pod �
 #### 4.7.2 Pod 状态和容器状态
 
 1. Pod 生命周期中各种状态说明
-- Pending（等待中）	Pod 已被 Kubernetes 系统接受，但有一个或者多个容器尚未创建亦未运行。此阶段包括等待 Pod 被调度的时间和通过网络下载镜像的时间。
-- Running（运行中）	Pod 已经绑定到了某个节点，Pod 中所有的容器都已被创建。至少有一个容器仍在运行，或者正处于启动或重启状态。
-- Succeeded（成功）	Pod 中的所有容器都已成功终止，并且不会再重启。
-- Failed（失败）	Pod 中的所有容器都已终止，并且至少有一个容器是因为失败终止。也就是说，容器以非 0 状态退出或者被系统终止。
-- Unknown（未知）	因为某些原因无法取得 Pod 的状态。这种情况通常是因为与 Pod 所在主机通信失败。
+- Pending（等待中） Pod 已被 Kubernetes 系统接受，但有一个或者多个容器尚未创建亦未运行。此阶段包括等待 Pod 被调度的时间和通过网络下载镜像的时间。
+- Running（运行中） Pod 已经绑定到了某个节点，Pod 中所有的容器都已被创建。至少有一个容器仍在运行，或者正处于启动或重启状态。
+- Succeeded（成功） Pod 中的所有容器都已成功终止，并且不会再重启。
+- Failed（失败） Pod 中的所有容器都已终止，并且至少有一个容器是因为失败终止。也就是说，容器以非 0 状态退出或者被系统终止。
+- Unknown（未知） 因为某些原因无法取得 Pod 的状态。这种情况通常是因为与 Pod 所在主机通信失败。
 
 2. Pod 内容器生命周期状态
 - Waiting （等待） 容器运行前的等待状态，如拉取容器镜像，或者向容器应用 Secret 数据等等。
 - Running（运行中） 表明容器正在执行状态并且没有问题发生。
 - Terminated（已终止） 容器已经开始执行并且或者正常结束或者因为某些原因失败。
 
-### 4.8 静态 Pod 
+### 4.8 静态 Pod
 
 静态 Pod 指的是 kubelet 自动创建的 Pod，不需要我们使用` kubectl <create|apply> `手动创建。静态 Pod 的 yaml 是存放在 ` /etc/kubernetes/manifests/ ` 中的，kubectl 会自动扫描该目录的 yaml 文件并自动创建，创建的 Pod 即为静态 Pod。如果我们想创建静态 Pod 直接将 yaml 放到该目录即可，kubectl 会自动创建。
 
@@ -501,20 +500,20 @@ metadata:
   name: test-web-config
   # 不指定命名空间的话，资源默认在 default 命名空间下
   namespace: default
-# 定义配置项，注意如果 Pod 是以挂载文件的方式引用 configMap 则 data 中的每 key-value 键值对都会单独生成一个文件，key 作为文件名，vlaue 作为文件内容 
+# 定义配置项，注意如果 Pod 是以挂载文件的方式引用 configMap 则 data 中的每 key-value 键值对都会单独生成一个文件，key 作为文件名，vlaue 作为文件内容
 data:
   # 简单键值对配置项，注意值要加引号，不然会报错
   redis_host: "127.0.0.1"
   redis_port: "6739"
   # 类似文件的配置项
   # | 在 yaml 中表示每一行都保留换行符号 \n
-  game.properties: |   
+  game.properties: |
     enemy.types=aliens,monsters
-    player.maximum-lives=5    
+    player.maximum-lives=5
   user-interface.properties: |
     color.good=purple
     color.bad=yellow
-    allow.textmode=true  
+    allow.textmode=true
   test-web.conf: |
     server {
       listen       81;
@@ -529,13 +528,13 @@ data:
 ```
 2. Secret 用于管理中的配置信息，如账号密码，等等敏感配置信息。Secret 资源的定义如下：
 
-```yaml 
+```yaml
 apiVersion: v1
 kind: Secret
 metadata:
   name: test-web-secret
   # 不指定命名空间的话，资源默认在 default 命名空间下
-  namespace: default 
+  namespace: default
 # type 指定 data 能定义哪些配置项，Opaque 表示用户可以定义的任意数据，当类型为 kubernetes.io/service-account-token 时 data 中只能配置 k8s 服务账号令牌
 # 具体查看： https://kubernetes.io/zh-cn/docs/concepts/configuration/secret/#secret-types
 type: Opaque
@@ -588,10 +587,10 @@ spec:
         # 定义环境变量 db_url
         - name: db_url
           value: jdbc://mysql/xxx//xx/xx
-        # 定义环境变量 test-env-json 
-        - name: test-env-json  
-          # | 符号，表示值可以换行和值中保留换行符号        
-          value: | 
+        # 定义环境变量 test-env-json
+        - name: test-env-json
+          # | 符号，表示值可以换行和值中保留换行符号
+          value: |
             {
               "hello":90
             }
@@ -610,7 +609,7 @@ spec:
               key: redis_port
           # 定义环境变量
         - name: apiversion
-          # 将 Pod 信息存到环境变量中 
+          # 将 Pod 信息存到环境变量中
           valueFrom:
             fieldRef:
               fieldPath: metadata.name
@@ -630,7 +629,7 @@ spec:
     - name: config-file-demo
       configMap:
         name: test-web-config
-        # 指定哪些 key 可以在容器 /etc/web-config 目录下生成文件，不指定的话，所有 Key 都会生成文件 
+        # 指定哪些 key 可以在容器 /etc/web-config 目录下生成文件，不指定的话，所有 Key 都会生成文件
         items:
         - key: "game.properties"
           path: "game.properties"
@@ -658,7 +657,7 @@ spec:
     image: nginx
     volumeMounts:
     - name: secret-config
-      # test-web-secret 中的 data 的每一个配置项都会在容器目录 /etc/config 中生成文件，key 作为文件名，value 是文件的内容  
+      # test-web-secret 中的 data 的每一个配置项都会在容器目录 /etc/config 中生成文件，key 作为文件名，value 是文件的内容
       mountPath: "/etc/config"
   volumes:
   - name: secret-config
@@ -710,10 +709,10 @@ spec:
   selector:
     matchLabels:
       app: nginx
-  # template 属性声明定义 Pod 的信息 
+  # template 属性声明定义 Pod 的信息
   template:
     metadata:
-      # 定义 Pod 的标签 
+      # 定义 Pod 的标签
       labels:
         app: nginx
     spec:
@@ -740,7 +739,7 @@ kubectl create deployment nginx-depoyment --image=nginx --replicas=3
 4. 查看 Deployment 信息
 
 ```bash
-# 查看默认命名空间下的所有 deployment 
+# 查看默认命名空间下的所有 deployment
 kubectl get deployments
 
 # 根据名称查看默认命名空间下的 deployment
@@ -749,14 +748,14 @@ kubectl get deployments nginx-deployment
 # deployment 是 replicasets 的扩展封装，在创建 Deployment 的同时创建了 ReplicaSet
 kubectl get replicasets  -o wide
 
-# 查看 deployment 信息和事件 
+# 查看 deployment 信息和事件
 kubectl describe deployment nginx-deployment
 
 # 查看 Depoyment 的状态
 kubectl rollout status deployment nginx-deployment
 ```
 
-5. 删除 Deloyment 
+5. 删除 Deloyment
 
 ```bash
 # 方式一，通过 yaml 文件删除
@@ -766,13 +765,13 @@ kubectl delete -f nginx-deployment.yaml
 kubectl delete depolyment nginx-deloyment
 ```
 
-6. 重启 Deployment 
+6. 重启 Deployment
 
 ```bash
 kubectl rollout restart deployment nginx-deployment
 ```
 
-### 6.2.2 更新 Deployment 
+### 6.2.2 更新 Deployment
 
 1. 更新副本数量
 
@@ -787,7 +786,7 @@ kubectl apply -f nginx-deloyment.yaml
 kubectl edit deployment nginx-deployment
 
 ```
-注意，创建 Deployment 资源时，也会创建 replicaset ，如果想通过修改 replicaset 资源的副本数量，去改变 Deployment 创建的副本数量是行不通，如下： 
+注意，创建 Deployment 资源时，也会创建 replicaset ，如果想通过修改 replicaset 资源的副本数量，去改变 Deployment 创建的副本数量是行不通，如下：
 ```bash
 # deployment 的副本数量并不会变
 kubectl scale replicaset nginx-deployment-687df7cddc --replicas=2
@@ -847,28 +846,28 @@ Deployment 控制器提供了两种更新策略，分别是：
 - Recreate  在更新新的 Pod 之前，先把旧的 Pod 全部先删除掉
 - RollingUpdate  滚动更新，根据指定的规则先创建新的 Pod 在删除旧的 Pods
 
-Deployment 默认使用的是 RollingUpdate 策略，它是一种平滑的滚动更新方式，可以保证服务的高可用，使RollingUpdate 策略时，需要设置 maxUnavailable 和 maxSurge 参数值，说明如下：
+Deployment 默认使用的是 RollingUpdate 策略，它是一种平滑的滚动更新方式，可以保证服务的高可用，使 RollingUpdate 策略时，需要设置 maxUnavailable 和 maxSurge 参数值，说明如下：
 - maxUnavailable 表示在更新过程中，最多有多少个 Pod 不可用，值可以是数值或者百分比，默认值是 25%，计算结果向下取整
 - maxSurge 表示在更新过程中，Pod 的个数最大峰值，值可以是数值或者百分比，默认值是 25%，注意计算结果向上取整，跟 maxUnavailable 的取整结果相反
 
 列如有 8 个 Pods 需要更新，如果 maxUnavailable 和 maxSurge 都按默认值 25 % 来计算，那么得出以下规则：
 - 在更新过程中，Pods 的数量最大值为 10 = (8 + 8 * 0.25maxSurge)
-- 在更新过程中，Ready 状态 Pods 数量至少大于等于 6 = (8 - 8*0.25maxUnavailable) 
+- 在更新过程中，Ready 状态 Pods 数量至少大于等于 6 = (8 - 8*0.25maxUnavailable)
 使用 `kubectl describe deployment nginx-deployment ` 命令查看 Deployment 的升级事件，如下：
 ![滚动升级事件](/images/滚动升级事件.png)
 由可以看到滚动升级的过程如下：
 - 启动 maxSurge 个 Pods
 - 关闭 maxUnavailable 个 pods
-- 启动 maxUnavailable 个 Pods 
+- 启动 maxUnavailable 个 Pods
 - 关闭 1 个 Pod
-- 启动 1 个 Pod 
+- 启动 1 个 Pod
 - 关闭 1 个 Pod
 - 启动 1 个 Pod，后面一直重复，启动一个关闭一个，直到 Pods 版本更新完成
 
 ## 7. Service
 
 Service 资源是一组 Pods 的抽象服务，可以看成是一组 Pods 的负载均衡(LB)，创建 Service 资源时，K8s 会为 Serivce 资源生成一个虚拟 IP，又称
-ClusterIP(集群IP)。访问该 ClusterIP 时，Serivice 会负责将请求转发给对应的 Pod。
+ClusterIP(集群 IP)。访问该 ClusterIP 时，Serivice 会负责将请求转发给对应的 Pod。
 
 Service 主要有以下特性：
 - Service 是通过 label 去关联对应的 Pods
@@ -885,7 +884,7 @@ metadata:
   name: test-k8s
 spec:
   # 根据 label 关联 Pods, 并根据 label 实时 Watch Pods 的状态
-  # 如果 Pod 是 Ready 状态，就将 Pod 加入 Service 的 Endpoints 中，不是就将其从 Service 的 Endpoints 中剔除 
+  # 如果 Pod 是 Ready 状态，就将 Pod 加入 Service 的 Endpoints 中，不是就将其从 Service 的 Endpoints 中剔除
   selector:
     app: test-k8s-pod
   # type 支持四种类型分别是 ClusterIP、NodePort、LoadBalancer、ExternalName
@@ -896,7 +895,7 @@ spec:
       # Pod 应用的端口
       targetPort: 80
 # 三个横线表示是将文件分成多个 yaml 文件
---- 
+---
 apiVersion: v1
 kind: Service
 metadata:
@@ -933,8 +932,7 @@ Service 资源的的 Type 说明如下：
 两个注意点：
 - 通过服务名访问服务，只能在 Pod 的容器内部使用。Pod 容器中的 `/etc/resolv.conf` 文件，维护有 Core-DNS 组件的 IP 地址，使用服务名访问会通过该 IP 去访问 Core-DNS 将服务名
 解析成服务的 ClusterIP
-- nodePort 实际上是由节点上的 Kube-proxy 组件监听的，通过节点 IP 访问服务时，实际是访问 kube-proxy 在转发到 Service 服务 
-
+- nodePort 实际上是由节点上的 Kube-proxy 组件监听的，通过节点 IP 访问服务时，实际是访问 kube-proxy 在转发到 Service 服务
 
 ### 7.1.2 操作资源的常用命令
 
@@ -964,11 +962,11 @@ Ingress 为外部访问集群提供了一个 统一入口，避免了对外暴�
 Ingress 资源只是提供访问转发路由的配置，实际访问配置和负责转发工作的是 Ingress 控制器，也就是底层的负载均衡器，ingress 控制器通过和 k8s API 交互，动态监控 ingress 资源中配置的规则。并将其更新到 ingress 控器 Pod 内的负载均衡应用中。如使用 ningx 控制器(ingress-nginx-controller)时，nginx 控制器通过 k8s API 实时监控 ingress 资源中配置的转发规则，当监控到 ingress 中
 的配置规则时，会将 ingress 规则转发 nginx 配置规则，并实时写到 ingress-nginx-controller 的 Pod 里的 nginx 服务的 nginx.config 文件中和在控制器中运行` nginx -s reload `动态实时生效配置。外部流量访问时，访问的是 ingress-nginx 控制器中 pod 的 nginx 服务，所以部署 ingress-nginx 控制器时候要指定 Deployment 中 Pod 的网络默认为 host 或者将 Service 中的类型改成 NodePort。
 
-注意Ingress 通过 Service 关联已经是 Ready 状态的 Pods，如下图所示：
+注意 Ingress 通过 Service 关联已经是 Ready 状态的 Pods，如下图所示：
 
-![Ingress网络](/images/Ingress-网络.png)
+![Ingress 网络](/images/Ingress-网络.png)
 
-### 8.2 Ingress 
+### 8.2 Ingress
 
 Ingress 资源文件定义如下，注意 k8s 在 1.18 版本之前可以使用注解指定使用那种控制器，1.18 版本之后使用 ingressClassName
 
@@ -978,8 +976,8 @@ kind: Ingress
 metadata:
   name: hello-ingress
   annotations:
-    # 指定要使用的控制器类，ingress-nginx 控制器需要在 pods 容器的启动参数中设置 –-ingress-class=nginx 
-    kubernetes.io/ingress.class: nginx 
+    # 指定要使用的控制器类，ingress-nginx 控制器需要在 pods 容器的启动参数中设置 –-ingress-class=nginx
+    kubernetes.io/ingress.class: nginx
     # 表示闭 https 连接，只使用 http 连接
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
 spec:
@@ -998,7 +996,7 @@ spec:
                   number: 3000
       # host 支持 * 通配符号
     - host: ecm.jintiantong.com
-      http: 
+      http:
         paths:
           path: /
           pathType: Prefix
@@ -1012,7 +1010,7 @@ spec:
 
 注意安装 Ingress 控制器的时候，可以更该 Pod 的配置 nodeSelector 表示需要将 Ingress 控制器的 Pod 部署在那个节点，默认是选择部署在有标签 kubernetes.io/os=linux 的节点
 
-注意要将 ingress-nginx-controller 配置文件中的 Deployment 资源中将 Pods 网络默认改成 host 模式，或者 Service 资源的类型改成 NodePort, 如果 service 资源需要安装一个LB(负载均衡器，可以使用开源的 MetalLB)，通过 LB 在将流量转发到集群内部的Serive ClusterIP, 不然无法访问到 ingress 控制器里面的负载均衡器的。
+注意要将 ingress-nginx-controller 配置文件中的 Deployment 资源中将 Pods 网络默认改成 host 模式，或者 Service 资源的类型改成 NodePort, 如果 service 资源需要安装一个 LB(负载均衡器，可以使用开源的 MetalLB)，通过 LB 在将流量转发到集群内部的 Serive ClusterIP, 不然无法访问到 ingress 控制器里面的负载均衡器的。
 
 注意 ingress-nginx-controller 资源安装文件中，可以 Pod 的控制器由 Deployment 改成 DaemonSet 控制，Pod 使用 host 模式时可以删除 service 资源配置不创建 Service 资源。
 
@@ -1683,7 +1681,6 @@ webhooks:
 ```
 </details>
 
-
 ## 9 Pods 调度
 
 调度指的是将 Pod 部署到合适的节点上，kube-scheduler 是 Kubernetes 集群的默认调度器。
@@ -1693,7 +1690,6 @@ webhooks:
 kube-scheduler 给一个 Pod 做调度时包含两个阶段：
 - 过滤，过滤阶段会将所有满足 Pod 调度需求的节点选出来。
 - 打分，打分阶段，调度器会为 Pod 从所有可调度节点中选取一个最合适的节点。 根据当前启用的打分规则，调度器会给每一个可调度节点进行打分。最后，kube-scheduler 会将 Pod 调度到得分最高的节点上。 如果存在多个得分最高的节点，kube-scheduler 会从中随机选取一个。
-
 
 ### 9.2 控制 k8s 调度
 
@@ -1706,10 +1702,10 @@ kube-scheduler 给一个 Pod 做调度时包含两个阶段：
 #### 9.2.1  nodeAffinity 节点亲和性
 
 nodeselector 是一种比较简单的控制 k8s 调度的方式，如果想控制粒度更细致的话，则需要用到 nodeAffinity(节点亲和性)定义策略去控制。亲和性的调度可以分成软策略和硬策略两种方式，如下：
-- requiredDuringSchedulingIgnoredDuringExecution 硬策略，表示只会将 pods 调度到满足策略的节点上，如果没有满足策略的节点，将会一直重试匹配策略直到有满足策略的节点出现才调度部署 pods。 
+- requiredDuringSchedulingIgnoredDuringExecution 硬策略，表示只会将 pods 调度到满足策略的节点上，如果没有满足策略的节点，将会一直重试匹配策略直到有满足策略的节点出现才调度部署 pods。
 - preferredDuringSchedulingIgnoredDuringExecution 软策略，表示会优先将 pods 调度到满足策略的节点上，如果没有满足策略的节点，k8s 也会自动调度到不满足策略的节点上。
 
-labels 标签在 K8s 中是一个很重要的概念，k8s 资源之间的关联都是通过 label 来实现的如 Service、Deployment、Pods 之间的关联。节点亲和性控制 pods 的调度也是通过匹配 node 节点标签来实现，亲和性匹配 labels 语法支持的运算符有：In、NotIn、Exists、DoesNotExist、Gt、Lt。 
+labels 标签在 K8s 中是一个很重要的概念，k8s 资源之间的关联都是通过 label 来实现的如 Service、Deployment、Pods 之间的关联。节点亲和性控制 pods 的调度也是通过匹配 node 节点标签来实现，亲和性匹配 labels 语法支持的运算符有：In、NotIn、Exists、DoesNotExist、Gt、Lt。
 
 nodeAffinity 节点亲和性使用例子如下：
 
@@ -1760,7 +1756,6 @@ spec:
 - 如果你同时指定了 nodeSelector 和 nodeAffinity，两者 必须都要满足， 才能将 Pod 调度到候选节点上。
 - 如果你在与 nodeAffinity 类型关联的 nodeSelectorTerms 中指定多个条件， 只要其中一个 nodeSelectorTerms 满足（各个条件按逻辑或操作组合）的话，Pod 就可以被调度到节点上。
 - 如果你在与 nodeSelectorTerms 中的条件相关联的单个 matchExpressions 字段中指定多个表达式， 则只有当所有表达式都满足（各表达式按逻辑与操作组合）时，Pod 才能被调度到节点上。
-
 
 #### 9.2.2 Pod 间亲和性与反亲和性
 
@@ -1816,9 +1811,9 @@ kubectl describe node k8s-node01 | grep -i taints
 2. 将为节点打上污点
 
 ```bash
-# 为 k8s-node01 节点打上 key1=value1 标签节点，并驱逐 k8s-node01 节点上的 Pods 到其他 node 节点上，并且新的 Pods 如果未设置污点容忍，则无法调度到此节点。 
+# 为 k8s-node01 节点打上 key1=value1 标签节点，并驱逐 k8s-node01 节点上的 Pods 到其他 node 节点上，并且新的 Pods 如果未设置污点容忍，则无法调度到此节点。
 kubectl taint nodes k8s-node01 key1=value1:NoExecute
-# 为 k8s-node01 节点打上 key=value1 标签，不驱逐 k8s-node01 节点上的 Pods, 新的 Pods 如果未设置污点容忍，则无法调度到此节点。 
+# 为 k8s-node01 节点打上 key=value1 标签，不驱逐 k8s-node01 节点上的 Pods, 新的 Pods 如果未设置污点容忍，则无法调度到此节点。
 kubectl taint nodes k8s-node01 key1=value1:NoSchedule
 
 # 查看 node 节点是否已经打上污点标签
@@ -1830,14 +1825,14 @@ kubectl describe node k8s-node01 | grep -i taints
 kubectl taint nodes k8s-node01 key1=value1:NoExecute-
 ```
 
-## 10. Helm 
+## 10. Helm
 
 Helm 是部署 Kubernetes 应用包管理工具，比如有多个应用服务，部署的时候如果不使用 Helm 则需要手动的一个个的编写 Pods, Deployment, Service 等资源文件，相当繁琐，并且版本更新的时候也繁琐。Helm 是使用 Chart 将 Pods, Deployment, Service 等资源的 yaml 文件作为一个整体管理，相当于 docker 去管理 image 一样，我们可以自己创建 Chart ，也可以从 Helm 仓库查找和使用别人配置好的 Chart。
 
 ### 10.1 Helm 的三个重要概念
 - Helm 是命令行工具
 - Chart 应用服务的资源的 yaml 配置文件集合
-- Release 是 Chart 的部署实体，运行部署使用命令` helm install ` 
+- Release 是 Chart 的部署实体，运行部署使用命令` helm install `
 
 ### 10.2 安装 Helm
 
@@ -1849,14 +1844,6 @@ Helm 是部署 Kubernetes 应用包管理工具，比如有多个应用服务，
 4. 验证是否安装成功 `helm help`
 
 ### 10.3 Helm Chart 常用命令
-
-
-
-
-
-
-
-
 
 ## 参考连接
 1. https://kubernetes.io/zh-cn/docs/concepts/workloads/pods/init-containers/

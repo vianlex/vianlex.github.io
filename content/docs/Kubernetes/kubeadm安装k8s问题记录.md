@@ -3,7 +3,6 @@ title: "kubeadm安装 k8s 问题记录"
 linkTitle: "kubeadm安装 k8s 问题记录"
 weight: 20
 ---
-
 1. kubeadm init 提示 [WARNING FileExisting-tc]: tc not found in system path 的解决办法
 
 ```bash
@@ -20,6 +19,5 @@ dnf install iproute-tc
 ```
 
 3. 组件 coredns 一直在 pending 中的，使用命令 `journalctl -f -u kubelet.service` 查看日志，如果有提示 Unable to update cni config: no networks found in /etc/cni/net.d 则说明是网络组件（Flannel 或者 calico 等）没有安装
-
 
 4. 安装 flannel 插件是如果一直无法成功,使用 docker images 查看` flannel `和`flannel-cni-plugin`镜像是否已经下载成功

@@ -3,7 +3,6 @@ title: "React 基础知识"
 linkTitle: "React 基础知识"
 weight: 110
 ---
-
 ## JSX 基础语法
 
 JSX 是 JavaScript 语法扩展，可以让你在 JavaScript 文件中书写类似 HTML 的标签。
@@ -14,7 +13,7 @@ JSX 是 JavaScript 语法扩展，可以让你在 JavaScript 文件中书写类�
 
 ```jsx
 
-const name = 'React' 
+const name = 'React'
 const Welcome = <h1> Hello {name}! </h1>
 
 const items = [<li> Item1 </li>, <li> Item2 </li>, <li> Item3 </li>]
@@ -61,20 +60,20 @@ const element = <a src={{width: '100%'}}> Hello World </a>
 const d1 = <div>{/** 多行注释*/}</div>
 
 const d2 = <div>
-  {/** 
+  {/**
     多行注释
     多行注释*/}
 </div>
 
-const d3 =  <div> 
+const d3 =  <div>
   {
     // 单行注释必须这么写
-  } 
+  }
 </div>
 
 ```
 
-4. 多行 JSX 
+4. 多行 JSX
 
 当 JSX 代码较长时，可以使用括号 () 将代码包裹起来，以保持代码的可读性
 
@@ -109,14 +108,13 @@ const element = <><h1>Hello, world!</h1><p>This is a paragraph.</p></>
 
 ```
 
-
 ## React 元素和组件
 
 ### React 元素
 
 React 元素一旦创建，就不能修改其属性或子元素，React 元素是普通的 JavaScript 对象，不包含复杂的逻辑。
 
-####  创建 React 元素 
+####  创建 React 元素
 
 1. 通过 JSX 创建元素
 
@@ -150,14 +148,14 @@ const element = { type: 'h1',props: {className: 'greeting', children: 'Hello, wo
 
 ### React 组件
 
-React 是可重用的代码块，用于封装UI逻辑和结构，组件包含多个元素，React 支持函数组件和类组件，它们的主要区别如下：
+React 是可重用的代码块，用于封装 UI 逻辑和结构，组件包含多个元素，React 支持函数组件和类组件，它们的主要区别如下：
 
 - 函数组件：没有生命周期方法和无法使用状态，但可以通过 useEffect Hook 来模拟生命周期行为和通过 useState Hook 来管理状态。
 - 类组件：可以使用 componentDidMount、componentDidUpdate 和 componentWillUnmount 等生命周期方法和通过 this.state、this.setState 来管理状态。
 
 #### 创建 React 组件
 
-注意：通过函数创建组件时，必须引入 React 对象 `import React from 'react' `, 因为 JSX 本质上只是一种语法糖，最终需要转化成 React.createElement 来创建组件。 
+注意：通过函数创建组件时，必须引入 React 对象 `import React from 'react' `, 因为 JSX 本质上只是一种语法糖，最终需要转化成 React.createElement 来创建组件。
 
 1. 通过函数方式创建 React 组件
 
@@ -195,7 +193,7 @@ let Greeting = function(props) {
 
 2. 通过类方式创建 React 组件
 
-通过类方式创建 React 组件时，必须继承 React.Component 并且实现 render 方法，React.Component 中默认定义有 this.props 和 this.state 
+通过类方式创建 React 组件时，必须继承 React.Component 并且实现 render 方法，React.Component 中默认定义有 this.props 和 this.state
 
 ```js
 class Welcome extends React.Component {
@@ -212,7 +210,7 @@ State 是 React 组件中的一个对象，用于存储组件内部的数据。�
 
 注意：State 是 React 组件内部的可变数据，而 Props 是从父组件传递下来的不可变数据。
 
-### 函数组件的 state 
+### 函数组件的 state
 
 在函数组件中，State 通常通过 useState 钩子（Hook）来管理。useState 是 React 提供的一个内置钩子，用于在函数组件中添加 State。
 
@@ -246,7 +244,7 @@ function InputForm() {
 
 ```
 
-### 类组件的 state 
+### 类组件的 state
 
 1. 通过构成方法或者类属性初始化 State
 
@@ -276,7 +274,7 @@ class MyComponent extends React.Component {
 
 ```
 
-2. 更新 state 
+2. 更新 state
 
 更新 state 必须使用 this.setState() 方法来更新 state，直接修改 this.state 不会触发重新渲染。
 
@@ -294,7 +292,7 @@ setState 是异步的，setState 属性后，立即访问 this.state 属性可�
 this.state.count = 1
 
 // 正确的写法
-this.setState({count : 2}) 
+this.setState({count : 2})
 this.setState({count : this.state.count + 2})
 // 更新前获取旧值
 this.setState(oldState =>{
@@ -316,7 +314,7 @@ this.setState(oldState=>{
 
 //使用回调函数，更新状态时，通过回调函数能保证我们获取到的数据是最新的。
 this.setState({count:2}, ()=>{
-    console.log(this.state.count ) 
+    console.log(this.state.count )
 })
 
 ```
@@ -327,7 +325,6 @@ State 和 Props 都是 React 中用于管理数据的机制，但它们有本质
 
 - State：组件内部的可变数据，由组件自身管理。
 - Props：从父组件传递下来的不可变数据，用于组件之间的通信。
-
 
 ## React 组件生命周期
 
@@ -356,7 +353,7 @@ React 组件的生命周期可以分为三个阶段：
 - `shouldComponentUpdate()` - 决定组件是否需要重新渲染
 - `render()` - 重新渲染组件
 - `getSnapshotBeforeUpdate()` - 在 DOM 更新前捕获一些信息
-- `componentDidUpdate()` - 组件更新后调用，适合执行基于DOM的操作
+- `componentDidUpdate()` - 组件更新后调用，适合执行基于 DOM 的操作
 
 3. 卸载阶段 (Unmounting)
 
@@ -364,10 +361,9 @@ React 组件的生命周期可以分为三个阶段：
 - `static getDerivedStateFromError()` - 捕获后代组件抛出的错误
 - `componentDidCatch()` - 捕获后代组件抛出的错误并记录错误信息
 
-
 ### 函数组件生命周期
 
-函数组件本身没有生命周期方法，但可以通过Hooks实现类似功能。
+函数组件本身没有生命周期方法，但可以通过 Hooks 实现类似功能。
 
 1. 挂载阶段
 
@@ -407,7 +403,7 @@ useEffect(() => {
 // 相当于 getDerivedStateFromProps
 function MyComponent({ propValue }) {
   const [state, setState] = useState(propValue);
-  
+
   useEffect(() => {
     setState(propValue)
   }, [propValue])
@@ -420,9 +416,7 @@ const MyComponent = React.memo(function MyComponent(props) {
 
 ```
 
-
 ## 组件通信方式
-
 
 ### Props 方式，父传到子
 
@@ -494,7 +488,7 @@ function ParentComponent() {
 
 function Parent() {
   const [sharedData, setSharedData] = useState("");
-  
+
   return (
     <>
       <SiblingA onUpdate={setSharedData} />
@@ -504,7 +498,6 @@ function Parent() {
 }
 
 ```
-
 
 ### Context 跨层级通信
 
@@ -561,7 +554,7 @@ function childElement(){
     return (
         <>
             <h1> value </h1>
-            <button onClick={() => setValue('Hello React')}> Update Value </button> 
+            <button onClick={() => setValue('Hello React')}> Update Value </button>
         </>
     )
 }
@@ -569,7 +562,7 @@ function childElement(){
 // 组件
 function App() {
     return (
-        <RootElement> 
+        <RootElement>
             <childElement/>
         </RootElement>
     )
@@ -601,7 +594,7 @@ const Child = forwardRef((props, ref) => {
       console.log("子组件方法被调用")
     }
   }));
-  
+
   return <div>子组件</div>
 })
 
@@ -610,7 +603,6 @@ const Child = forwardRef((props, ref) => {
 ### 任意组件通信
 
 通过事件发布订阅的方式实现任意组件通信
-
 
 ```jsx
 
@@ -639,7 +631,6 @@ useEffect(() => {
 }, [])
 
 ```
-
 
 ## React 实现插槽
 
@@ -685,13 +676,13 @@ function Greeting({children}) {
 
 function Greeting({children}) {
     // 子元素传递 map
-    return (<div> 
+    return (<div>
         {children.header("React")}
         {children.footer}
     </div>)
 }
 
-<Greeting> 
+<Greeting>
     {{
         header: (name) => <h1> Greeting {name} </h1>
         footer: <h2> Footer </h2>
@@ -713,13 +704,13 @@ function Welcome(props) {
 
     let children = props.children
     let type =  typeof children
- 
+
     if(type == 'function') { // 判断是否函数
 
     }else if(React.createElement(children)) {  // 判断是否 jsx
-       
+
     }else {  // 否则当作文本组件处理
-       
+
 
     }
 
@@ -751,7 +742,6 @@ export default function App() {
 }
 
 ```
-
 
 ## React.memo
 
@@ -805,7 +795,7 @@ const Child2 = React.memo(({ value }) => {
 export default function Parent() {
   const [count, setCount] = useState(0)
   const [text, setText] = useState('hello')
-  
+
   return (
     <div>
       <button onClick={() => setCount(count + 1)}>计数: {count}</button>
@@ -817,7 +807,6 @@ export default function Parent() {
 }
 
 ```
-
 
 ## Portals
 
@@ -857,17 +846,16 @@ export default function Parent() {
 
 ```
 
-
 ## 常用 Hooks 说明
 
-### useState 
+### useState
 
 useState 是一个函数，它接收一个初始状态值作为参数，并返回一个包含两个元素的数组：一个元素是当前状态值，另一个元素是用于更新该状态的函数。
 
 #### 基本语法
 
 ```jsx
-//  setState 是异步的，通过 setState 更新状态时，立即获取 state 
+//  setState 是异步的，通过 setState 更新状态时，立即获取 state
 const [state, setState] = useState(initialState)
 // 通过 useEffect 监听状态变化
 useEffect(()=> console.log(state), [state])
@@ -894,7 +882,7 @@ export default function UserForm() {
       [name]: value
     }));
   };
- // 
+ //
  const [count, setCount] = useState(0);
  const increment = () => setCount(prevCount => prevCount + 1);
  // 数组状态
@@ -912,7 +900,7 @@ export default function UserForm() {
 
 ```
 
-### useEffect 
+### useEffect
 
 useEffect 用于在函数组件中执行副作用操作（副作用指：如数据获取、订阅、手动修改 DOM 等）它可以看作是 componentDidMount、componentDidUpdate 和 componentWillUnmount 的组合。
 
@@ -1008,7 +996,7 @@ export default function App() {
 
 ```
 
-### useReducer  
+### useReducer
 
 useReducer 类似 useState，它也是一个状态函数，主要用于管理组件中的复杂状态逻辑
 
@@ -1022,8 +1010,7 @@ const [state, dispatch] = useReducer(reducer, initialState, initFunction)
 - initialState：初始值状态
 - initFunction: 初始化函数，如果存在初始化函数，则使用 initialState 作为 initFunction 函数的第一个参数，并且将 initFunction 函数返回结果作为初始值，不存在 initFunction 函数，则默认使用 initialState 作为初始值
 - dispatch：是一个函数，用于触发 reducer  状态更新函数
-- reducer： 状态更新逻辑处理函数，该函数有两个参数，第一个参数是当前状态，第二个参数用于接收 dispatch 函数的参数 
-
+- reducer： 状态更新逻辑处理函数，该函数有两个参数，第一个参数是当前状态，第二个参数用于接收 dispatch 函数的参数
 
 #### 使用例子
 
@@ -1050,7 +1037,7 @@ function counterReducer(state, action) {
 
 export default function Counter({ initialCount = 0 }) {
   const [state, dispatch] = useReducer(counterReducer, initialCount, init);
-  
+
   return (
     <>
       计数: {state.count}
@@ -1086,10 +1073,10 @@ import React, {useCallback, useState} from 'react'
 
 let normalList = [], cacheList = []
 
-/** 
+/**
  * 注意：React.memo 缓存组件的化，只有组件依赖状态改变时，才会重新渲染组件，
  * 如果不是 React.memo 缓存组件只要父级组件重新渲染，子组件也会跟着重新渲染
- * */ 
+ * */
 // 只有 onClick 引用变化时，children才会重渲染
 const Children = React.memo(({ onClick }) => {
    console.log('Children 组件被重新渲染了')
@@ -1120,7 +1107,7 @@ export default function Parent(props) {
   }
   console.log('Parent 组件每次渲染后 normalFn 函数都生成新的实例：'+(normalList[0] == normalFn))
   console.log('Parent 组件每次渲染后 cacheFn 函数都生成新的实例：'+(cacheList[0] == cacheFn))
-  
+
   return <>
     <button onClick={normalFn}>按钮{value}</button>
     <Children onClick={cacheFn} />
@@ -1130,7 +1117,7 @@ export default function Parent(props) {
 
 ```
 
-### useRef 
+### useRef
 
 在 React 函数组件中，可以通过 useRef 钩子函数，访问 DOM 元素或存储可变值(值改变时，不会触发组件重新渲染)。
 
@@ -1140,9 +1127,8 @@ export default function Parent(props) {
 
 ```jsx
 // 返回的一个新的可变对象，通过 current 属性去引用初始化对象，如：{current: {name: 'React'}}
-const objRef = useRef({name: 'React'}) 
+const objRef = useRef({name: 'React'})
 ```
-
 
 #### 通过 useRef 访问 DOM 元素
 
@@ -1208,7 +1194,7 @@ export default function App() {
    // useRef 创建
   const inputRef = useRef(null);
   return (
-    <div> 
+    <div>
       {/* MyInput 是 forwardRef 类型的组件，所以 inputRef 不会绑定 MyInput 组件，只是作为参数传递到 MyInput 组件中，然后在 MyInpt 指定它绑定 input 元素 */}
       <Input ref={inputRef} />
     </div>
@@ -1216,7 +1202,7 @@ export default function App() {
 }
 ```
 
-### useMemo  
+### useMemo
 
 useMemo 是 React Hooks 中用于性能优化的 Hook，它通过缓存计算结果来避免组件在每次渲染时都进行昂贵的计算。
 
@@ -1240,7 +1226,6 @@ function computeExpensiveValue(a, b) {
 const memoizedValue = useMemo(() => computeExpensiveValue(a, b), [a, b]);
 
 ```
-
 
 ### 自定义 Hook
 
@@ -1304,12 +1289,10 @@ function useWindowSize() {
 export default function ResponsiveComponent() {
   const { width } = useWindowSize()
   const isMobile = width < 768
-  
+
   return <div>{isMobile ? '移动端' : '桌面端'}</div>
 }
 ```
-
-
 
 ## 参考链接
 1. https://www.echo.cool/docs/framework/react/react-basics/react-elements-and-components

@@ -3,7 +3,6 @@ title: "OpenClaw 基础知识"
 linkTitle: "OpenClaw 基础知识"
 weight: 10
 ---
-
 > 本教程介绍 OpenClaw 中 Agent（智能体）的概念、作用、如何配置多个 Agent，以及 Agent 之间如何协作。
 > 消息通道：仅使用 **飞书（Feishu/Lark）**
 > 基于 OpenClaw 官方文档编写，版本持续更新中。
@@ -37,7 +36,7 @@ weight: 10
 
 每个 Agent 的 Workspace 是它的"家"，包含以下文件：
 
-```
+```text
 ~/.openclaw/workspace/          # 工作区根目录
 ├── AGENTS.md        # 操作规则（每次会话开头加载）
 ├── SOUL.md          # 人格、语气、边界定义
@@ -677,7 +676,7 @@ OpenClaw 支持多种 Agent 协作方式：
 
 **主 Agent 协作流程（通过飞书）：**
 
-```
+```text
 用户在飞书向主助手发送请求
     │
     ├─► 子 Agent 1（研究）：研究 TensorFlow
@@ -760,7 +759,7 @@ openclaw pairing list feishu
 
 ## 十三、路径速查
 
-```
+```text
 ~/.openclaw/                    # 状态根目录
 ├── openclaw.json               # 主配置文件
 ├── agents/                     # Agent 状态目录

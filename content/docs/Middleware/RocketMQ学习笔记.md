@@ -3,10 +3,9 @@ title: "RocketMQ 学习笔记"
 linkTitle: "RocketMQ 学习笔记"
 weight: 90
 ---
-
 ## 核心架构与角色
 
-![RocketMQ 架构图](/images/RocketMQ架构图.png) 
+![RocketMQ 架构图](/images/RocketMQ 架构图.png)
 
 **NameServer**：提供轻量级的 Broker 路由服务，类似于 ZooKeeper 但更简单，无状态。
 
@@ -15,7 +14,6 @@ weight: 90
 **Producer（生产者）**：发送消息的客户端。支持同步发送、异步发送、单向发送。
 
 **Consumer（消费者）**：接收消息的客户端。采用 Pull（拉）模式，同时支持 Push 模式的封装（底层仍是 Pull）。
-
 
 ## 核心概念
 
@@ -32,7 +30,7 @@ weight: 90
 
 **ConsumerQueue（消费队列）**：
 
-- ConsumerQueue 队列存放的不是真正的消息内容，而是存放消息的索引记录，即存放消息在 CommitLog 文件中的 offset 偏移量、消息大小以及消息的标签哈希值。消费者消费时，先从 ConsumeQueue 队列读取索引记录，然后利用索引记录中的CommitLog Offset 和 Size，从 CommitLog 中读取完整的消息内容，最后再将消息内容返回给消费者。
+- ConsumerQueue 队列存放的不是真正的消息内容，而是存放消息的索引记录，即存放消息在 CommitLog 文件中的 offset 偏移量、消息大小以及消息的标签哈希值。消费者消费时，先从 ConsumeQueue 队列读取索引记录，然后利用索引记录中的 CommitLog Offset 和 Size，从 CommitLog 中读取完整的消息内容，最后再将消息内容返回给消费者。
 - 消息在同一个 Queue 内保证 FIFO（先进先出）顺序，但不同 Queue 间不保证顺序。
 - 生产者的发送时通过策略（如轮询）决定消息落在哪个 Queue；消费者的负载均衡策略决定消费哪些 Queue。
 
@@ -47,11 +45,9 @@ weight: 90
 - Tag（标签）：用于对 Topic 下的消息进行二级过滤，方便消费者精细订阅（如 TagA || TagC）。
 - Key：用户自定义的业务关键词，可用于消息索引查询。
 
+## 消息储存机制
 
-## 消息储存机制 
-
-![RocketMQ 消息储存机制](/images/RocketMQ消息储存机制.png)
-
+![RocketMQ 消息储存机制](/images/RocketMQ 消息储存机制.png)
 
 设计核心：
 
@@ -59,7 +55,6 @@ weight: 90
 - 异步构建 ConsumeQueue 索引，按 Topic-Queue 维度组织
 - 消费时通过 ConsumeQueue 定位 CommitLog 中的消息
 - IndexFile 提供 Key 查询能力
-
 
 ## 生产写入消息流程
 
@@ -98,7 +93,7 @@ weight: 90
 
 ## 延迟消息实现原理
 
-![延迟消息实现原理图](/images/Rocket延迟消息实现原理.png)
+![延迟消息实现原理图](/images/Rocket 延迟消息实现原理.png)
 
 核心设计：
 
@@ -107,13 +102,11 @@ weight: 90
 - 通过 ScheduleMessageService 定时扫描每个 Level 队列
 - 到期消息恢复原始 Topic 重新投递目标 Topic 的消费队列中
 
-
 ## 消费模式
 
 - 集群消费（Clustering）：一条消息只能被同一个 Consumer Group 中的一个消费者消费，但是一条消息可以被多个 Consumer Group 进行消费。集群消息是默认的消费模式，用于负载均衡。
-  
-- 广播消费（Broadcasting）：一条消息会被同一个 Consumer Group 中的所有消费者消费。即消息会忽略消费者组，只要是消费者都能消费消息。
 
+- 广播消费（Broadcasting）：一条消息会被同一个 Consumer Group 中的所有消费者消费。即消息会忽略消费者组，只要是消费者都能消费消息。
 
 ## 消息顺序性
 
@@ -126,8 +119,6 @@ weight: 90
 - 主题设置单一 ConsumerQueue 队列（全局顺序）
 - 发送和消费主题消息时，根据 Key 的路由到指定的 ConsumerQueue，实现的业务的局部顺序。
 - 消费者端使用单一线程去消费消息， 如果消费者处理逻辑中出现问题，不建议抛出异常，可以返回 ConsumeOrderlyStatus.SUSPEND_CURRENT_QUEUE_A_MOMENT 暂时停止消费，过一点时间再消费。
-  
-
 
 ## MessageType 消息类型
 
@@ -135,13 +126,11 @@ weight: 90
 
 - Normal：普通消息，消息本身无特殊语义，消息之间也没有任何关联。
 
-- FIFO：顺序消息，Apache RocketMQ 通过消息分组MessageGroup标记一组特定消息的先后顺序，可以保证消息的投递顺序严格按照消息发送时的顺序。
+- FIFO：顺序消息，Apache RocketMQ 通过消息分组 MessageGroup 标记一组特定消息的先后顺序，可以保证消息的投递顺序严格按照消息发送时的顺序。
 
 - Delay：定时/延时消息，通过指定延时时间控制消息生产后不要立即投递，而是在延时间隔后才对消费者可见。
 
 - Transaction：事务消息，Apache RocketMQ 支持分布式事务消息，支持应用数据库更新和消息调用的事务一致性保障。
-
-
 
 ## Broker 和 Producer 和 Consumer 关键属性
 
@@ -162,37 +151,34 @@ weight: 90
 - ` transactionCheckinterval`：本地事务状态返回 UNKNOWN 时，会重新回查事务状态，通过该配置可以指定本地事务回查时间，默认 30000ms
 - `transactionCheckMax` 本地事务回查次数，如果超过回查次数，则将消息丢弃掉，默认值：15 次。
 
-
 ### Producer 关键属性
 
 - `retryTimesWhenSendFailed`：表示同步发送失败时的内部重试次数（不包括第一次），默认值：2
 
 - `retryTimesWhenSendAsyncFailed`：异步发送失败重试次数，默认值：2
-  
+
 - `batchMaxSize`：表示本地缓存队列最大储存多少条后批量发送，默认值：1000 条
 
 - `batchMaxDelayMs`：表示本地缓存队列中的消息，延迟多少时间后发送，设置为 0 表示立即发送。
-
-
 
 ### Consumer 关键属性
 
 - `consumeFromWhere`：指定初始消费位置，设置 LAST_OFFSET 从消费者启动后发送的消息，设置 FIRST_OFFSET 最开始可以消费的位置，设置 TIMESTAMP 表示从某个时间点开始消费，需要配合参数 `consumeTimestamp` 使用。
 
-- `consumeTimestamp`：consumeFromWhere为 TIMESTAMP 时生效，默认值：30分钟前。 
+- `consumeTimestamp`：consumeFromWhere 为 TIMESTAMP 时生效，默认值：30 分钟前。
 
-- `autoCommit`：表示是否自动提交消费进度，默认值 true（建议true）
+- `autoCommit`：表示是否自动提交消费进度，默认值 true（建议 true）
 
-- `commitOffsetPeriod`： 自动提交Offset的时间间隔，默认值：5000 ms
+- `commitOffsetPeriod`： 自动提交 Offset 的时间间隔，默认值：5000 ms
 
 - `persistConsumerOffsetInterval`：持久化消费进度间隔，默认值：5000ms
 
-- `pullBatchSize`：Pull 时单次拉取的最大消息数（Push模式内部使用），默认值：32
+- `pullBatchSize`：Pull 时单次拉取的最大消息数（Push 模式内部使用），默认值：32
 
-- `consumeMessageBatchMaxSize`：批量消费的最大消息数，Pull模式可设置>1，默认值：1
+- `consumeMessageBatchMaxSize`：批量消费的最大消息数，Pull 模式可设置>1，默认值：1
 
 - `consumeThreadMin`：消费线程池最小线程数，默认值：20
 
 - `consumeThreadMax`：消费线程池最大线程数，默认值：20
 
-- `maxReconsumeTimes`：最大重试消费次数，可选值从-1表示16次，默认值：-1
+- `maxReconsumeTimes`：最大重试消费次数，可选值从-1 表示 16 次，默认值：-1

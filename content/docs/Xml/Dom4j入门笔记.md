@@ -3,7 +3,6 @@ title: "Dom4j 入门笔记"
 linkTitle: "Dom4j 入门笔记"
 weight: 10
 ---
-
 ## Maven 引入依赖包
 
 ```xml
@@ -51,19 +50,19 @@ import org.junit.jupiter.api.Test;
 public class Dom4jTest {
 
     /**
-	 * 构建 xml 
+	 * 构建 xml
 	 * <?xml version="1.0" encoding="UTF-8"?>
-	 * <beans> 
+	 * <beans>
 	 * 		<bean id="userService" class="com.github.vianlex.service.impl.UserServiceImpl">
 	 * 			<property name="userDao" ref="userDao"/>
 	 *      </bean>
-	 *      <bean id="roleService" class="com.github.vianlex.service.impl.RoleServiceImpl"> 
+	 *      <bean id="roleService" class="com.github.vianlex.service.impl.RoleServiceImpl">
 	 *      	<property name="roleDao" ref="roleDao"></property>
 	 *      </bean>
 	 *      <bean id="roleDao" class="com.github.vianlex.dao.RoleDao"></bean>
 	 *      <bean id="userDao" class="com.github.vianlex.dao.UserDao"></bean>
 	 * <beans>
-	 * 
+	 *
 	 */
     @Test
 	public void createXml() {
@@ -95,13 +94,13 @@ public class Dom4jTest {
 			OutputFormat format = OutputFormat.createPrettyPrint();
 			XMLWriter writer = new XMLWriter(System.out, format);
 			writer.write(document);
-			
+
 		} catch (Exception e) {
 			// TODO: handle exception
 		}
 
 		System.out.println(" ============================================== ");
-		
+
 		// 紧凑型打印 xml
 		try {
 			// Compact format to System.out
@@ -126,8 +125,7 @@ document.write(out);
 out.close();
 ```
 
-
-## 解析 XML 
+## 解析 XML
 
 1. 解析文本 xml
 
@@ -171,10 +169,10 @@ public void getDocumentByXmlFile() {
 	 */
 @Test
 public void parseDocumentByIter() throws Exception{
-    
+
     String xml = "<beans id=\"helloRoot\"><bean id=\"userService\" class=\"com.github.vianlex.service.impl.UserServiceImpl\"><property name=\"userDao\" ref=\"userDao\"/></bean><bean id=\"roleService\" class=\"com.github.vianlex.service.impl.RoleServiceImpl\"><property name=\"roleDao\" ref=\"roleDao\"/></bean><bean id=\"roleDao\" class=\"com.github.vianlex.dao.RoleDao\"/><bean id=\"userDao\" class=\"com.github.vianlex.dao.UserDao\"/></beans>";
     Document document =  DocumentHelper.parseText(xml);
-    
+
     // root elements
     Element root = document.getRootElement();
 
@@ -203,11 +201,11 @@ public void parseDocumentByIter() throws Exception{
 
 /**
     * xpath 方式解析 document
-    * @throws Exception 
+    * @throws Exception
     */
 @Test
 public void parseDocumentByXpath() throws Exception {
-    
+
     String xml = "<beans><bean id=\"userService\" class=\"com.github.vianlex.service.impl.UserServiceImpl\"><property name=\"userDao\" ref=\"userDao\"/></bean><bean id=\"roleService\" class=\"com.github.vianlex.service.impl.RoleServiceImpl\"><property name=\"roleDao\" ref=\"roleDao\"/></bean><bean id=\"roleDao\" class=\"com.github.vianlex.dao.RoleDao\"/><bean id=\"userDao\" class=\"com.github.vianlex.dao.UserDao\"/></beans>";
     Document document =  DocumentHelper.parseText(xml);
     // 查找 <bean> 元素
@@ -226,7 +224,6 @@ public void parseDocumentByXpath() throws Exception {
 }
 
 ```
-
 
 ## 参考链接
 

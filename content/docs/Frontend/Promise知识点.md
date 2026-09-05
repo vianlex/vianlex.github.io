@@ -3,7 +3,6 @@ title: "Promise 知识点"
 linkTitle: "Promise 知识点"
 weight: 100
 ---
-
 ## 一、Promise 是什么
 
 **Promise 是 ES6 引入的异步编程方案**，用来处理异步操作（网络请求、定时器、文件读写等），解决回调地狱（Callback Hell），让异步代码像 “同步” 一样链式书写、清晰易读。
@@ -29,7 +28,7 @@ weight: 100
 const p = new Promise((resolve, reject) => {
   setTimeout(() => {
     // 模拟成功、失败
-    const ok = true; 
+    const ok = true;
     if (ok) {
       resolve("数据加载成功");
     } else {
@@ -41,7 +40,6 @@ const p = new Promise((resolve, reject) => {
 
 Promise 构造函数的参数必须是一个函数，该参数函数必须有两个参数分别是 resolve、reject 形参，初始化 Promise 对象时，会将 Promise 类内部定义的 resolve 函数
 和 reject 函数，分别赋值给参数函数中的 resolve 和 reject 形参。
-
 
 ### 3.2 核心实例方法
 
@@ -66,7 +64,7 @@ new Promise((resolve,reject)=>{
 
 ```js
 new Promise((resolve, reject)=>{
-  // todo 
+  // todo
 })
 .then(res => { throw new Error("中间出错");  })
 .then(res=>{console.log("第一个 then 出错后，不会再执行该 then, 直接进入 catch。")})
@@ -80,7 +78,7 @@ new Promise((resolve, reject)=>{
 
 ```js
 new Promise((resolve, reject)=>{
-  //todo 
+  //todo
 }).then(res => { console.log("成功：", res) })
  .catch(err => { console.log("出错：", err) })
  .finally(() => { console.log("操作结束"); });
@@ -93,10 +91,10 @@ new Promise((resolve, reject)=>{
 - 创建一个已成功状态的 Promise 对象。
 
 ```js
-Promise.resolve("成功").then(res => console.log(res)); 
+Promise.resolve("成功").then(res => console.log(res));
 ```
 
-#### Promise.reject(reason) 
+#### Promise.reject(reason)
 
 - 快速创建一个已失败的 Promise
 
@@ -140,7 +138,6 @@ Promise.allSettled([p1, p2])
 });
 ```
 
-
 #### Promise.race(promises[])
 
 - 并行执行，谁先完成就用谁的结果（无论成功 / 失败）
@@ -168,22 +165,22 @@ Promise.any([p1, p2, p3]).then(res => console.log(res)); // 成功
 
 ```js
 class SimplePromise {
-    // 构造函数的 executor 参数必须是一个函数 
+    // 构造函数的 executor 参数必须是一个函数
     constructor(executor) {
       // Promise 默认状态是待处理
       this.state = "pending"
       // 定义 Promise 的默认值为 undefined
       this.value = undefined;
       // 成功的回调队列，存放 then 链式函数中回调函数
-      this.onFulfilledCallbacks = []  
+      this.onFulfilledCallbacks = []
       // 失败的回调队列，存放 catch 链式函数中的回调函数
-      this.onRejectedCallbacks = []   
+      this.onRejectedCallbacks = []
       // 定义 resolve 函数, 该函数接收一个 value 值
       const resolve = (value)=>{
         // 将 Promise 状态改成功
         this.state = "fulfilled"
-        // Promise 的成功值 
-        this.value = value 
+        // Promise 的成功值
+        this.value = value
         // 然后执行 then 链式回调，默认放入微任务队列中，这里使用 setTimeout 实现
         this.onFulfilledCallbacks.foreach(cb => setTimeout(()=>cb(value),0))
       }
@@ -232,7 +229,7 @@ class SimplePromise {
         resolve(value)
       })
     }
-} 
+}
 
 ```
 
@@ -246,12 +243,12 @@ async/await 是 Promise 的语法糖，本质还是 Promise，只是把链式写
 
 1. aysnc 修饰没有返回值的函数
 
-```js 
-// async 修饰的普通函数，没有显示指定返回值，则默认返回一个已成功值为 undefined 的 Promise 对象 
+```js
+// async 修饰的普通函数，没有显示指定返回值，则默认返回一个已成功值为 undefined 的 Promise 对象
 async function hello() {
   console.log("Hello World")
 }
-// 执行函数后，会默认返回一个 fulfilled 已成功的 Promise 对象，Promise 的 value 默认为 undefined 
+// 执行函数后，会默认返回一个 fulfilled 已成功的 Promise 对象，Promise 的 value 默认为 undefined
 hello()
 ```
 
@@ -266,19 +263,19 @@ async function p1() {
 p1()
 
 
-async function p2() { 
+async function p2() {
   return setTimeout(()=> console.log("HelloWorld"), 5000)
 }
 // 执行后函数后，返回一个已成功的值 Promise 对象
 timer()
 
-async function p3() { 
+async function p3() {
   return new Promise((resolve, reject)=>{
     setTimeout(()=> resolve("HelloWorld"), 5000)
   })
 }
 // 注意 p3 和 p4 是等价的
-function p4() { 
+function p4() {
   return new Promise((resolve, reject)=>{
     setTimeout(()=> resolve("HelloWorld"), 5000)
   })
@@ -330,7 +327,7 @@ async function test() {
 test();
 ```
 
-#### await 等待的结果是 rejected 状态的 Promise 对象  
+#### await 等待的结果是 rejected 状态的 Promise 对象
 
 ```js
 async function fn() {
@@ -344,12 +341,12 @@ fn();
 
 #### async 和 await 的标准写法
 
-```js 
+```js
 async function fn() {
   try {
-    // 外层使用 try-catch 防止返回的 rejected 状态的 Promise 对象，导致程序异常 
+    // 外层使用 try-catch 防止返回的 rejected 状态的 Promise 对象，导致程序异常
     const res = await new Promise((resolve, reject)=>{
-      // todo 
+      // todo
     });
   } catch (err) {
     console.log("手动捕获错误：", err);
@@ -360,19 +357,13 @@ fn();
 async function fn() {
   // 先自己兜底 catch 防止返回 rejected 状态的 Promise 导致程序异常
   const p = new Promise((resolve, reject)=>{
-    //todo 
+    //todo
   }).catch(err => err);
-  const res = await p; 
-  console.log(res); 
+  const res = await p;
+  console.log(res);
 }
 fn();
 ```
-
-
-
-
-
-
 
 ## 六、常见面试点总结
 

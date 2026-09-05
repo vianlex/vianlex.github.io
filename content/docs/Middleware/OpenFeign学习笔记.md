@@ -3,7 +3,6 @@ title: "OpenFeign 学习笔记"
 linkTitle: "OpenFeign 学习笔记"
 weight: 80
 ---
-
 ## @FeignClient 注解属性说明
 
 ```java
@@ -18,28 +17,28 @@ public @interface FeignClient {
     // 服务名称（与 value 互为别名）
     @AliasFor("value")
     String name() default "";
-    
+
     // 上下文 ID，默认服务名称，用于同一个服务需要配置多个不同的客户端
     String contextId() default "";
-    
+
     // 直接指定服务 URL（用于不使用服务发现的场景）
     String url() default "";
-    
+
     // 是否解码 404 错误，true 时 404 不抛异常而是返回 null
     boolean decode404() default false;
-    
+
     // 配置类，为 FeignClient 客户端，自定义特定的配置
     Class<?>[] configuration() default {};
-    
+
     // 降级处理类（服务不可用时的回退逻辑）
     Class<?> fallback() default void.class;
-    
+
     // 工厂类，用于创建 fallback 实例
     Class<?> fallbackFactory() default void.class;
-    
+
     // 定义请求路径前缀，所有的请求方法前都会加这个前缀（已废弃，推荐使用 Spring MVC 的 @RequestMapping）
     String path() default "";
-    
+
     // 是否为主负载均衡客户端
     boolean primary() default true;
 }
@@ -47,8 +46,7 @@ public @interface FeignClient {
 
 ## 实现原理
 
-![OpenFeign实现原理图](/images/OpenFeign实现原理图.png)
-
+![OpenFeign 实现原理图](/images/OpenFeign 实现原理图.png)
 
 ## 日志配置
 
@@ -75,7 +73,7 @@ public class FeignConfig {
     /**
     * OpenFeign 全局日志配置
     * 注意：如果日志不生效，请检查 application.yml 文件中是否开启日志记录配置（如：logging.level.com.ils.service=DEBUG）
-    */ 
+    */
     @Bean
     public Logger.Level feignLoggerLevel() {
         return Logger.Level.FULL;
@@ -120,7 +118,7 @@ logging:
     root: DEBUG # 全局日志级别
     # 为特定 Feign 客户端设置日志级别
     com.example.feign.OrderOpenFeignClient: DEBUG
-    
+
   # 或者全局设置所有 Feign 客户端
 spring:
   cloud:
@@ -156,7 +154,7 @@ OpenFeign 拦截器 (RequestInterceptor) 允许你在 HTTP 请求发送之前，
 ```java
 @Configuration
 public class FeignConfig {
-    
+
     @Bean
     @Order(1)
     public RequestInterceptor authInterceptor() {
@@ -169,7 +167,7 @@ public class FeignConfig {
             requestTemplate.header("X-Trace-Id", MDC.get("traceId"));
         };
     }
-    
+
     @Bean
     @Order(2)
     public RequestInterceptor loggingInterceptor() {
@@ -191,9 +189,9 @@ public class FeignConfig {
 ```java
 @Component
 public class GlobalFeignInterceptor implements RequestInterceptor {
-    
+
     private static final Logger log = LoggerFactory.getLogger(GlobalFeignInterceptor.class);
-    
+
     @Override
     public void apply(RequestTemplate template) {
         // 1. 添加认证
@@ -203,7 +201,7 @@ public class GlobalFeignInterceptor implements RequestInterceptor {
         // 3. 记录请求日志
         logRequest(template);
     }
-    
+
     private void addAuthHeader(RequestTemplate template) {
         // Spring Security 集成示例
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -212,7 +210,7 @@ public class GlobalFeignInterceptor implements RequestInterceptor {
             template.header("Authorization", "Bearer " + token);
         }
     }
-    
+
     private void addTraceInfo(RequestTemplate template) {
         // 添加 Sleuth 的 traceId
         String traceId = MDC.get("traceId");
@@ -220,10 +218,10 @@ public class GlobalFeignInterceptor implements RequestInterceptor {
             template.header("X-B3-TraceId", traceId);
         }
     }
-    
+
     private void logRequest(RequestTemplate template) {
-        log.info("Feign Request -> Method: {}, URL: {}, Headers: {}", 
-                 template.method(), 
+        log.info("Feign Request -> Method: {}, URL: {}, Headers: {}",
+                 template.method(),
                  template.url(),
                  template.headers());
     }
@@ -236,7 +234,7 @@ public class GlobalFeignInterceptor implements RequestInterceptor {
 
 // 1. 先定义特定配置类
 public class OrderServiceFeignConfig {
-    
+
     @Bean
     public RequestInterceptor orderServiceInterceptor() {
         return template -> {
@@ -259,7 +257,6 @@ public interface OrderServiceClient {
 
 ```
 
-
 ### 基于配置文件的实现全局和局部拦截器配置
 
 ```yaml
@@ -276,7 +273,7 @@ spring:
             - com.example.interceptor.LoggingInterceptor
           connect-timeout: 5000
           read-timeout: 30000
-        
+
         # 为特定的服务配置（优先级更高）
         order-server:
           request-interceptors:
@@ -285,10 +282,7 @@ spring:
           decode404: false
 ```
 
-
 ## 降级处理配置
-
-
 
 ### 局部降级配置（为指定客户端配置降级）
 
@@ -304,7 +298,7 @@ public interface UserServiceClient {
 // 2. 实现 fallback 类
 @Component
 public class UserServiceFallback implements UserServiceClient {
-    
+
     private static final Logger log = LoggerFactory.getLogger(UserServiceFallback.class);
     @Override
     public User getUser(Long id) {
@@ -342,14 +336,14 @@ public interface UserServiceClient {
 @Component
 @Slf4j
 public class UserServiceFallbackFactory implements FallbackFactory<UserServiceClient> {
-    
+
     @Override
     public UserServiceClient create(Throwable cause) {
         return new UserServiceClient() {
             @Override
             public User getUser(Long id) {
                 log.error("调用用户服务失败，用户ID: {}，异常: {}", id, cause.getMessage(), cause);
-                
+
                 // 根据不同异常类型返回不同降级结果
                 if (cause instanceof FeignException.NotFound) {
                     return User.builder()
@@ -373,7 +367,7 @@ public class UserServiceFallbackFactory implements FallbackFactory<UserServiceCl
 ```yaml
 spring:
   cloud:
-    openfeign: 
+    openfeign:
       client:
         config:
           # default 代表所有 Feign 客户端
@@ -398,14 +392,14 @@ spring:
 // 场景：同一个服务需要多个不同配置的客户端（创建多个 order-service 客户端）
 @Configuration
 public class FeignClients {
-    
+
     // 客户端1：普通调用
     @FeignClient(
         name = "order-service",
         contextId = "orderServiceNormal"  // 唯一标识
     )
     public interface OrderServiceNormalClient {}
-    
+
     // 客户端2：长超时配置
     @FeignClient(
         name = "order-service",
@@ -413,7 +407,7 @@ public class FeignClients {
         configuration = LongTimeoutConfig.class
     )
     public interface OrderServiceLongTimeoutClient {}
-    
+
     // 客户端3：带认证
     @FeignClient(
         name = "order-service",
@@ -423,7 +417,6 @@ public class FeignClients {
     public interface OrderServiceWithAuthClient {}
 }
 ```
-
 
 ## 客户端 Http 组件替换配置
 
@@ -484,4 +477,3 @@ spring:
         write-timeout: 10000ms
         call-timeout: 30000ms
 ```
-

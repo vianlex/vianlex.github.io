@@ -3,20 +3,19 @@ title: "Docker 常用命令"
 linkTitle: "Docker 常用命令"
 weight: 50
 ---
-
 ## docker 镜像查看、删除等相关命令
 
 ### 1. docker images 命令查看本地镜像仓库中的镜像
 
 docker images 语法格式 `docker images [OPTIONS] [REPOSITORY[:TAG]]`，可选参数如下：
-- docker images -a	列出本地所有的镜像
+- docker images -a 列出本地所有的镜像
 - docker images -f 过滤查询镜像
-- docker images -q	列出显示镜像 ID
+- docker images -q 列出显示镜像 ID
 
 ```bash
 
 # 查看所有镜像
-docker images 
+docker images
 
 # 根据 <REPOSITORY>[:TAG] 显式的过滤查看镜像，注意当使用 * 模糊匹配时，无法匹配 / 符号，如匹配 vianlex/nginx:dev-latest 镜像，支持以下方式匹配
 docker images vianlex/nginx
@@ -33,7 +32,7 @@ docker images -f="dangling=true"
 
 # 根据 reference=<REPOSITORY>[:TAG] 模糊匹配镜像，注意匹配时，reference=<REPOSITORY>[:TAG] 中的 / 符号不能无法使用 * 模糊匹配，如匹配镜像 vianlex/nginx:dev-latest
 docker images -f="reference=*/nginx" 或者 docker images -f "reference=*/nginx"
-docker images -f=reference="*/nginx" 或者 docker images -f  reference="*/nginx" 
+docker images -f=reference="*/nginx" 或者 docker images -f  reference="*/nginx"
 #或者
 docker images -f="reference=*/nginx:dev-*"
 docker images -f=reference="*/nginx:dev-*"
@@ -51,11 +50,10 @@ docker images -f="label=version=v1"
 docker images --format "{{.Repository}} -- {{.ID}} -- {{.Size}}"
 # 或者
 docker images --format "{{.Repository}} {{.ID}} {{.Size}} {{.di}}"
-# 或者 
+# 或者
 docker images --fotmat "{{.ID}}"
 
 ```
-
 
 ### 2. docker rmi 命令删除 docker 镜像
 
@@ -63,14 +61,14 @@ docker rmi 命令语法格式：`docker rmi [ repository:tag | imageId  ] `，�
 
 ```bash
 
-# 根据镜像仓库加标签删除 
+# 根据镜像仓库加标签删除
 docker rmi nginx:latest
 
 # 根据镜像 ID 删除
 docker rmi 43154ddb57a8
 
-# 根据镜像 id 批量删除 
-docker images -q | xargs docker rmi 
+# 根据镜像 id 批量删除
+docker images -q | xargs docker rmi
 # 或
 docker rmi $(docker images -q)
 # 删除 tag 是 none 的所有镜像
@@ -80,7 +78,6 @@ docker images -f="dangling=true" -q | xargs -r docker rmi
 
 ```
 
-
 ## docker 操作容器的常用命令
 
 ### 1. docker run 命令
@@ -89,25 +86,25 @@ docker images -f="dangling=true" -q | xargs -r docker rmi
 - -d, --detach=false 指定容器以后台进程的方式运行
 - -i, --interactive=false 以交互模式运行容器，通常与 -t 同时使用
 - -t: 为容器重新分配一个伪输入终端，通常与 -i 同时使用
-- --name="myNginx"	指定容器名字，方便管理
+- --name="myNginx" 指定容器名字，方便管理
 - --dns 8.8.8.8 指定容器使用的 DNS 服务器，默认和宿主一致
-- --dns-search= example.com 指定容器的 dns 搜索域名，会写入到容器的 /etc/resolv.conf 文件 
+- --dns-search= example.com 指定容器的 dns 搜索域名，会写入到容器的 /etc/resolv.conf 文件
 - -h "linux-hostname" 指定容器的 hostname
 - -w, --workdir="/opt" 指定容器的工作目录
 - -e username=centeos, --env=[] 设置容器的环境变量
 - --env-file=[] 从指定文件读入环境变量
-- -v, --volume=[]	给容器挂载存储卷，挂载到容器的某个目录。
-- –dns=[]	指定容器的 dns 服务器。
+- -v, --volume=[] 给容器挂载存储卷，挂载到容器的某个目录。
+- –dns=[] 指定容器的 dns 服务器。
 - -P 随机端口映射，容器内部端口随机映射到主机的端口
 - -p 指定端口映射，格式为：主机(宿主)端口:容器端口
-- –entrypoint=""	覆盖 image 的入口点。
-- –env-file=[]	指定环境变量文件，文件格式为每行一个环境变量。
-- –expose=[]	指定容器暴露的端口，即修改镜像的暴露端口。
-- –link=[]	指定容器间的关联，使用其他容器的 IP、env 等信息。
-- -net="bridge"	指定容器网络配置
-- --privileged=false	指定容器是否为特权容器，特权容器拥有所有的 capabilities。
-- --restart="no"	指定容器停止后的重启策略:
-- --rm=false	指定容器停止后自动删除容器(不支持以 docker run -d 启动的容器)。
+- –entrypoint="" 覆盖 image 的入口点。
+- –env-file=[] 指定环境变量文件，文件格式为每行一个环境变量。
+- –expose=[] 指定容器暴露的端口，即修改镜像的暴露端口。
+- –link=[] 指定容器间的关联，使用其他容器的 IP、env 等信息。
+- -net="bridge" 指定容器网络配置
+- --privileged=false 指定容器是否为特权容器，特权容器拥有所有的 capabilities。
+- --restart="no" 指定容器停止后的重启策略:
+- --rm=false 指定容器停止后自动删除容器(不支持以 docker run -d 启动的容器)。
 
 ```bash
 #创建并启动 nginx 容器
@@ -138,7 +135,7 @@ docker ps --filter status=running
 
 docker ps --filter ancestor=nginx:latest
 
-# 显示创建比容器 9c3527ed70ce 早的所有容器 
+# 显示创建比容器 9c3527ed70ce 早的所有容器
 docker ps -f before=9c3527ed70ce
 
 ```
@@ -212,13 +209,13 @@ docker logs -t --since="2018-02-08T13:23:37" --until "2018-02-09T12:23:37" conta
 ```bash
 
 # 进入容器的终端命令行
-docker exec -it [container_id | container_name] [/bin/sh | /bin/bash] 
+docker exec -it [container_id | container_name] [/bin/sh | /bin/bash]
 
 # 查看容器的文件内容
-docker exec [container_id | container_name]  cat /logs/ils.2020-08-19.log 
+docker exec [container_id | container_name]  cat /logs/ils.2020-08-19.log
 
 # 运行容器的命令
-docker exec -it [container_id | container_name] nginx -s reload 
+docker exec -it [container_id | container_name] nginx -s reload
 
 ```
 
@@ -236,7 +233,6 @@ docker cp /home/xxxxxx  [container_id | container_name]:/xxx/xxx
 
 ```
 
-
 ## 归档镜像导入导出
 
 ### 1. docker save 命令将 Docker 镜像保存成 tar 包
@@ -253,7 +249,7 @@ docker save  > flannel-cni-plugin.tar fcecffc7ad4a
 ```
 ### 2. docker load 命令将镜像归档文件导入镜像仓库
 
-docker load 命令语法 `docker load [ --input | < ] filename.tar` 
+docker load 命令语法 `docker load [ --input | < ] filename.tar`
 
 ```bash
 
@@ -267,10 +263,6 @@ docker load < filename.tar
 docker tag ancher/mirrored-flannelcni-flannel:1.0.0  container_id
 
 ```
-
-
-
-
 
 ## 参考连接
 1. https://docs.docker.com/engine/reference/commandline/images/

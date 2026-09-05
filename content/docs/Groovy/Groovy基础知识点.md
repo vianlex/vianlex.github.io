@@ -3,7 +3,6 @@ title: "Groovy 基础知识"
 linkTitle: "Groovy 基础知识"
 weight: 10
 ---
-
 ---
 
 ## 一、基础语法
@@ -157,8 +156,8 @@ while (x > 0) {
 }
 
 // each
-[1, 2, 3].each { println it } 
-[1, 2, 3].each { item -> println item } // 简写为 { println it } 
+[1, 2, 3].each { println it }
+[1, 2, 3].each { item -> println item } // 简写为 { println it }
 [1, 2, 3].eachWithIndex { item, idx -> println "$idx: $item" }
 ```
 
@@ -416,7 +415,7 @@ class Animal {
 class Dog extends Animal {
     @Override
     def speak() { "Woof!" }
-    
+
     def fetch() { "$name fetches the ball" }
 }
 
@@ -557,7 +556,7 @@ def regex2 = /\d+/                        // 简写
 - 匹配规则：整个字符串必须完全匹配正则表达式
 - 相当于：String.matches(regex)
 **/
-"hello123" ==~ /\w+/                
+"hello123" ==~ /\w+/
 
 /**
 =~ 表示部分匹配
@@ -565,7 +564,7 @@ def regex2 = /\d+/                        // 简写
 - 匹配规则：在字符串中查找是否有子串匹配正则表达式
 - 可用于：条件判断（Groovy 会将其转换为 boolean）、提取匹配内容
 **/
-def m = "hello123" =~ /\d+/                       
+def m = "hello123" =~ /\d+/
 if(m) {
     println m[0]
 }
@@ -885,11 +884,11 @@ GParsPool.withPool {
 // 1. synchronized 同步方法
 class Counter {
     int count = 0
-    
+
     synchronized void increment() {
         count++
     }
-    
+
     synchronized int getCount() {
         count
     }
@@ -995,9 +994,9 @@ import java.util.concurrent.*
 // Callable + Future
 def executor = Executors.newSingleThreadExecutor()
 
-def future = executor.submit({ 
+def future = executor.submit({
     sleep(1000)
-    "任务完成" 
+    "任务完成"
 } as Callable)
 
 println "等待结果..."

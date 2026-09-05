@@ -3,24 +3,22 @@ title: "SpringBoot 常用注解说明"
 linkTitle: "SpringBoot 常用注解说明"
 weight: 20
 ---
-
-## @Controller 和 @RestController 
+## @Controller 和 @RestController
 
 在 `Spring Boot` 中，`@Controller` 和 `@RestController` 都是用于处理 `HTTP` 请求的注解，它们的主要区别是默认返回响应类型不同。
 
-
-### @Controller 
+### @Controller
 
 主要用于返回视图（`HTML`页面），如果想要能返回 `JSON/XML`数据需要配合 `@ResponseBody` 注解。
 
-注意：SpringBoot 返回 JSP、Freemarker 等视图时，需要先配置视图解析类 `ViewResolver`。 
+注意：SpringBoot 返回 JSP、Freemarker 等视图时，需要先配置视图解析类 `ViewResolver`。
 
 ```java
 
 @Controller
 @RequestMapping("/web")
 public class WebController {
-    
+
     // 返回视图（HTML页面）
     @GetMapping("/home")
     public String home() {
@@ -32,7 +30,7 @@ public class WebController {
     @GetMapping("/index")
     public String index(Model model) {
         model.addAttribute("message", "Hello World");
-        // 返回 index 视图    
+        // 返回 index 视图
         return "index";
     }
 
@@ -46,8 +44,8 @@ public class WebController {
         // 返回 ModelAndView 对象
         return modelAndView;
     }
-    
-    
+
+
     @GetMapping("/data")
     // 需要@ResponseBody才能返回JSON
     @ResponseBody
@@ -58,23 +56,23 @@ public class WebController {
 
 ```
 
-### RestController 
+### RestController
 
-`@RestController` 是 `@Controller` 和 `@ResponseBody` 的组合，默认所有方法都返回JSON/XML数据，而不是视图。
+`@RestController` 是 `@Controller` 和 `@ResponseBody` 的组合，默认所有方法都返回 JSON/XML 数据，而不是视图。
 
 ```java
 
 @RestController
 @RequestMapping("/api")
 public class ApiController {
-    
+
     // 自动返回JSON数据
     @GetMapping("/user")
     public User getUser() {
         // 自动转换为JSON
-        return new User("John", 25); 
+        return new User("John", 25);
     }
-    
+
     @PostMapping("/create")
     public ResponseEntity<?> createUser(@RequestBody User user) {
         return ResponseEntity.ok(user);
@@ -83,5 +81,4 @@ public class ApiController {
 
 ```
 
-
-## @Qualifier 
+## @Qualifier

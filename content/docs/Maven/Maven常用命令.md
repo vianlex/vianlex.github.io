@@ -3,9 +3,7 @@ title: "Maven 常用命令"
 linkTitle: "Maven 常用命令"
 weight: 30
 ---
-
 ## install 命令用法
-
 
 ### 手动安装 jar 到本地仓库
 
@@ -20,8 +18,8 @@ weight: 30
 </dependency>
 
 ```
-  
-2. 使用 ` mvn install ` 命令将手动下载的 jar 导入本地仓库 
+
+2. 使用 ` mvn install ` 命令将手动下载的 jar 导入本地仓库
 
 ```bash
 
@@ -33,7 +31,7 @@ mvn install:install-file -Dfile=D:/guava-33.0.0-jre.jar -DgroupId=com.google.gua
 
 ```bash
 
-mvn dependency:get -DgroupId=com.google.guava  -DartifactId=guava -Dversion=33.3.0-jre 
+mvn dependency:get -DgroupId=com.google.guava  -DartifactId=guava -Dversion=33.3.0-jre
 
 ```
 
@@ -51,9 +49,6 @@ mvn dependency:get -DgroupId=com.google.guava  -DartifactId=guava -Dversion=33.3
 [DEBUG] Using manager EnhancedLocalRepositoryManager with priority 10.0 for C:\Users\zhouy\.m2\repository
 
 ```
-
-
-
 
 ## 参考链接
 1. https://maven.org.cn/ref/current/maven-embedder/cli.html

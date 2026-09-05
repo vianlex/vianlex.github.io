@@ -3,11 +3,7 @@ title: "Spring Security 学习笔记"
 linkTitle: "Spring Security 学习笔记"
 weight: 140
 ---
-
 Spring Security 的核心原理是构建一套安全过滤器链（Filter Chain），对每个进入应用的 HTTP 请求进行安全检查。通过可配置的过滤器（Filter）来实现，将认证（Authentication）、授权（Authorization）、防护（Protection）等功能模块化。
-
-
-
 
 ## SpringBoot 整合 Security
 
@@ -39,7 +35,7 @@ spring:
     user:
       name: admin #用户名
       password: 123456 #密码
-      roles: 
+      roles:
        - amind # 拥有角色
 ```
 
@@ -56,7 +52,7 @@ import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 
 @Configuration
 // 开启 Security 支持
-@EnableWebSecurity 
+@EnableWebSecurity
 public class UserLoginSecurityConfig {
 
     @Bean
@@ -111,14 +107,14 @@ public class UserLoginSecurityConfig {
 
 | 注解 | 作用 | 启用配置 | 特点 |
 | :--- | :--- | :--- | :--- |
-| `@PreAuthorize` | 方法执行前检查权限 | `prePostEnabled = true` | 最强大，支持SpEL表达式 |
+| `@PreAuthorize` | 方法执行前检查权限 | `prePostEnabled = true` | 最强大，支持 SpEL 表达式 |
 | `@PostAuthorize` | 方法执行后检查权限 | `prePostEnabled = true` | 可基于返回值做检查 |
-| `@Secured` | 基于角色的简单检查 | `securedEnabled = true` | 简单直接，不支持SpEL |
-| `@RolesAllowed` | JSR-250标准角色检查 | `jsr250Enabled = true` | Java标准，可移植性好 |
+| `@Secured` | 基于角色的简单检查 | `securedEnabled = true` | 简单直接，不支持 SpEL |
+| `@RolesAllowed` | JSR-250 标准角色检查 | `jsr250Enabled = true` | Java 标准，可移植性好 |
 | `@PreFilter` | 方法执行前过滤集合参数 | `prePostEnabled = true` | 过滤集合中的元素 |
 | `@PostFilter` | 方法执行后过滤集合返回值 | `prePostEnabled = true` | 过滤返回集合中的元素 |
 
-#### 启用权限注解 
+#### 启用权限注解
 
 ```java
 @Configuration
@@ -139,48 +135,48 @@ public class SecurityConfig {
 ```java
 @Service
 public class ProductService {
-    
+
     // 1. 基于角色检查，不要求 ROLE_ 前缀
     @PreAuthorize("hasRole('ADMIN')")
     public void deleteProduct(Long productId) {
         // 仅管理员可执行
     }
-    
+
     // 2. 多个角色满足其一即可
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     public void updateProduct(Product product) {
         // 管理员或经理可执行
     }
-    
+
     // 3. 基于权限字符串检查（更细粒度）
     @PreAuthorize("hasAuthority('PRODUCT_DELETE')")
     public void archiveProduct(Long productId) {
         // 需要有 PRODUCT_DELETE 权限
     }
-    
+
     // 4. 组合条件
     @PreAuthorize("hasRole('USER') and hasIpAddress('192.168.1.0/24')")
     public void viewDashboard() {
         // 用户角色且来自特定IP段
     }
-    
+
     // 5. 访问方法参数（强大特性！）
     @PreAuthorize("#userId == authentication.principal.id")
     public UserProfile getUserProfile(Long userId) {
         // 只能查看自己的资料
     }
-    
+
     @PreAuthorize("#product.ownerId == authentication.principal.username")
     public void updateProduct(Product product) {
         // 只能修改自己拥有的产品
     }
-    
+
     // 6. 调用Bean的方法进行权限检查
     @PreAuthorize("@productSecurityService.canView(#productId, authentication)")
     public Product getProduct(Long productId) {
         // 调用自定义安全服务进行复杂检查
     }
-    
+
     // 7. 基于时间的权限控制
     @PreAuthorize("T(java.time.LocalTime).now().isAfter(T(java.time.LocalTime).of(9, 0))")
     public void processBatchJob() {
@@ -194,21 +190,21 @@ public class ProductService {
 ```java
 @Service
 public class OrderService {
-    
+
     // 1. 基于返回值检查
     @PostAuthorize("returnObject.customerId == authentication.principal.id")
     public Order getOrder(Long orderId) {
         // 方法正常执行，但返回时会检查
         // 只能访问自己的订单
     }
-    
+
     // 2. 结合返回值的属性
     @PostAuthorize("returnObject.status != 'CONFIDENTIAL' or hasRole('ADMIN')")
     public Document getDocument(Long docId) {
         // 非机密文档任何人都可看
         // 机密文档只有管理员可看
     }
-    
+
     // 3. 返回值是集合时的检查（第一个元素）
     @PostAuthorize("returnObject.size() == 0 or returnObject[0].owner == authentication.name")
     public List<Account> findAccountsByType(String type) {
@@ -222,13 +218,13 @@ public class OrderService {
 ```java
 @Service
 public class AdminService {
-    
+
     // 1. 单个角色，要求 ROLE_ 前缀
     @Secured("ROLE_ADMIN")
     public void performAdminAction() {
         // 需要 ROLE_ADMIN 角色
     }
-    
+
     // 2. 多个角色（满足其一即可）
     @Secured({"ROLE_ADMIN", "ROLE_SUPER_ADMIN"})
     public void systemConfiguration() {
@@ -242,7 +238,7 @@ public class AdminService {
 ```java
 @Service
 public class FinanceService {
-    
+
     // 等价于 @Secured({"ROLE_ACCOUNTANT", "ROLE_AUDITOR"})，注意：不要求 ROLE_ 前缀
     @RolesAllowed({"ACCOUNTANT", "AUDITOR"})
     public FinancialReport generateReport() {
@@ -256,14 +252,14 @@ public class FinanceService {
 ```java
 @Component("securityUtil")
 public class SecurityUtil {
-    
+
     public boolean isOwner(Object obj, Authentication auth) {
         if (obj instanceof OwnableEntity) {
             return ((OwnableEntity) obj).getOwner().equals(auth.getName());
         }
         return false;
     }
-    
+
     public boolean isBusinessHours() {
         LocalTime now = LocalTime.now();
         return now.isAfter(LocalTime.of(9, 0)) && now.isBefore(LocalTime.of(18, 0));
@@ -277,14 +273,12 @@ public void updateProduct(Product product) {
 }
 ```
 
-
 ### JWT 认证登录模式
 
 JWT（JSON Web Token ）生成的 Token 携带用户信息，可以通过验证 Token 的合法性，判断是否需要登陆，验证合法的 Token 我们就可以取出登录的用户信息。
 注意 Token 支持 RAS 对称性加密，公私钥都可以放在 Nacos 中方便更换。
 
 JWT 一旦签发后就不能撤回了，我们可以设置一个过期时间，当我们校验 Token 的时候，如果时间过期了，就说明 Token 失效了。或者我们可以添加一个黑名单，将 JWT 加入黑名单后就不能访问了。
-
 
 #### 实现 JWT 登录认证
 
@@ -370,12 +364,3 @@ public class SecurityConfig {
     }
 }
 ```
-
-
-
-
-
-
-
-
-

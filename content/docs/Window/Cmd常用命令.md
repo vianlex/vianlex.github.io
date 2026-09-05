@@ -3,7 +3,6 @@ title: "Cmd 常用命令"
 linkTitle: "Cmd 常用命令"
 weight: 10
 ---
-
 ## type 查看文件内容
 
 1、基本用法
@@ -38,13 +37,12 @@ chcp 65001
 type utf8编码的文件.txt
 ```
 
-
 ## more 查看文件内容
 
 1、基础命令
 
 ```bash
-# 查看命令用户 
+# 查看命令用户
 more /?
 
 # 分页查看文件（按 Enter 翻行，按 Space 翻页，按 Q 退出）
@@ -111,7 +109,7 @@ findstr /r "1[3-9][0-9]{9}" user.txt
 
 ```bash
 # 将 Cmd 切换为 UTF-8 编码
-chcp 65001  
+chcp 65001
 # 查找内容，并忽略大小写
 findstr /i "中文" utf8文件.txt
 ```

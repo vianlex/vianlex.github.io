@@ -3,7 +3,6 @@ title: "Maven 学习笔记"
 linkTitle: "Maven 学习笔记"
 weight: 20
 ---
-
 ## Maven 配置优先级
 
 Maven 三类核心配置文件优先级从高到低：
@@ -30,9 +29,9 @@ Maven 依赖查找整体流程：本地仓库 → 远程仓库，优先从本地
 
 ```bash
 # maven 3.9 之前的版本
-mvn clean package  -llr 
+mvn clean package  -llr
 # 或者
-mvn clean package --legacy-local-repository 
+mvn clean package --legacy-local-repository
 # 或者
 mvn clean package -Dmaven.legacyLocalRepo=true
 
@@ -57,7 +56,6 @@ mvn install:install-file -Dfile=D:/xx.jar -DgroupId=com.ils -DartifactId=xx -Dve
 </mirror>
 ```
 
-
 ### 2. 远程仓库查找优先级
 
 本地无对应依赖时，自动按以下顺序遍历远程仓库下载：
@@ -66,12 +64,9 @@ mvn install:install-file -Dfile=D:/xx.jar -DgroupId=com.ils -DartifactId=xx -Dve
 - 用户级 settings.xml 中配置的远程仓库
 - 全局 settings.xml 中配置的远程仓库
 
-
 注意：若同一配置文件内多个仓库，按从上到下顺序依次匹配查找，若目标仓库配置了镜像，会自动转发请求至镜像仓库拉取依赖。
 
-
 ## Maven 镜像仓库
-
 
 ### 1. 镜像核心概念
 
@@ -99,9 +94,8 @@ mvn install:install-file -Dfile=D:/xx.jar -DgroupId=com.ils -DartifactId=xx -Dve
 - `repo1,repo2` 表示只匹配 repo1, repo2 两个仓库
 - `*,!repo1` 表示匹配除 repo1 外的所有仓库
 - `external:*` 表示匹配所有外部仓库（排除 localhost 和 file://）
-- `external:http:*`	表示匹配所有 HTTP 协议的仓库
-- `external:https:*`	表示匹配所有 HTTPS 协议的仓库
-
+- `external:http:*` 表示匹配所有 HTTP 协议的仓库
+- `external:https:*` 表示匹配所有 HTTPS 协议的仓库
 
 ### 4. 多个 mirror 匹配规则说明
 
@@ -116,7 +110,7 @@ mvn install:install-file -Dfile=D:/xx.jar -DgroupId=com.ils -DartifactId=xx -Dve
         <mirrorOf>central</mirrorOf>
         <url>https://maven.aliyun.com/repository/central</url>
     </mirror>
-    
+
     <!-- 对其他仓库使用这个镜像 -->
     <mirror>
         <id>aliyun-others</id>
@@ -138,7 +132,7 @@ mvn install:install-file -Dfile=D:/xx.jar -DgroupId=com.ils -DartifactId=xx -Dve
         <mirrorOf>*,!internal-repo</mirrorOf>
         <url>https://public-mirror.com</url>
     </mirror>
-    
+
     <!-- 为 internal-repo 单独配置 -->
     <mirror>
         <id>internal-mirror</id>
@@ -185,7 +179,6 @@ Maven 如何判断一个 JAR 包是 `release` 版本还是 `snapshot` 版本，�
 严格不可覆盖，如果仓库已存在对应版本的构建产物，重复上传直接报错，正式版本版本必须唯一性。除非手动删除后，才能上传。
 
 正式版本和快照版本最大的区别点就是：构建产物上传仓库时，快照版本号相同能自动实现覆盖更新，正式版本相同只能手动删除更新或者更换版本号
-
 
 ## 依赖仓库配置
 
@@ -263,7 +256,6 @@ Maven 如何判断一个 JAR 包是 `release` 版本还是 `snapshot` 版本，�
 
 注意：普通依赖仓库和插件仓库即使仓库 `url` 一样，也必须分别配置；只配 `repositories`，插件依然会去默认插件仓库下载，不会复用 `repositories`。
 
-
 ## 配置示例
 
 1、普通依赖仓库配置
@@ -305,8 +297,6 @@ Maven 如何判断一个 JAR 包是 `release` 版本还是 `snapshot` 版本，�
 - 依赖仓库：一般情况下，只开放 SNAPSHOT。
 - 插件仓库：只允许 Release、禁止 SNAPSHOT。
 
-
-
 ## 网络代理配置（公司内网 / 翻墙用）
 
 ```xml
@@ -328,7 +318,7 @@ Maven 如何判断一个 JAR 包是 `release` 版本还是 `snapshot` 版本，�
 
 每个 `profile` 是一套环境（仓库、JDK、属性），通过 `id` 切换。
 
-### 常用 profiles 配置 
+### 常用 profiles 配置
 
 ```xml
 <profiles>

@@ -3,7 +3,6 @@ title: "location 和 rewrite 笔记"
 linkTitle: "location 和 rewrite 笔记"
 weight: 40
 ---
-
 ## location 指令
 
 location 指令由 ngx_http_core_module 模块提供，官方文档说明
@@ -16,10 +15,10 @@ Context:	server, location
 
 ```
 
-The matching is performed against a normalized URI, after decoding the text encoded in the “%XX” form, 
-resolving references to relative path components “.” and “..”, and possible compression of two or more adjacent slashes into a single slash. 
+The matching is performed against a normalized URI, after decoding the text encoded in the “%XX” form,
+resolving references to relative path components “.” and “..”, and possible compression of two or more adjacent slashes into a single slash.
 
-匹配是针对标准化的 URI 执行的，故在执行前，会将 URI 中以 `%XX` 形式编码的文本先进行解码、及解析对相对路径中 . 和 .. 组件的引用，和尽可能的去将路径中 `// ` 压缩替换成 `/`。  
+匹配是针对标准化的 URI 执行的，故在执行前，会将 URI 中以 `%XX` 形式编码的文本先进行解码、及解析对相对路径中 . 和 .. 组件的引用，和尽可能的去将路径中 `// ` 压缩替换成 `/`。
 
 A location can either be defined by a prefix string, or by a regular expression. Regular expressions are specified with the preceding “~*” modifier (for case-insensitive matching), or the “~” modifier (for case-sensitive matching). To find location matching a given request, nginx first checks locations defined using the prefix strings (prefix locations). Among them, the location with the longest matching prefix is selected and remembered. Then regular expressions are checked, in the order of their appearance in the configuration file. The search of regular expressions terminates on the first match, and the corresponding configuration is used. If no match with a regular expression is found then the configuration of the prefix location remembered earlier is used.
 
@@ -48,7 +47,6 @@ Also, using the “=” modifier it is possible to define an exact match of URI 
 In versions from 0.7.1 to 0.8.41, if a request matched the prefix location without the “=” and “^~” modifiers, the search also terminated and regular expressions were not checked.
 
 在 0.7.1 到 0.8.41 版本中，如果请求与前缀字符串的 location 匹配，但没有 `=` 和 `^~` 修饰符，也会终止检查匹配，并且不检查正则表达式。
-
 
 Let’s illustrate the above by an example:
 
@@ -110,7 +108,6 @@ location = /user {
 }
 
 ```
-
 
 ## 参考链接
 1. [location 官方文档](https://nginx.org/en/docs/http/ngx_http_core_module.html#location)
