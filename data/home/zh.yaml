@@ -8,31 +8,31 @@ sections:
         - title: Java 基础
           desc: JDK 核心机制、字节码、类加载、SPI、字节码增强等底层知识
           icon: fa-solid fa-mug-hot
-          url: docs/Java/
+          url: docs/java/
         - title: Java 设计模式
           desc: 六大设计原则与常用设计模式实战
           icon: fa-solid fa-puzzle-piece
-          url: docs/JavaDesign/
+          url: docs/javadesign/
         - title: Spring 全家桶
           desc: Spring Boot 注解、路径模式与踩坑记录
           icon: fa-solid fa-leaf
-          url: docs/Spring/
+          url: docs/spring/
         - title: Maven 构建
           desc: 依赖管理、插件配置与常见问题
           icon: fa-solid fa-box
-          url: docs/Maven/
+          url: docs/maven/
         - title: Golang
           desc: Go 语言包管理与导入机制
           icon: fa-solid fa-gears
-          url: docs/Golang/
+          url: docs/golang/
         - title: Python
           desc: Python 学习笔记
           icon: fa-brands fa-python
-          url: docs/Python/
+          url: docs/python/
         - title: Groovy
           desc: Groovy 脚本语言基础
           icon: fa-solid fa-wand-magic-sparkles
-          url: docs/Groovy/
+          url: docs/groovy/
   - type: cards
     data:
       title: 前端开发
@@ -41,11 +41,11 @@ sections:
         - title: JavaScript / TypeScript
           desc: JS 核心、原型链、闭包、异步、虚拟 DOM、React、TS
           icon: fa-solid fa-code
-          url: docs/Frontend/
+          url: docs/frontend/
         - title: 移动端 / Hybrid
           desc: Capacitor、Cordova 移动端方案
           icon: fa-solid fa-mobile-screen
-          url: docs/Android/
+          url: docs/android/
   - type: cards
     data:
       title: 中间件 & 微服务
@@ -54,27 +54,27 @@ sections:
         - title: 微服务组件
           desc: Gateway / Nacos / OpenFeign / Sentinel / SkyWalking / Seata / Spring Security / Kafka / RocketMQ / ES
           icon: fa-solid fa-satellite-dish
-          url: docs/Middleware/
+          url: docs/middleware/
         - title: MySQL
           desc: 字符串函数与开窗函数
           icon: fa-solid fa-database
-          url: docs/Mysql/
+          url: docs/mysql/
         - title: Redis
           desc: 缓存穿透、击穿、雪崩
           icon: fa-solid fa-bolt
-          url: docs/Redis/
+          url: docs/redis/
         - title: MongoDB
           desc: 文档型数据库基础
           icon: fa-solid fa-leaf
-          url: docs/Database/
+          url: docs/database/
         - title: 规则引擎
           desc: Drools 规则引擎
           icon: fa-solid fa-scale-balanced
-          url: docs/RuleEngine/
+          url: docs/ruleengine/
         - title: Jemeter 压测
           desc: 性能与接口压测入门
           icon: fa-solid fa-flask
-          url: docs/Jemeter/
+          url: docs/jemeter/
   - type: cards
     data:
       title: 容器 & 云原生
@@ -83,15 +83,15 @@ sections:
         - title: Docker
           desc: Docker、Dockerfile、Compose、Swarm 全栈
           icon: fa-brands fa-docker
-          url: docs/Docker/
+          url: docs/docker/
         - title: Kubernetes
           desc: K8s 入门与 kubeadm 部署实战
           icon: fa-solid fa-cubes
-          url: docs/Kubernetes/
+          url: docs/kubernetes/
         - title: Nginx / Tengine
           desc: Nginx 模块、location、rewrite、Tengine
           icon: fa-solid fa-server
-          url: docs/Nginx/
+          url: docs/nginx/
   - type: cards
     data:
       title: 运维 & 系统
@@ -100,27 +100,27 @@ sections:
         - title: Linux
           desc: 常用命令、权限、SSH、iptables、tmux 等
           icon: fa-brands fa-linux
-          url: docs/Linux/
+          url: docs/linux/
         - title: Shell 脚本
           desc: Shell / Awk / Sed 实战
           icon: fa-solid fa-terminal
-          url: docs/Shell/
+          url: docs/shell/
         - title: Windows
           desc: PowerShell、Cmd、OpenSSH、WSL
           icon: fa-brands fa-windows
-          url: docs/Window/
+          url: docs/window/
         - title: Apache POI
           desc: Excel 行高与换行处理
           icon: fa-solid fa-table
-          url: docs/Apache-POI/
+          url: docs/apache-poi/
         - title: PowerDesigner
           desc: 建模工具使用与逆向导入
           icon: fa-solid fa-diagram-project
-          url: docs/PowerDesigner/
+          url: docs/powerdesigner/
         - title: XML 处理
           desc: Dom4j 与 XPath
           icon: fa-solid fa-file-code
-          url: docs/Xml/
+          url: docs/xml/
   - type: cards
     data:
       title: 工具 & 协作
@@ -129,23 +129,23 @@ sections:
         - title: OpenClaw / AI
           desc: OpenClaw、Openfang、智能体配置
           icon: fa-solid fa-robot
-          url: docs/OpenClaw/
+          url: docs/openclaw/
         - title: AI 编码
           desc: Claude Code 与 Pi Agent 学习教程
           icon: fa-solid fa-laptop-code
-          url: docs/AiCoding/
+          url: docs/aicoding/
         - title: 开发工具
           desc: Mise 版本管理工具
           icon: fa-solid fa-toolbox
-          url: docs/Tools/
+          url: docs/tools/
         - title: Git
           desc: Git 学习笔记与快捷操作
           icon: fa-brands fa-git-alt
-          url: docs/Git/
+          url: docs/git/
         - title: 计算机网络
           desc: 域名、网络设备、软件名称
           icon: fa-solid fa-network-wired
-          url: docs/Computer/
+          url: docs/computer/
 
 hero:
   align: center
