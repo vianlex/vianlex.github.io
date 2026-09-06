@@ -12,10 +12,15 @@ description: "Pi Agent 安装、使用与公告系统实战"
 ## 一、安装与认证
 
 ```bash
-npm install -g @mariozechner/pi-coding-agent
+# 推荐：安装脚本（自动拉 Node 与 Pi）
+curl -fsSL https://pi.dev/install.sh | sh
+
+# 或：npm 全局安装
+npm install -g --ignore-scripts @earendil-works/pi-coding-agent
 ```
 
-> 包名 scope 曾多次变更，以 https://pi.dev 官网当前为准。
+> `--ignore-scripts` 是因为 Pi 的依赖生命周期脚本在 npm 全局安装时不需要，关掉可避免奇怪的 postinstall 失败。
+> npm scope 是当前（2026 年）官方发布渠道——`@earendil-works/pi-coding-agent`；老 scope `@mariozechner/pi-coding-agent` 与 `@styrene-lab/pi-coding-agent` 都是更早版本/分叉，新装请以 https://pi.dev 为准。
 
 认证两种方式：
 
@@ -262,13 +267,306 @@ pi --mode json "分析这个接口的边界情况" > analysis.jsonl
 
 ## 六、扩展生态
 
-| 层 | 作用 |
-|---|---|
-| Skills | Markdown 能力包，`/skill:name` 触发 |
-| Prompt Templates | 可复用提示，`/` 展开 |
-| Extensions | TypeScript 模块，加工具/命令/UI |
-| Packages | 打包分享，`pi install git:...` |
+Pi 的核心刻意保持小，把"够用就行"之外的定制能力下放到五层扩展。先看全景，再分层讲。
 
-⚠️ 第三方包以完整系统权限运行，安装前先审源码。
+| 层 | 形态 | 加载位置 | 触发方式 |
+|---|---|---|---|
+| **Sub-Agents** | Markdown + YAML frontmatter | `~/.pi/agent/agents/*.md` 或 `.pi/agents/*.md` | 子代理机制（需装扩展，Pi 内置没有） |
+| **Skills** | Markdown（`SKILL.md`） | `~/.pi/agent/skills/` 或 `.pi/skills/` | `/skill:name` 显式 / 按 description 自动加载 |
+| **Prompt Templates** | Markdown（带 frontmatter） | `~/.pi/agent/prompts/` 或 `.pi/prompts/` | `/模板名`（文件名即命令名） |
+| **Themes** | JSON（51-token 配色） | `~/.pi/agent/themes/` 或 `.pi/themes/` | `/theme` 切换；修改文件即热重载 |
+| **Extensions** | TypeScript 模块 | `~/.pi/agent/extensions/` 或 `.pi/extensions/` | 注册到 `~/.pi/agent/settings.json` |
+
+> ⚠️ **第三方包以完整系统权限运行**，安装前先审源码。Pi 故意不做权限系统——靠容器化（Docker / Gondolin / OpenShell 见官方文档 Containerization 章节）兜底。
+
+### 1. Sub-Agents（子代理）
+
+> Pi 内置**没有** sub-agent——这是 Pi 与 Claude Code 等的核心差异之一（Pi 哲学：够用就行，不想要的都不默认塞）。需要的话装扩展。
+
+最常见的实现：
+
+```bash
+pi install npm:@bytetrue/pi-subagent       # 推荐：极简、fresh/fork 双模式
+pi install npm:@piotr-oles/pi-subagents    # 隔离会话、独立模型/工具
+pi install npm:@rohaquinlop/pi-subagents   # pipeline + 运行时注册
+pi install npm:@melihmucuk/pi-crew         # 多 agent 团队 + 实时状态条
+```
+
+每个 agent 是一个 Markdown 文件：
+
+```markdown
+<!-- ~/.pi/agent/agents/code-reviewer.md -->
+---
+name: code-reviewer            # 必填，主代理按这个名字调用
+description: 读 diff 并找出具体 bug；提交前主动触发
+model: anthropic/claude-sonnet-4-20250514
+thinking: high
+tools: read, grep, find, ls    # 内置工具白名单
+---
+
+你是一个代码审查子代理。逐文件检查最新 diff，输出
+「文件路径 + 行号 + 问题 + 修复建议」列表。不写代码。
+```
+
+**frontmatter 字段：**
+
+| 字段 | 必填 | 说明 |
+|---|---|---|
+| `name` | ✅ | 唯一标识，主代理按 `name` 调用 |
+| `description` | ✅ | 主代理据此决定何时分派 |
+| `model` | | `provider/model-id` 格式；省略则继承父会话模型 |
+| `thinking` | | `off / minimal / low / medium / high / xhigh` |
+| `tools` | | 内置工具白名单（`read, bash, edit, write, grep, find, ls`） |
+| `interactive` | | 完成后保持会话可追问，默认 `false` |
+
+**两种 context 模式：**
+
+- **`spawn`**（默认）：子代理拿到 **纯任务字符串**「Task: ...」，**没有父会话上下文**——token 省、隔离干净，适合一次性的检索/审查/测试
+- **`fork`**：子代理拿到 **父会话的 fork 快照 + 任务**——能看到此前的对话与读过的文件，适合「接着刚才讨论的事继续做」
+
+**经验法则**：能从一句话讲清楚的任务用 `spawn`；需要参考刚才讨论、读过的文件、做的决策用 `fork`。
+
+### 2. Skills（技能）
+
+Markdown 包，文件名即技能名，`SKILL.md` 是入口：
+
+```markdown
+<!-- ~/.pi/agent/skills/code-review/SKILL.md -->
+---
+name: code-review
+description: 审查当前 diff 的正确性与风格；commit 前主动触发
+---
+
+## 步骤
+1. `git diff` 拿到改动
+2. 逐文件扫描：边界、空指针、错误处理、可测性
+3. 输出「文件:行 + 问题 + 建议」结构化列表
+```
+
+**触发方式：**
+
+```text
+/skill:code-review                 # 显式调用
+/skill:code-review 当前分支改动   # 带参数
+
+# 或让 Pi 自动按 description 决定——description 写得越具体，匹配越准
+```
+
+**description 写法的关键**（主代理在启动时加载所有 skill 的 description，按相关性决定加载哪个）：
+
+> **写「什么场景下主动使用」**，而不是「这个 skill 能做什么」。比如 ❌「代码审查 skill」 / ✅「**代码提交前主动调用**，审查 diff 正确性与风格」。前者太宽、容易误触发；后者精准。
+
+**两个查找路径：**
+
+- **本机已有**：直接装包 `pi install npm:@aholbreich/agent-skills`（包内多 skill 时用 `pi install -l` 装到项目）
+- **公共技能仓库**：`npx skills add <github 用户/仓库> --skill <skill 名>`
+
+### 3. Prompt Templates（提示词模板）
+
+文件名即命令名，frontmatter 描述 + 正文，`$@` 转发参数：
+
+```markdown
+<!-- ~/.pi/agent/prompts/quick-debug.md -->
+---
+description: 快速 debug 当前报错；用轻量模型 + REPL skill
+model: claude-sonnet-4-20250514
+skill: tmux
+---
+
+启动一个 Python REPL 会话，帮 debug：
+
+$@
+```
+
+```text
+/quick-debug 跑这个 case 时 OOM
+```
+
+> Skills vs Prompt Templates：
+> - **Skills**——可复用的方法论，任意会话可触发；不带参数
+> - **Prompt Templates**——固定流程工作流，自带参数（`$@`）；触发后是一整套动作
+>
+> 例：审查 PR 用 **code-review skill**（方法论）；/implement 加暗色模式 触发 3 个 sub-agent 链 → **prompt template**（流程）
+
+### 4. Themes（主题）
+
+```json
+<!-- ~/.pi/agent/themes/dim.json -->
+{
+  "name": "dim",
+  "vars": {
+    "background": "#1a1b26",
+    "foreground": "#c0caf5",
+    "border": "#414868",
+    "accent": "#7aa2f7",
+    "muted": "#565f89"
+  }
+}
+```
+
+**51 个 token**（含 `toolTitle / error / warning / success / userMessage / assistantMessage / diffAdd / diffContext / ...`）覆盖 UI 全要素。文件保存即热重载。
+
+```text
+/theme dim
+```
+
+### 5. Extensions（TypeScript 扩展）
+
+最强大的一层。TypeScript 模块，能做：
+
+| 能力 | API |
+|---|---|
+| 订阅生命周期事件 | `pi.on("session_start", ...)` / `tool_call` / `agent_end` / ... |
+| 注册 LLM 可调用的工具 | `pi.registerTool({ name, parameters, execute })` |
+| 注册斜杠命令 | `pi.registerCommand("name", { description, handler })` |
+| 注册键盘快捷键 / CLI flag | `pi.registerShortcut` / `pi.registerFlag` |
+| 主动操作 agent | `pi.sendMessage` / `pi.setModel` / `pi.exec` |
+| 自定义 LLM provider | `pi.registerProvider(...)`（OAuth 流程都可） |
+| 自定义 TUI 渲染 | `renderCall` / `renderResult` 返回 `pi-tui` 组件 |
+| 用户交互弹窗 | `ctx.ui.select / confirm / input / notify / custom` |
+
+**最简骨架（一个工具）：**
+
+```typescript
+// ~/.pi/agent/extensions/jira-search.ts
+import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
+import { Type } from "typebox";
+
+export default function (pi: ExtensionAPI) {
+  // 1) 订阅事件
+  pi.on("session_start", async (_event, ctx) => {
+    ctx.ui.notify("Jira 扩展已加载", "info");
+  });
+
+  // 2) 拦截危险命令
+  pi.on("tool_call", async (event, ctx) => {
+    if (event.toolName === "bash" && event.input.command?.includes("rm -rf")) {
+      const ok = await ctx.ui.confirm("危险操作", "确认执行 rm -rf？");
+      if (!ok) return { block: true, reason: "用户阻止" };
+    }
+  });
+
+  // 3) 注册 LLM 可调用的工具
+  pi.registerTool({
+    name: "jira_search",         // snake_case，LLM 按这个名字调用
+    label: "Jira 搜索",          // TUI 显示名
+    description: "在 Jira 项目中按关键词搜索 Issue",
+    parameters: Type.Object({
+      query: Type.String({ description: "搜索关键词" }),
+      project: Type.Optional(Type.String({ description: "项目 Key" })),
+    }),
+    async execute(_toolCallId, params, _signal, _onUpdate, ctx) {
+      const issues = await fetch(`https://your-jira/rest/api/2/search?jql=text~"${params.query}"`)
+        .then(r => r.json());
+      return {
+        content: [{ type: "text", text: JSON.stringify(issues.issues) }],
+        details: { count: issues.total },
+      };
+    },
+  });
+
+  // 4) 注册斜杠命令
+  pi.registerCommand("checkpoint", {
+    description: "把当前改动 stash 到 git",
+    handler: async (_args, ctx) => {
+      const msg = `pi-checkpoint-${Date.now()}`;
+      await ctx.exec(`git stash push -m "${msg}"`);
+      ctx.ui.notify(`已 stash: ${msg}`, "success");
+    },
+  });
+}
+```
+
+**加载与调试：**
+
+```bash
+# 快速测试（一次性加载，不入库）
+pi -e ./jira-search.ts
+
+# 正式放到自动发现位置 → 用 /reload 热加载
+cp jira-search.ts ~/.pi/agent/extensions/
+
+# 加依赖（用到 npm 包时）
+mkdir ~/.pi/agent/extensions/jira-search/
+cd ~/.pi/agent/extensions/jira-search/
+npm init -y
+npm install node-fetch
+# 然后把 jira-search.ts 改名 index.ts
+```
+
+### 6. Packages（包管理）
+
+把上面 5 层任意组合打包分发：
+
+```bash
+# 装
+pi install npm:@foo/pi-tools                 # npm 包
+pi install npm:@foo/pi-tools@1.2.3           # 钉版本
+pi install git:github.com/user/repo          # git
+pi install git:github.com/user/repo@v1.2     # 钉 tag/commit
+pi install -l npm:@foo/pi-tools              # 项目级（写到 .pi/npm/）
+```
+
+**自动发现 vs manifest**：扩展/skill/prompt/theme 只要放进 `~/.pi/agent/extensions/`、`skills/`、`prompts/`、`themes/` 这几个约定目录就**自动发现**，无需注册。需要在 npm 包里显式声明就写 `package.json`：
+
+```json
+{
+  "name": "@me/my-pi-pack",
+  "keywords": ["pi-package"],
+  "pi": {
+    "extensions": ["./extensions"],
+    "skills":     ["./skills"],
+    "prompts":    ["./prompts"],
+    "themes":     ["./themes"]
+  }
+}
+```
+
+`keywords: ["pi-package"]` 是 Pi 识别分发包的标志。
+
+**日常管理：**
+
+```bash
+pi list                       # 列出已装包
+pi update                     # 更新 Pi 本身
+pi update --all               # Pi + 所有包
+pi update --extensions        # 仅扩展
+pi update --models            # 刷新模型目录
+pi remove npm:@foo/pi-tools   # 卸载
+pi config                     # 启用/禁用各层
+```
+
+**钉版本陷阱**：`pi update --all` 会跳过钉了 `@v1.2` 这种 tag 的包；想升级钉版包需手动 `pi install git:...@新版本`。
+
+### 7. Custom Models & Providers（高级）
+
+**加一个模型**（已有 provider，但官方目录里没有）：
+
+```jsonc
+// ~/.pi/agent/models.json
+{
+  "my-custom-model": {
+    "provider": "anthropic",
+    "id": "claude-3-5-sonnet-20241022",
+    "thinking": "low",
+    "contextWindow": 200000
+  }
+}
+```
+
+**加一个自定义 provider**（新 API、OAuth 流程、第三方代理）通过扩展实现：
+
+```typescript
+pi.registerProvider("my-proxy", {
+  baseUrl: "https://my-proxy.example.com/v1",
+  apiKey: process.env.MY_PROXY_KEY,
+  // OAuth 流式授权注册也支持
+});
+```
+
+`/model` 选择列表会立刻出现新模型/新 provider。
+
+---
 
 > 官网：https://pi.dev
+> 文档：https://pi.dev/docs/latest
