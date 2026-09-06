@@ -5,13 +5,97 @@ weight: 30
 description: Pi 扩展生态深入教程——Sub-Agents、Skills、Prompt Templates、Themes、Extensions 五层全实战
 ---
 
-> 📌 **与 [PiAgent 使用教程](.) 第六节的关系**
->
-> 使用教程的「六、扩展生态」是**导览**——只介绍 5 层是什么、各自装哪条命令、能解决什么问题。
->
 > **本文是深入教程**——逐层展开「完整写法 + 实战 demo + 调试排错 + 打包发布」。读本文前建议先通读使用教程第六节打底。
 
-## 0. 5 层扩展全景图
+## ⚡ 快速上手：安装 · 查看 · 常用命令
+
+> 本节是**速查表**。想逐层深入看后面各节；想直接查命令看这里。
+
+### 安装
+
+**① 装 Pi 本体（先决条件）**
+
+```bash
+curl -fsSL https://pi.dev/install.sh | sh
+# 或 npm 全局安装
+npm install -g --ignore-scripts @earendil-works/pi-coding-agent
+```
+
+**② 装扩展包**
+
+| 源 | 命令 |
+|---|---|
+| npm | `pi install npm:@foo/pi-tools` |
+| git | `pi install git:github.com/user/repo` |
+| 本地路径 | `pi install file:~/work/my-pack` |
+| 项目级（不污染全局） | `pi install -l npm:@foo/tools` |
+| 钉版本 | npm 加 `@1.2.3`、git 加 `@v1.2` |
+
+**③ 装单个 skill**
+
+```bash
+npx skills add <github用户/仓库> --skill <skill名>
+```
+
+**④ 约定目录自动发现**（把文件放进去即生效，无需命令注册）
+
+| 类型 | 全局目录 | 项目目录 |
+|---|---|---|
+| Extensions | `~/.pi/agent/extensions/` | `.pi/extensions/` |
+| Skills | `~/.pi/agent/skills/` | `.pi/skills/` |
+| Prompts | `~/.pi/agent/prompts/` | `.pi/prompts/` |
+| Themes | `~/.pi/agent/themes/` | `.pi/themes/` |
+| Agents（子代理） | `~/.pi/agent/agents/` | `.pi/agents/` |
+
+### 查看
+
+| 想查什么 | 命令 |
+|---|---|
+| 已装的包 | `pi list` |
+| 已装的 skills | `/skill:list` |
+| 已注册的子代理 | `/subagent:list` |
+| 可用主题 | `/theme`（无参数即列出） |
+| 各层启用/禁用状态 | `pi config` |
+| 扩展加载情况 | `pi --debug`（启动时打印注册结果） |
+| 扩展日志 | `cat ~/.pi/agent/logs/extension_*.log` |
+
+### 常用命令速查
+
+**包管理：**
+
+```text
+pi install npm:...        # 装（npm: / git: / file: 三种源）
+pi list                   # 列出已装
+pi update                 # 更新 Pi 本体
+pi update --all           # Pi + 所有包
+pi update --extensions    # 仅扩展包
+pi update --models        # 刷新模型目录
+pi remove npm:@foo/pkg    # 卸载（= pi uninstall）
+pi config                 # 启用/禁用各层
+```
+
+**会话内（`/` 触发）：**
+
+```text
+/reload                   # 热加载扩展/skill 改动
+/skill:name               # 触发 skill（name = SKILL.md 文件名）
+/模板名                    # 触发 prompt 模板
+/theme <name>             # 切换主题
+/subagent:task <模式> <任务>  # 分派子代理（spawn / fork）
+```
+
+**扩展开发：**
+
+```text
+pi -e ./my-ext.ts         # 干跑测试扩展（一次性加载，不入库）
+pi --debug                # 调试模式启动
+```
+
+> 完整参数见后续各节；这里只列高频项。
+
+---
+
+## 层扩展全景图
 
 ```
                     ┌─────────────────────────────────────┐
