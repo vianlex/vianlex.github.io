@@ -565,25 +565,53 @@ npx pi-toolbox setup
 
 ### 9.3 MCP 集成类
 
-#### pi-mcp-adapter
+#### pi-mcp-adapter（nicopreme，官方 MCP 适配器）
 
-Pi 默认不支持 MCP，此扩展让 agent 直接调用 MCP 服务器工具。
+Pi 默认不支持 MCP。此扩展用一个约 200 token 的 `mcp` 代理工具接入 MCP 生态，避免把几十上百个工具定义一次性塞进上下文窗口（Playwright MCP 21 个工具 ≈ 13.7k token，Chrome DevTools 26 个工具 ≈ 18k token）。
 
 ```bash
 pi install npm:pi-mcp-adapter
+# 装完重启 Pi
 ```
 
-在 agent 的 `tools` 字段加 `mcp:` 前缀：
+**配置文件**（按优先级从低到高，后者覆盖前者）：
 
-```markdown
----
-name: browser-agent
-tools: read, bash, mcp:chrome-devtools
----
-
-# mcp:server-name         → 该服务器全部工具
-# mcp:server/tool_name    → 单个工具
+```text
+~/.config/mcp/mcp.json    # 用户全局共享配置
+~/.pi/agent/mcp.json      # Pi 全局覆盖
+.mcp.json                 # 项目级共享配置
+.pi/mcp.json              # Pi 项目覆盖
 ```
+
+```json
+{
+  "mcpServers": {
+    "chrome-devtools": {
+      "command": "npx",
+      "args": ["-y", "chrome-devtools-mcp@latest"]
+    },
+    "github": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-github"],
+      "env": { "GITHUB_PERSONAL_ACCESS_TOKEN": "${GITHUB_TOKEN}" }
+    }
+  }
+}
+```
+
+**两种调用方式**：
+
+```text
+# 代理模式（默认）：只占一个 mcp 工具，按需发现
+mcp({ search: "screenshot" })                                      # 搜工具
+mcp({ tool: "chrome_devtools_take_screenshot", args: '{"format":"png"}' })  # 调工具
+
+# 直连模式：把高频工具注册为一级 Pi 工具（directTools: true）
+```
+
+**常用命令**：`/mcp`（交互面板：连接状态 / 工具列表 / 直连与代理切换）、`/mcp setup`（引导式导入 Cursor / Claude Code / Codex 的现有配置）。
+
+**特性**：惰性连接（用到才起服务器）、工具元数据缓存、闲置 10 分钟自动断开、支持 OAuth / HTTP(SSE) / bearer token。
 
 ### 9.4 实用小扩展
 
@@ -595,6 +623,88 @@ tools: read, bash, mcp:chrome-devtools
 | `pi-bash-audit` | bash 命令风险分级审计（低/中/高） | `pi install npm:pi-bash-audit` |
 
 > 这些多为社区扩展，安装前在 [pi.dev/packages](https://pi.dev/packages) 查证最新版本与评价。
+
+### 9.5 Web 访问 — pi-web-access（nicopreme）
+
+给 Pi 加联网能力（搜索 + 抓取），同类里下载量最大、最活跃的扩展（月下载 39 万+）。
+
+```bash
+pi install npm:pi-web-access
+```
+
+**两个核心工具**：
+
+```text
+web_search({ query: "...", numResults: 5, recencyFilter: "month" })  # 搜索，最多 20 条
+fetch_content({ url: "https://...", prompt: "提取要点" })            # 抓取并提炼网页
+```
+
+**特性**：多源搜索（curl 链式 fallback / Exa MCP 零配置）、支持 PDF / YouTube / 本地视频、Chromium 浏览器 cookie 复用、GitHub 仓库本地 clone 检索。
+
+> 省 token 可选 `pi-web-access-lean`（最小 fork，只留 search / code_search / fetch_content 三个工具，比原版少约 878 token）。
+
+### 9.6 上下文管理 — pi-context（ttttmr）
+
+Agentic Context Management，让长对话保持聚焦：给关键节点打锚点、查看历史结构、把已完成的噪声路径压缩成状态摘要。启发自 kimi-cli 的 d-mail，实现会话树的「无损时间旅行」。
+
+```bash
+pi install npm:pi-context
+```
+
+**三个核心工具**：
+
+```text
+context_checkpoint    # 给有意义的对话节点打语义锚点（如 parser-fix-start）
+context_timeline      # 查看当前路径的结构：锚点 / 压缩 / 分支点 / 用户轮次
+context_compact       # 从早期锚点/节点压缩出摘要分支，恢复关键状态
+```
+
+**两个命令**：`/acm`（可视化仪表盘，看上下文占用与 token 分布）、`/context`（类似 Claude Code 的 /context 用法）。
+
+> 你看到的「pi-context-review」多半指这类「上下文审查 / 管理」工具，官方包名是 `pi-context`。另有一批纯可视化版本（`pi-context-viz`、`pi-context-inspector`）只做 token 网格展示，不做压缩管理。
+
+### 9.7 旁路提问 — pi-btw（@nguyenquangthai）
+
+在不打断主任务的前提下「偷偷问」另一个模型问题（side questions），答案只回给你、不污染主会话上下文。
+
+```bash
+pi install npm:@nguyenquangthai/pi-btw
+```
+
+**特性**：独立 RPC 子进程、9 个问题槽位、`Alt+I` 注入回答、流式返回、7 种上下文策略（`none / compact / smart / last-n / budget / full`，配置文件 `~/.pi/agent/btw-settings.json`）。
+
+> 安全模型：旁路 side agent **只读**（read / grep / find / ls），永远不写文件；线程存 `~/.pi/agent/btw/threads-*.json`。另有 `@signalridge/pi-btw` 版本，且 `pi-agent-extensions` 全家桶（17 扩展）里也内置了 btw。
+
+### 9.8 差异审查 — pi-diff（phongndo）
+
+树状 diff 导航 UI，在 TUI 里逐文件、逐改动审阅本次会话做了什么。
+
+```bash
+pi install git:github.com/phongndo/pi-diff@v0.1.4
+```
+
+**三种模式**：
+
+```text
+/diff session     # 按会话轮次审 edit/write 改动
+/diff git         # 看暂存 / 未暂存 / untracked
+/diff branch      # 对比 main/master 分支
+```
+
+**UI 快捷键**：`m` 切模式、`f` 跳文件、`/` 搜索、`n`/`N` 循环匹配、`ctrl+g` 外编辑器。
+
+### 9.9 会话中枢 — pi-agent-hub（masta_g3）
+
+基于 tmux 的会话 hub，集中管理多个 Pi 长会话。
+
+```bash
+pi install npm:pi-agent-hub
+# 启动：pi-hub 或 pi-agent-hub（两者等价）
+```
+
+**dashboard 键盘操作**：`n` 新建、`Enter` 切换、`f` fork、`d` 删除、`R` 改名、`Ctrl+Q` 回 dashboard。
+
+**特性**：project-scoped skills / MCP、多仓库（额外 repo symlink 进 runtime workspace）、hub 自持 worktree（`Ctrl+T`）。
 
 ## 十、调试与排错
 
