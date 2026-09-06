@@ -13,15 +13,7 @@ description: Pi 扩展生态深入教程——Sub-Agents、Skills、Prompt Templ
 
 ### 安装
 
-**① 装 Pi 本体（先决条件）**
-
-```bash
-curl -fsSL https://pi.dev/install.sh | sh
-# 或 npm 全局安装
-npm install -g --ignore-scripts @earendil-works/pi-coding-agent
-```
-
-**② 装扩展包**
+**① 装扩展包**
 
 | 源 | 命令 |
 |---|---|
@@ -31,13 +23,13 @@ npm install -g --ignore-scripts @earendil-works/pi-coding-agent
 | 项目级（不污染全局） | `pi install -l npm:@foo/tools` |
 | 钉版本 | npm 加 `@1.2.3`、git 加 `@v1.2` |
 
-**③ 装单个 skill**
+**② 装单个 skill**
 
 ```bash
 npx skills add <github用户/仓库> --skill <skill名>
 ```
 
-**④ 约定目录自动发现**（把文件放进去即生效，无需命令注册）
+**③ 约定目录自动发现**（把文件放进去即生效，无需命令注册）
 
 | 类型 | 全局目录 | 项目目录 |
 |---|---|---|
